@@ -3,6 +3,7 @@ const IplArticlesDAO = require("../../dao/ipl_articles_dao")
 
 module.exports = class IPLArticlesController {
     static async apiAppGetIplArticleList(req, res, next) {
+        console.log("API iplarticles");
         const ARTICLES_PER_PAGE = 20
         let page
         try {
@@ -61,6 +62,7 @@ module.exports = class IPLArticlesController {
     }
 
     static async apiWebGetIplArticleList(req, res, next) {
+        console.log("in articles");
         const ARTICLES_PER_PAGE = 20
         let page
         try {
