@@ -5,6 +5,7 @@ const morgan = require("morgan")
 // const movies = require("../src/api/routes/movies_route")
 // const users = require("../src/api/routes/users_route")
 
+const pages = require("../src/api/routes/pages_route")
 const iplMatches = require("../src/api/routes/ipl_match_route")
 const iplVideos = require("../src/api/routes/ipl_videos_route")
 const app = express()
@@ -18,6 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 //app.use("/api/v1/movies", movies);
 //app.use("/api/v1/user", users);
 
+app.use("/api/v1/pages", pages);
 app.use("/api/v1/ipl_matches", iplMatches);
 app.use("/api/v1/ipl_videos", iplVideos);
 app.use("*", (req, res) => res.status(404).json({ error: "api not found" }))

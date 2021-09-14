@@ -3,7 +3,7 @@ module.exports = class PagesDAO {
     static async injectDB(conn) {
      
       try {
-        pages = await conn.db(process.env.BCCINS).collection("pages")
+        pages = await conn.db(process.env.BCCINS).collection("ipl-pages")
       } catch (e) {
         console.error(`Unable to establish collection handles in pagesDAO: ${e}`)
       }
