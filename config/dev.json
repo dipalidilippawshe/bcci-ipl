@@ -1,0 +1,4 @@
+{
+    // "mongodb_uri": "mongodb://bcciadmin:SOh3TbYhx8ypJPxmt1oOfV@52.66.77.143:27017/bcci?retryWrites=true&w=majority"
+    "mongodb_uri": "mongodb://bcciadmin:SOh3TbYhx8ypJPxmt1oOfV@localhost:27017/bcci?retryWrites=true&w=majority"
+}
