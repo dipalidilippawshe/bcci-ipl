@@ -4,7 +4,7 @@ const cors = require("cors")
 const morgan = require("morgan")
 // const movies = require("../src/api/routes/movies_route")
 // const users = require("../src/api/routes/users_route")
-
+const matches = require("../src/api/routes/matches_route")
 const iplMatches = require("../src/api/routes/ipl_match_route")
 const iplVideos = require("../src/api/routes/ipl_videos_route")
 const iplArticles =  require("./api/routes/ipl_articles_routes")
@@ -22,6 +22,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use("/api/v1/ipl_matches", iplMatches);
 app.use("/api/v1/ipl_videos", iplVideos);
 app.use("/api/v1/ipl_Articles",iplArticles);
+app.use("/api/v1/matches", matches);
 app.use("*", (req, res) => res.status(404).json({ error: "api not found" }))
 
 module.exports = app

@@ -4,7 +4,7 @@ const { MongoClient } = require("mongodb")
 /* const MoviesDAO = require("../src/dao/movies_dao")
 const UsersDAO = require("./dao/users_dao")
 const CommentsDAO = require("./dao/comments_dao") */
-
+const MatchesDAO = require("./dao/matches_dao")
 const MatchDAO = require("./dao/ipl_match_dao")
 const IplVideosDAO = require("./dao/ipl_videos_dao")
 const IplArticlesDao = require  ("./dao/ipl_articles_dao");
@@ -25,6 +25,7 @@ MongoClient.connect(
   await MatchDAO.injectDB(client)
   await IplVideosDAO.injectDB(client)
   await IplArticlesDao.injectDB(client)
+  await MatchesDAO.injectDB(client)
   app.listen(port, () => {
     console.log(`listening on port ${port}`)
   })
