@@ -8,7 +8,8 @@ const morgan = require("morgan")
 const pages = require("../src/api/routes/pages_route")
 const iplMatches = require("../src/api/routes/ipl_match_route")
 const iplVideos = require("../src/api/routes/ipl_videos_route")
-const iplArticles =  require("./api/routes/ipl_articles_routes")
+const iplArticles = require("./api/routes/ipl_articles_routes")
+const iplPhotos = require("../src/api/routes/ipl_photos_route")
 const app = express()
 
 app.use(cors())
@@ -23,7 +24,8 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use("/api/v1/pages", pages);
 app.use("/api/v1/ipl_matches", iplMatches);
 app.use("/api/v1/ipl_videos", iplVideos);
-app.use("/api/v1/ipl_Articles",iplArticles);
+app.use("/api/v1/ipl_articles", iplArticles);
+app.use("/api/v1/ipl_photos", iplPhotos);
 app.use("*", (req, res) => res.status(404).json({ error: "api not found" }))
 
 module.exports = app
