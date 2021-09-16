@@ -179,6 +179,23 @@ module.exports = class MatchController {
             res.status(500).json({ error: e })
         }
     }
+
+    static async apiWebGetFranchiseById(req, res, next) {
+        try {
+            let id = req.params.ID && parseInt(req.params.ID) || "0"
+            let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
+
+            let article = await RecordDAO.getFranchiseByID({ id: parseInt(id), year: year })
+            if (!article) {
+                res.status(404).json({ success: false, error: "Not found" })
+                return
+            }
+            res.json({ success: true, data: article })
+        } catch (e) {
+            console.log(`api, ${e}`)
+            res.status(500).json({ error: e })
+        }
+    }
 }
 
 
