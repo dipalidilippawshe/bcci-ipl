@@ -14,6 +14,7 @@ const PromosDAO = require('./dao/promos_dao')
 const PlaylistDAO = require('./dao/playlist_dao')
 const IplArticlesDao = require("./dao/ipl_articles_dao");
 const IplPhotosDAO = require("./dao/ipl_photos_dao")
+const RecordDAO = require("./dao/ipl_records_dao")
 const playlistDAO = require("./dao/playlist_dao")
 
 const port = 5001
@@ -38,6 +39,7 @@ MongoClient.connect(
   await IplArticlesDao.injectDB(client)
   await MatchesDAO.injectDB(client)
   await IplPhotosDAO.injectDB(client)
+  await RecordDAO.injectDB(client)
   await playlistDAO.injectDB(client)
   app.listen(port, () => {
     console.log(`listening on port ${port}`)

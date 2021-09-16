@@ -2,14 +2,14 @@ let matches
 const DEFAULT_SORT = [["date", -1]]
 module.exports = class MatchDAO {
     static async injectDB(conn) {
-     
-      try {
-        matches = await conn.db(process.env.BCCINS).collection("ipl_matches")
-      } catch (e) {
-        console.error(`Unable to establish collection handles in pagesDAO: ${e}`)
-      }
+
+        try {
+            matches = await conn.db(process.env.BCCINS).collection("ipl_matches")
+        } catch (e) {
+            console.error(`Unable to establish collection handles in pagesDAO: ${e}`)
+        }
     }
-  
+
     /**
     Ticket: User Management
   
@@ -26,13 +26,13 @@ module.exports = class MatchDAO {
   
     The method deleteUser is already given to you.
     */
-  
+
     /**
      * Finds a user in the `users` collection
      * @param {string} slug - The email of the desired user
      * @returns {Object | null} Returns either a single user or nothing
      */
-     static async getMatches({
+    static async getMatches({
         // here's where the default parameters are set for the getMatches method
         filters = null,
         page = 0,
@@ -152,5 +152,25 @@ module.exports = class MatchDAO {
             throw e
         }
     }
-  
-  }
+
+    static async getFranchiseByID(id) {
+        try {
+            const pipeline = [
+                {
+                    $match: {
+                        "matchInfo.teams.team.id": id
+                    }
+                }
+            ]
+            console.log(pipeline)
+            return await matches.aggregate(pipeline).toArray()
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
+        }
+    }
+
+}
