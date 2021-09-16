@@ -66,7 +66,21 @@ module.exports = class IplVideosDAO {
         }
     }
    
-
+    static async getPlayListByid(id) {
+        try {
+            const pipeline = [
+                {
+                    $match: {
+                        ID: id
+                    }
+                }
+            ]
+            return await playList.aggregate(pipeline).next();
+        }
+        catch (e) {
+            console.error(`Unable to establish a collection handle in Playlist DAO: ${e}`);
+        }
+    }
 }
 
 /**
