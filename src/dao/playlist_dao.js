@@ -67,6 +67,7 @@ module.exports = class IplVideosDAO {
     }
    
     static async getPlayListByid(id) {
+      
         try {
             const pipeline = [
                 {
@@ -75,7 +76,7 @@ module.exports = class IplVideosDAO {
                     }
                 }
             ]
-            return await playList.aggregate(pipeline).next();
+            return await videos.aggregate(pipeline).next();
         }
         catch (e) {
             console.error(`Unable to establish a collection handle in Playlist DAO: ${e}`);
