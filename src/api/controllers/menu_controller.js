@@ -17,5 +17,18 @@ module.exports = class PagesController {
              
     }
 
-    
+    static async webSponsors(req, res, next) {
+        console.log("At route me...");
+        var slug="home"
+        const menuFromDB = await MenusDAO.getsposorsList()
+        if (!menuFromDB) {
+          errors.general = "Internal error, please try again later"
+        }
+        else{
+            //processPageData(pageFromDB, req, res, next);
+            console.log("In page data here me;;;... ");
+            res.send({status:true, message:"Received pagedata" ,Data : menuFromDB});
+        }
+             
+    }
 }

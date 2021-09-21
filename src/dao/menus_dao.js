@@ -1,9 +1,11 @@
 let menus
+let logos
 module.exports = class MenuDAO {
     static async injectDB(conn) {
      
       try {
         menus = await conn.db(process.env.BCCINS).collection("ipl-menus")
+        logos = await conn.db(process.env.BCCINS).collection("logos")
       } catch (e) {
         console.error(`Unable to establish collection handles in pagesDAO: ${e}`)
       }
@@ -35,6 +37,46 @@ module.exports = class MenuDAO {
       // TODO Ticket: User Management
       // Retrieve the user document corresponding with the user's email.
       return await menus.findOne({ slug: "ipl-web" })
+    }
+
+    static async getsposorsList(){
+        let matchesPerPage=20;
+        let cursor
+        try {
+            cursor = await logos
+                .find({});
+
+                const displayCursor = cursor.limit(matchesPerPage)
+
+                try {
+                    const List = await displayCursor.toArray()
+                    //const totalList = await matches.countDocuments(query) //page === 0 ? await matches.countDocuments(query) : 0
+                    return List
+                } catch (e) {
+                    console.error(
+                        `Unable to convert cursor to array or problem counting documents, ${e}`,
+                    )
+                    return e;
+                }
+
+        } catch (e) {
+            console.error(`Unable to issue find command, ${e}`)
+            return { data: [] }
+        }
+    //    logos.find({}, async function(err,data){
+    //         if(err){
+    //             console.log("error is:,", err);
+    //         }else{
+
+
+    //             console.log("data us :",data);
+    //             let data1=JSON.stringify(data);
+    //             data1=JSON.parse(data1);
+    //             return data1;
+    //         }
+            
+    //     });
+        
     }
   
   }
