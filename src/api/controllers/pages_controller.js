@@ -20,10 +20,10 @@ module.exports = class PagesController {
 
   static async webHomepage(req, res, next) {
     console.log("At route me...");
-    var slug = "home"
+    var slug = "home-web"
     const pageFromDB = await PagesDAO.getPage(slug)
     if (!pageFromDB) {
-      errors.general = "Internal error, please try again later"
+      res.send({ status: false, message: "Could not load data.", pageData: pageFromDB });
     }
     else {
       //processPageData(pageFromDB, req, res, next);

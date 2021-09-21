@@ -2,7 +2,8 @@ const iplDao = require('../../dao/ipl_pages_dao');
 module.exports = class IplPagesController {
     static async homeIplPagesForWeb(req, res, next) {
         try {
-            const homeIplPages = await iplDao.homeIplPages();
+            let slug = "home-web"
+            const homeIplPages = await iplDao.homeIplPages(slug);
             // console.log("--------- controlllers .js----------------");
             // console.log(homeIplPages);
             if (homeIplPages) {
@@ -20,7 +21,8 @@ module.exports = class IplPagesController {
     }
     static async homeIplPagesForApp(req, res, next) {
         try {
-            const homeIplPages = await iplDao.homeIplPages();
+            let slug = "home-app"
+            const homeIplPages = await iplDao.homeIplPages(slug);
             
      
             if (homeIplPages) {

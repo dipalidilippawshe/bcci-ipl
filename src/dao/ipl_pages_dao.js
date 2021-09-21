@@ -9,10 +9,10 @@ module.exports = class IplPagesDAO {
         }
 
     }
-    static async homeIplPages() {
+    static async homeIplPages(slug) {
         try {
 
-            return await iplPages.find({ slug: 'home' }).limit(1).skip(1).toArray();
+            return await iplPages.find({ slug: slug }).limit(1).skip(1).toArray();
 
         }
         catch (e) {
@@ -21,5 +21,6 @@ module.exports = class IplPagesDAO {
 
         }
     }
+    
 
 }
