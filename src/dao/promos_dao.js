@@ -26,7 +26,7 @@ module.exports = class PromosDAO {
         }
         catch(e)
         {
-            console.error(`Unable to establish a collection handle in Playlist DAO: ${e}`)
+            console.error(`Error ${e}`)
         }
      
     }
