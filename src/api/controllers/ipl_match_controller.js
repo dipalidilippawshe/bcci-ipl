@@ -1,6 +1,7 @@
 const MatchDAO = require("../../dao/ipl_match_dao")
-const RecordDAO = require("../../dao/ipl_records_dao")
-
+const RecordDAO = require("../../dao/ipl_franchise_years_dao")
+const franchiseDAO = require("../../dao/ipl_franchise_dao")
+const config = require("config")
 
 module.exports = class MatchController {
     static async apiAppGetMatch(req, res, next) {
@@ -73,7 +74,7 @@ module.exports = class MatchController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let article = await MatchDAO.getMatchByID(parseInt(id))
             if (!article) {
-                res.status(404).json({ success: false, error: "Not found" })
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
                 return
             }
             res.json({ success: true, data: article })
@@ -153,7 +154,7 @@ module.exports = class MatchController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let article = await MatchDAO.getMatchByID(parseInt(id))
             if (!article) {
-                res.status(404).json({ success: false, error: "Not found" })
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
                 return
             }
             res.json({ success: true, data: article })
@@ -170,7 +171,7 @@ module.exports = class MatchController {
 
             let article = await RecordDAO.getFranchiseByID({ id: parseInt(id), year: year })
             if (!article) {
-                res.status(404).json({ success: false, error: "Not found" })
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
                 return
             }
             res.json({ success: true, data: article })
@@ -187,7 +188,40 @@ module.exports = class MatchController {
 
             let article = await RecordDAO.getFranchiseByID({ id: parseInt(id), year: year })
             if (!article) {
-                res.status(404).json({ success: false, error: "Not found" })
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                return
+            }
+            res.json({ success: true, data: article })
+        } catch (e) {
+            console.log(`api, ${e}`)
+            res.status(500).json({ error: e })
+        }
+    }
+
+    static async apiWebGetTeams(req, res, next) {
+        try {
+            let id = req.params.ID && parseInt(req.params.ID) || "0"
+            let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
+
+            let article = await RecordDAO.getTeams({ year: year })
+            if (!article) {
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                return
+            }
+            res.json({ success: true, data: article })
+        } catch (e) {
+            console.log(`api, ${e}`)
+            res.status(500).json({ error: e })
+        }
+    }
+
+    static async apiWebGetVenue(req, res, next) {
+        try {
+            let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
+            console.log(year)
+            let article = await MatchDAO.getVenue({ year: year })
+            if (!article) {
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
                 return
             }
             res.json({ success: true, data: article })

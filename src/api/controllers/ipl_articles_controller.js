@@ -1,6 +1,6 @@
 
 const IplArticlesDAO = require("../../dao/ipl_articles_dao")
-
+const config = require("config")
 module.exports = class IPLArticlesController {
     static async apiAppGetIplArticleList(req, res, next) {
         console.log("API iplarticles");
@@ -46,12 +46,12 @@ module.exports = class IPLArticlesController {
     }
 
     static async apiAppGetIplArticleById(req, res, next) {
-        
+
         try {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let iplArticle = await IplArticlesDAO.getIplArticleByID(parseInt(id))
             if (!iplArticle) {
-                res.status(404).json({ success: false, error: "Not found" })
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
                 return
             }
             res.json({ success: true, data: iplArticle })
@@ -109,7 +109,7 @@ module.exports = class IPLArticlesController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let Iplarticle = await IplArticlesDAO.getIplArticleByID(parseInt(id))
             if (!Iplarticle) {
-                res.status(404).json({ success: false, error: "Not found" })
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
                 return
             }
             res.json({ success: true, data: Iplarticle })

@@ -1,6 +1,7 @@
 const playlistDAO = require("../../dao/playlist_dao");
+const config = require("config")
 module.exports = class IplVideosController {
-    
+
     static async getAppPlaylistbyType(req, res, next) {
         var type = req.params.type;
         if (!type) {
@@ -47,7 +48,7 @@ module.exports = class IplVideosController {
             const id = req.params.id ? req.params.id : "";
             const playList = await playlistDAO.getPlayListByid(parseInt(id));
             if (!playList) {
-                res.status(404).json({ succcess: false, data: `id ${id} not found ` });
+                res.status(404).json({ succcess: false, error: config.error_codes["1001"] });
             }
             else {
                 res.status(200).json({ success: true, data: playList });
@@ -62,7 +63,7 @@ module.exports = class IplVideosController {
             const id = req.params.id ? req.params.id : "";
             const playList = await playlistDAO.getPlayListByid(parseInt(id));
             if (!playList) {
-                res.status(404).json({ succcess: false, data: `id not ${id} found` })
+                res.status(404).json({ succcess: false, error: config.error_codes["1001"] })
             }
             else {
                 res.json({ success: true, data: playList })

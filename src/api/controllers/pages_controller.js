@@ -1,6 +1,6 @@
 
 const PagesDAO = require("../../dao/pages_dao")
-
+const config = require("config")
 module.exports = class PagesController {
   static async appHomepage(req, res, next) {
     console.log("At route me...");

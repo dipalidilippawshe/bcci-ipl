@@ -10,4 +10,7 @@ router.get("/app/franchise/detail/:ID", iplMatchCtrl.apiAppGetFranchiseById)
 router.get("/web/:type", iplMatchCtrl.apiWebGetMatch)
 router.get("/web/detail/:ID", iplMatchCtrl.apiWebGetMatchById)
 router.get("/web/franchise/detail/:ID", iplMatchCtrl.apiWebGetFranchiseById)
+
+router.get("/web/franchise/teams-list", iplMatchCtrl.apiWebGetTeams)
+router.get("/web/franchise/venue-list", iplMatchCtrl.apiWebGetVenue)
 module.exports = router
