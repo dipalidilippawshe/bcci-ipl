@@ -49,7 +49,7 @@ module.exports = class PagesController {
     {
 
         const standings = await MenusDAO.getStadings(); 
-        res.status(200).json({data:standings});
+        res.status(200).json({status:true,data:standings});
     }
 
 
