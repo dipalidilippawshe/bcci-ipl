@@ -33,10 +33,10 @@ module.exports = class MenuDAO {
      * @param {string} slug - The email of the desired user
      * @returns {Object | null} Returns either a single user or nothing
      */
-    static async getMenu() {
+    static async getMenu(slug) {
       // TODO Ticket: User Management
       // Retrieve the user document corresponding with the user's email.
-      return await menus.findOne({ slug: "ipl-web" })
+      return await menus.findOne({ slug: slug })
     }
 
     static async getsposorsList(){

@@ -41,13 +41,18 @@ module.exports = class MatchDAO {
         let queryParams = {}
         queryParams.query = {}
         if (filters) {
+            console.log("filters: ",filters);
             if ("matchState" in filters) {
                 queryParams.query["matchInfo.matchState"] = { $in: filters["matchState"] }
             }
             if ("startDate" in filters && "endDate" in filters) {
+                console.log("In start and end dates");
                 queryParams.query["matchInfo.matchDate"] = { $gte: filters["startDate"], $lte: filters["endDate"] }
             } if ("team" in filters) { //Men or Women
                 queryParams.query["matchInfo.teams.team.type"] = { $in: filters["team"] }
+            }
+            if("matchId" in filters){
+                queryParams.query["matchId.id"] = parseInt(filters["matchId"]) 
             }
         }
         console.dir(queryParams, { depth: null, color: true })

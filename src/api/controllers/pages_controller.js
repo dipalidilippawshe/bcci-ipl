@@ -7,7 +7,8 @@ module.exports = class PagesController {
     var slug = "home-app"
     const pageFromDB = await PagesDAO.getPage(slug)
     if (!pageFromDB) {
-      errors.general = "Internal error, please try again later"
+      res.send({ status: false, message: "Error!" });
+      // errors.general = "Internal error, please try again later"
     }
     else {
       //processPageData(pageFromDB, req, res, next);
