@@ -1,11 +1,13 @@
 let menus
 let logos
+let standings;
 module.exports = class MenuDAO {
     static async injectDB(conn) {
      
       try {
         menus = await conn.db(process.env.BCCINS).collection("ipl-menus")
         logos = await conn.db(process.env.BCCINS).collection("logos")
+        standings = await conn.db(process.env.BCCINS).collection('standings');
       } catch (e) {
         console.error(`Unable to establish collection handles in pagesDAO: ${e}`)
       }
@@ -77,6 +79,18 @@ module.exports = class MenuDAO {
             
     //     });
         
+    }
+    static async getStadings(){
+      try{
+        return standings.find({}).toArray(); 
+      }
+      catch(e)
+      {
+
+        console.error("Error :",e);
+        return {data:"Unable to find data"}
+      }
+
     }
   
   }
