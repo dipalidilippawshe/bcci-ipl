@@ -230,6 +230,72 @@ module.exports = class MatchController {
             res.status(500).json({ error: e })
         }
     }
+
+    static async apiAppGetFixtures(req,res,next){
+        //fixtures
+        console.log("IN FIXTURES....");
+        const FIXTURES_PER_PAGE = 20;
+        let page
+        try {
+            page = req.query.page ? parseInt(req.query.page, 10) : "0"
+        } catch (e) {
+            console.error(`Got bad value for page:, ${e}`)
+            page = 0
+        }
+        var filters = req.body;
+        filters.matchState = ["U"];
+        filters.team = req.body.team ? [req.body.team] : ["m", "w"]
+        filters.startDate =  new Date("2008-01-01").toISOString();
+        filters.endDate =  new Date("2021-01-01").toISOString();
+        console.log("In apis list: ",filters);
+        const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
+            filters,
+            page,
+            FIXTURES_PER_PAGE
+        })
+        let response = {
+            success: true,
+            data: matchesList,
+            page: page,
+            filters: {},
+            entries_per_page: FIXTURES_PER_PAGE,
+            total_results: totalNumMatches,
+        }
+        res.json(response)
+    }
+
+    static async apiAppGetResults(req,res,next){
+            //results
+        console.log("IN RESULTS....");
+        const FIXTURES_PER_PAGE = 20;
+        let page
+        try {
+            page = req.query.page ? parseInt(req.query.page, 10) : "0"
+        } catch (e) {
+            console.error(`Got bad value for page:, ${e}`)
+            page = 0
+        }
+        var filters = req.body;
+        filters.matchState = ["C"];
+        filters.team = req.body.team ? [req.body.team] : ["m", "w"]
+        filters.startDate =  new Date("2020-01-01").toISOString();
+        filters.endDate =  new Date("2021-01-01").toISOString();
+        console.log("In apis list: ",filters);
+        const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
+            filters,
+            page,
+            FIXTURES_PER_PAGE
+        })
+        let response = {
+            success: true,
+            data: matchesList,
+            page: page,
+            filters: {},
+            entries_per_page: FIXTURES_PER_PAGE,
+            total_results: totalNumMatches,
+        }
+        res.json(response)
+    }
 }
 
 

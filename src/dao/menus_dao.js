@@ -1,11 +1,13 @@
 let menus
 let logos
+let standings;
 module.exports = class MenuDAO {
     static async injectDB(conn) {
      
       try {
         menus = await conn.db(process.env.BCCINS).collection("ipl-menus")
         logos = await conn.db(process.env.BCCINS).collection("logos")
+        standings = await conn.db(process.env.BCCINS).collection('standings');
       } catch (e) {
         console.error(`Unable to establish collection handles in pagesDAO: ${e}`)
       }
@@ -33,10 +35,10 @@ module.exports = class MenuDAO {
      * @param {string} slug - The email of the desired user
      * @returns {Object | null} Returns either a single user or nothing
      */
-    static async getMenu() {
+    static async getMenu(slug) {
       // TODO Ticket: User Management
       // Retrieve the user document corresponding with the user's email.
-      return await menus.findOne({ slug: "ipl-web" })
+      return await menus.findOne({ slug: slug })
     }
 
     static async getsposorsList(){
@@ -77,6 +79,18 @@ module.exports = class MenuDAO {
             
     //     });
         
+    }
+    static async getStadings(){
+      try{
+        return standings.find({}).toArray(); 
+      }
+      catch(e)
+      {
+
+        console.error("Error :",e);
+        return {data:"Unable to find data"}
+      }
+
     }
   
   }

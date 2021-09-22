@@ -45,6 +45,12 @@ module.exports = class PagesController {
         }
 
     }
+    static async getStanding(req,res,next)
+    {
+
+        const standings = await MenusDAO.getStadings(); 
+        res.status(200).json({data:standings});
+    }
 
 
 }
