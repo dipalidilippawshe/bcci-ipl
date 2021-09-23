@@ -41,21 +41,27 @@ module.exports = class MatchDAO {
         let queryParams = {}
         queryParams.query = {}
         if (filters) {
-            console.log("filters: ",filters);
+            console.log("filters: ", filters);
             if ("matchState" in filters) {
                 queryParams.query["matchInfo.matchState"] = { $in: filters["matchState"] }
             }
-            if ("startDate" in filters && "endDate" in filters) {
+            if (filters["startDate"] && filters["endDate"]) {
                 console.log("In start and end dates");
                 queryParams.query["matchInfo.matchDate"] = { $gte: filters["startDate"], $lte: filters["endDate"] }
             } if ("team" in filters) { //Men or Women
                 queryParams.query["matchInfo.teams.team.type"] = { $in: filters["team"] }
             }
-            if("matchId" in filters){
-                queryParams.query["matchId.id"] = parseInt(filters["matchId"]) 
+            if ("matchId" in filters) {
+                queryParams.query["matchId.id"] = parseInt(filters["matchId"])
+            }
+            if ("team_id" in filters) {
+                queryParams.query["matchInfo.teams.team.id"] = parseInt(filters["team_id"])
+            }
+            if ("year" in filters) {
+                queryParams.query["matchInfo.matchDate"] = new RegExp(filters["year"], "i")
             }
         }
-        console.dir(queryParams, { depth: null, color: true })
+        console.log(queryParams)
         let { query = {}, project = {}, sort = DEFAULT_SORT } = queryParams
         let cursor
         try {
@@ -168,6 +174,29 @@ module.exports = class MatchDAO {
                 }
             ]
             console.log(pipeline)
+            return await matches.aggregate(pipeline).toArray()
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
+        }
+    }
+
+    static async getVenue(params) {
+        try {
+            const pipeline = [
+                {
+                    $match: {
+                        "matchInfo.matchDate": new RegExp(params.year, "i")
+                    }
+                },
+                { $group: { _id: null, venues: { $addToSet: "$matchInfo.venue" } } }
+
+            ]
+            console.dir(pipeline, { depth: null, color: true })
+            //  console.log(franchise_years)
             return await matches.aggregate(pipeline).toArray()
         } catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {

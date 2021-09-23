@@ -1,5 +1,5 @@
 const MatchDAO = require("../../dao/matches_dao")
-
+const config = require("config")
 module.exports = class MatchController {
     static async apiAppGetMatch(req, res, next) {
         const FIXTURES_PER_PAGE = 20
@@ -21,49 +21,49 @@ module.exports = class MatchController {
         } else if (req.params.type !== "" && req.params.type === "fixtures") {
             console.log("I m in else iffff");
             filters.matchState = ["U", "L"]
-        }else if (req.params.type !== "" && req.params.type === "series-and-tournaments") {
+        } else if (req.params.type !== "" && req.params.type === "series-and-tournaments") {
             filters.matchState = ["U", "L"]
             filters.sort = 1
         } else if (req.params.type == "archive") {
             filters.matchState = ["U", "L"]
             filters.sort = -1
         }
-        
+
         console.log(filters)
         if (["results", "fixtures"].includes(req.params.type)) {
 
-        const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
-            filters,
-            page,
-            FIXTURES_PER_PAGE
-        })
-        let response = {
-            success: true,
-            data: matchesList,
-            page: page,
-            filters: {},
-            entries_per_page: FIXTURES_PER_PAGE,
-            total_results: totalNumMatches,
-        }
-        res.json(response)
+            const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
+                filters,
+                page,
+                FIXTURES_PER_PAGE
+            })
+            let response = {
+                success: true,
+                data: matchesList,
+                page: page,
+                filters: {},
+                entries_per_page: FIXTURES_PER_PAGE,
+                total_results: totalNumMatches,
+            }
+            res.json(response)
 
-      }else {
+        } else {
 
-        const { matchesList, totalNumMatches } = await MatchDAO.getSeriesnTournaments({
-            filters, page,
-            FIXTURES_PER_PAGE
-        })
-        //  console.log(matchesList)
-        let response = {
-            success: true,
-            data: matchesList,
-            page: page,
-            filters: {},
-            entries_per_page: FIXTURES_PER_PAGE,
-            total_results: totalNumMatches,
+            const { matchesList, totalNumMatches } = await MatchDAO.getSeriesnTournaments({
+                filters, page,
+                FIXTURES_PER_PAGE
+            })
+            //  console.log(matchesList)
+            let response = {
+                success: true,
+                data: matchesList,
+                page: page,
+                filters: {},
+                entries_per_page: FIXTURES_PER_PAGE,
+                total_results: totalNumMatches,
+            }
+            res.json(response)
         }
-        res.json(response)
-     }
     }
 
     static async apiAppGetMatchById(req, res, next) {
@@ -71,7 +71,7 @@ module.exports = class MatchController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let article = await MatchDAO.getMatchByID(parseInt(id))
             if (!article) {
-                res.status(404).json({ success: false, error: "Not found" })
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
                 return
             }
             res.json({ success: true, data: article })
@@ -80,7 +80,7 @@ module.exports = class MatchController {
             res.status(500).json({ error: e })
         }
     }
- 
+
     static async apiWebGetMatch(req, res, next) {
         const FIXTURES_PER_PAGE = 20
         let page
@@ -101,49 +101,49 @@ module.exports = class MatchController {
         } else if (req.params.type !== "" && req.params.type === "fixtures") {
             console.log("I m in else iffff");
             filters.matchState = ["U", "L"]
-        }else if (req.params.type !== "" && req.params.type === "series-and-tournaments") {
+        } else if (req.params.type !== "" && req.params.type === "series-and-tournaments") {
             filters.matchState = ["U", "L"]
             filters.sort = 1
         } else if (req.params.type == "archive") {
             filters.matchState = ["U", "L"]
             filters.sort = -1
         }
-        
+
         console.log(filters)
         if (["results", "fixtures"].includes(req.params.type)) {
 
-        const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
-            filters,
-            page,
-            FIXTURES_PER_PAGE
-        })
-        let response = {
-            success: true,
-            data: matchesList,
-            page: page,
-            filters: {},
-            entries_per_page: FIXTURES_PER_PAGE,
-            total_results: totalNumMatches,
-        }
-        res.json(response)
+            const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
+                filters,
+                page,
+                FIXTURES_PER_PAGE
+            })
+            let response = {
+                success: true,
+                data: matchesList,
+                page: page,
+                filters: {},
+                entries_per_page: FIXTURES_PER_PAGE,
+                total_results: totalNumMatches,
+            }
+            res.json(response)
 
-      }else {
+        } else {
 
-        const { matchesList, totalNumMatches } = await MatchDAO.getSeriesnTournaments({
-            filters, page,
-            FIXTURES_PER_PAGE
-        })
-        //  console.log(matchesList)
-        let response = {
-            success: true,
-            data: matchesList,
-            page: page,
-            filters: {},
-            entries_per_page: FIXTURES_PER_PAGE,
-            total_results: totalNumMatches,
+            const { matchesList, totalNumMatches } = await MatchDAO.getSeriesnTournaments({
+                filters, page,
+                FIXTURES_PER_PAGE
+            })
+            //  console.log(matchesList)
+            let response = {
+                success: true,
+                data: matchesList,
+                page: page,
+                filters: {},
+                entries_per_page: FIXTURES_PER_PAGE,
+                total_results: totalNumMatches,
+            }
+            res.json(response)
         }
-        res.json(response)
-     }
     }
 
     static async apiWebGetMatchById(req, res, next) {
@@ -151,7 +151,7 @@ module.exports = class MatchController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let article = await MatchDAO.getMatchByID(parseInt(id))
             if (!article) {
-                res.status(404).json({ success: false, error: "Not found" })
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
                 return
             }
             res.json({ success: true, data: article })

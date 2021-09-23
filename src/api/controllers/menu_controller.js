@@ -1,6 +1,6 @@
 
 const MenusDAO = require("../../dao/menus_dao")
-
+const config = require("config")
 module.exports = class PagesController {
     static async webMenus(req, res, next) {
         console.log("At route me...");
@@ -19,17 +19,15 @@ module.exports = class PagesController {
 
     static async webSponsors(req, res, next) {
         console.log("At route me...");
-        var slug="home"
+        var slug = "home"
         const menuFromDB = await MenusDAO.getsposorsList()
         if (!menuFromDB) {
-          errors.general = "Internal error, please try again later"
+            errors.general = "Internal error, please try again later"
         }
-        else{
-            //processPageData(pageFromDB, req, res, next);
-            console.log("In page data here me;;;... ");
-            res.send({status:true, message:"Received pagedata" ,Data : menuFromDB});
+        else {
+            res.send({ status: true, message: "Received pagedata", data: menuFromDB });
         }
-             
+
     }
     static async appMenus(req, res, next) {
         console.log("At route me...");
@@ -39,17 +37,14 @@ module.exports = class PagesController {
             errors.general = "Internal error, please try again later"
         }
         else {
-            //processPageData(pageFromDB, req, res, next);
-            console.log("In page data here me;;;... ");
-            res.send({ status: true, message: "Received pagedata", Data: menuFromDB });
+            res.send({ status: true, message: "Received data", data: menuFromDB });
         }
 
     }
-    static async getStanding(req,res,next)
-    {
+    static async getStanding(req, res, next) {
 
-        const standings = await MenusDAO.getStadings(); 
-        res.status(200).json({data:standings});
+        const standings = await MenusDAO.getStadings();
+        res.status(200).json({ data: standings });
     }
 
 

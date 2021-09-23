@@ -1,5 +1,5 @@
 const PhotosDAO = require("../../dao/ipl_photos_dao")
-
+const config = require("config")
 module.exports = class PhotosController {
     static async apiAppGetPhotos(req, res, next) {
         const PHOTOS_PER_PAGE = 20
@@ -37,7 +37,7 @@ module.exports = class PhotosController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let video = await PhotosDAO.getPhotoByID(parseInt(id))
             if (!video) {
-                res.status(404).json({ success: false, error: "Not found" })
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
                 return
             }
             res.json({ success: true, data: video })
@@ -52,7 +52,7 @@ module.exports = class PhotosController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let video = await PhotosDAO.getPhotoByID(parseInt(id))
             if (!video) {
-                res.status(404).json({ success: false, error: "Not found" })
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
                 return
             }
             res.json({ success: true, data: video })

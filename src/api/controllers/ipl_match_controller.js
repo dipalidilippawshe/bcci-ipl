@@ -1,6 +1,7 @@
 const MatchDAO = require("../../dao/ipl_match_dao")
-const RecordDAO = require("../../dao/ipl_records_dao")
-
+const RecordDAO = require("../../dao/ipl_franchise_years_dao")
+const franchiseDAO = require("../../dao/ipl_franchise_dao")
+const config = require("config")
 
 module.exports = class MatchController {
     static async apiAppGetMatch(req, res, next) {
@@ -73,7 +74,7 @@ module.exports = class MatchController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let article = await MatchDAO.getMatchByID(parseInt(id))
             if (!article) {
-                res.status(404).json({ success: false, error: "Not found" })
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
                 return
             }
             res.json({ success: true, data: article })
@@ -113,7 +114,10 @@ module.exports = class MatchController {
 
         console.log(filters)
         if (["results", "fixtures"].includes(req.params.type)) {
-
+            if (req.query.franchise_id) {
+                filters.team_id = req.query.franchise_id
+            }
+            filters.year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
             const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
                 filters,
                 page,
@@ -153,7 +157,7 @@ module.exports = class MatchController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let article = await MatchDAO.getMatchByID(parseInt(id))
             if (!article) {
-                res.status(404).json({ success: false, error: "Not found" })
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
                 return
             }
             res.json({ success: true, data: article })
@@ -170,7 +174,7 @@ module.exports = class MatchController {
 
             let article = await RecordDAO.getFranchiseByID({ id: parseInt(id), year: year })
             if (!article) {
-                res.status(404).json({ success: false, error: "Not found" })
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
                 return
             }
             res.json({ success: true, data: article })
@@ -187,7 +191,7 @@ module.exports = class MatchController {
 
             let article = await RecordDAO.getFranchiseByID({ id: parseInt(id), year: year })
             if (!article) {
-                res.status(404).json({ success: false, error: "Not found" })
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
                 return
             }
             res.json({ success: true, data: article })
@@ -197,7 +201,40 @@ module.exports = class MatchController {
         }
     }
 
-    static async apiAppGetFixtures(req,res,next){
+    static async apiWebGetTeams(req, res, next) {
+        try {
+            let id = req.params.ID && parseInt(req.params.ID) || "0"
+            let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
+
+            let article = await RecordDAO.getTeams({ year: year })
+            if (!article) {
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                return
+            }
+            res.json({ success: true, data: article })
+        } catch (e) {
+            console.log(`api, ${e}`)
+            res.status(500).json({ error: e })
+        }
+    }
+
+    static async apiWebGetVenue(req, res, next) {
+        try {
+            let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
+            console.log(year)
+            let article = await MatchDAO.getVenue({ year: year })
+            if (!article) {
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                return
+            }
+            res.json({ success: true, data: article })
+        } catch (e) {
+            console.log(`api, ${e}`)
+            res.status(500).json({ error: e })
+        }
+    }
+
+    static async apiAppGetFixtures(req, res, next) {
         //fixtures
         console.log("IN FIXTURES....");
         const FIXTURES_PER_PAGE = 20;
@@ -211,9 +248,9 @@ module.exports = class MatchController {
         var filters = req.body;
         filters.matchState = ["U"];
         filters.team = req.body.team ? [req.body.team] : ["m", "w"]
-        filters.startDate =  new Date("2008-01-01").toISOString();
-        filters.endDate =  new Date("2021-01-01").toISOString();
-        console.log("In apis list: ",filters);
+        filters.startDate = new Date("2008-01-01").toISOString();
+        filters.endDate = new Date("2021-01-01").toISOString();
+        console.log("In apis list: ", filters);
         const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
             filters,
             page,
@@ -230,8 +267,8 @@ module.exports = class MatchController {
         res.json(response)
     }
 
-    static async apiAppGetResults(req,res,next){
-            //results
+    static async apiAppGetResults(req, res, next) {
+        //results
         console.log("IN RESULTS....");
         const FIXTURES_PER_PAGE = 20;
         let page
@@ -244,9 +281,9 @@ module.exports = class MatchController {
         var filters = req.body;
         filters.matchState = ["C"];
         filters.team = req.body.team ? [req.body.team] : ["m", "w"]
-        filters.startDate =  new Date("2020-01-01").toISOString();
-        filters.endDate =  new Date("2021-01-01").toISOString();
-        console.log("In apis list: ",filters);
+        filters.startDate = new Date("2020-01-01").toISOString();
+        filters.endDate = new Date("2021-01-01").toISOString();
+        console.log("In apis list: ", filters);
         const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
             filters,
             page,

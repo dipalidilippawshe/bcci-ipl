@@ -1,6 +1,6 @@
 
 const IplVideosDAO = require("../../dao/ipl_videos_dao")
-
+const config = require("config")
 module.exports = class IplVideosController {
     static async apiAppGetIplVideos(req, res, next) {
         const MOVIES_PER_PAGE = 20
@@ -56,7 +56,7 @@ module.exports = class IplVideosController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let video = await IplVideosDAO.getVideoByID(parseInt(id))
             if (!video) {
-                res.status(404).json({ success: false, error: "Not found" })
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
                 return
             }
             res.json({ success: true, data: video })
@@ -86,7 +86,7 @@ module.exports = class IplVideosController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let video = await IplVideosDAO.getPromoByID(parseInt(id))
             if (!video) {
-                res.status(404).json({ success: false, error: "Not found" })
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
                 return
             }
             res.json({ success: true, data: video })
@@ -155,7 +155,7 @@ module.exports = class IplVideosController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let video = await IplVideosDAO.getVideoByID(parseInt(id))
             if (!video) {
-                res.status(404).json({ success: false, error: "Not found" })
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
                 return
             }
             res.json({ success: true, data: video })
@@ -185,7 +185,7 @@ module.exports = class IplVideosController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let video = await IplVideosDAO.getPromoByID(parseInt(id))
             if (!video) {
-                res.status(404).json({ success: false, error: "Not found" })
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
                 return
             }
             res.json({ success: true, data: video })

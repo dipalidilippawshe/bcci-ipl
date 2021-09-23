@@ -14,4 +14,6 @@ router.get("/web/franchise/detail/:ID", iplMatchCtrl.apiWebGetFranchiseById)
 
 //Teams 
 
+router.get("/web/franchise/teams-list", iplMatchCtrl.apiWebGetTeams)
+router.get("/web/franchise/venue-list", iplMatchCtrl.apiWebGetVenue)
 module.exports = router
