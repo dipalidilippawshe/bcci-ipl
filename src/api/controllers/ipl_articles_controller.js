@@ -1,6 +1,6 @@
-
 const IplArticlesDAO = require("../../dao/ipl_articles_dao")
-const config = require("config")
+const config = require("config");
+
 module.exports = class IPLArticlesController {
     static async apiAppGetIplArticleList(req, res, next) {
         console.log("API iplarticles");
@@ -105,17 +105,42 @@ module.exports = class IPLArticlesController {
     }
 
     static async apiWebGetIplArticleById(req, res, next) {
-        try {
-            let id = req.params.ID && parseInt(req.params.ID) || "0"
-            let Iplarticle = await IplArticlesDAO.getIplArticleByID(parseInt(id))
-            if (!Iplarticle) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
-                return
+       
+            let idType=  await Object.keys(req.query)[0];
+            if(idType==="id")
+            {
+                try {
+                let id = req.query.id && parseInt(req.query.id) || "0"
+    
+                let Iplarticle = await IplArticlesDAO.getIplArticleByID(parseInt(id))
+                if (!Iplarticle) {
+                    res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                    return
+                }
+                res.json({ success: true, data: Iplarticle })
+            } catch (e) {
+                console.log(`api, ${e}`)
+                res.status(500).json({ error: e })
+            }  
             }
-            res.json({ success: true, data: Iplarticle })
-        } catch (e) {
-            console.log(`api, ${e}`)
-            res.status(500).json({ error: e })
+        else{
+            try {
+                let teamId = req.query.teamId && parseInt(req.query.teamId) || "0"
+             
+                // console.log("id is  "+teamId);
+                const articles = await IplArticlesDAO.getIplArticleByTeamId(teamId);
+                if (!articles) {
+                    res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                    return
+                }
+                res.status(200).json({ success: true, data: articles })
+            } catch (e) {
+                console.log(e);
+                res.status(500).json({success:false, error: e })
+            } 
         }
+
+           
     }
+  
 }

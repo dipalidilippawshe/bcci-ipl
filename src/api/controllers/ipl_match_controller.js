@@ -114,7 +114,10 @@ module.exports = class MatchController {
 
         console.log(filters)
         if (["results", "fixtures"].includes(req.params.type)) {
-
+            if (req.query.franchise_id) {
+                filters.team_id = req.query.franchise_id
+            }
+            filters.year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
             const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
                 filters,
                 page,
@@ -231,7 +234,7 @@ module.exports = class MatchController {
         }
     }
 
-    static async apiAppGetFixtures(req,res,next){
+    static async apiAppGetFixtures(req, res, next) {
         //fixtures
         console.log("IN FIXTURES....");
         const FIXTURES_PER_PAGE = 20;
@@ -245,9 +248,9 @@ module.exports = class MatchController {
         var filters = req.body;
         filters.matchState = ["U"];
         filters.team = req.body.team ? [req.body.team] : ["m", "w"]
-        filters.startDate =  new Date("2008-01-01").toISOString();
-        filters.endDate =  new Date("2021-01-01").toISOString();
-        console.log("In apis list: ",filters);
+        filters.startDate = new Date("2008-01-01").toISOString();
+        filters.endDate = new Date("2021-01-01").toISOString();
+        console.log("In apis list: ", filters);
         const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
             filters,
             page,
@@ -264,8 +267,8 @@ module.exports = class MatchController {
         res.json(response)
     }
 
-    static async apiAppGetResults(req,res,next){
-            //results
+    static async apiAppGetResults(req, res, next) {
+        //results
         console.log("IN RESULTS....");
         const FIXTURES_PER_PAGE = 20;
         let page
@@ -278,9 +281,9 @@ module.exports = class MatchController {
         var filters = req.body;
         filters.matchState = ["C"];
         filters.team = req.body.team ? [req.body.team] : ["m", "w"]
-        filters.startDate =  new Date("2020-01-01").toISOString();
-        filters.endDate =  new Date("2021-01-01").toISOString();
-        console.log("In apis list: ",filters);
+        filters.startDate = new Date("2020-01-01").toISOString();
+        filters.endDate = new Date("2021-01-01").toISOString();
+        console.log("In apis list: ", filters);
         const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
             filters,
             page,
@@ -295,6 +298,22 @@ module.exports = class MatchController {
             total_results: totalNumMatches,
         }
         res.json(response)
+    }
+
+    static async apiWebGetSeasonList(req, res, next) {
+        try {
+            let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
+            console.log(year)
+            let data = await MatchDAO.getSeasonList({ year: year })
+            if (!data) {
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                return
+            }
+            res.json({ success: true, data: data })
+        } catch (e) {
+            console.log(`api, ${e}`)
+            res.status(500).json({ error: e })
+        }
     }
 }
 
