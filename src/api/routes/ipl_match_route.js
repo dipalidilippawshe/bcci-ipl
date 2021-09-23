@@ -13,7 +13,7 @@ router.get("/web/detail/:ID", iplMatchCtrl.apiWebGetMatchById)
 router.get("/web/franchise/detail/:ID", iplMatchCtrl.apiWebGetFranchiseById)
 
 //Teams 
-
+router.get("/web/teams/list",iplMatchCtrl.apiWebGetTeams)
 router.get("/web/franchise/teams-list", iplMatchCtrl.apiWebGetTeams)
 router.get("/web/franchise/venue-list", iplMatchCtrl.apiWebGetVenue)
 router.get("/web/franchise/season-list", iplMatchCtrl.apiWebGetSeasonList)

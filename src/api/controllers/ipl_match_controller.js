@@ -85,6 +85,7 @@ module.exports = class MatchController {
     }
 
     static async apiWebGetMatch(req, res, next) {
+        console.log("CALLINGIN..");
         const FIXTURES_PER_PAGE = 20
         let page
         try {
@@ -315,6 +316,8 @@ module.exports = class MatchController {
             res.status(500).json({ error: e })
         }
     }
+
+  
 }
 
 
