@@ -117,6 +117,7 @@ module.exports = class MatchController {
             if (req.query.franchise_id) {
                 filters.team_id = req.query.franchise_id
             }
+            filters.year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
             const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
                 filters,
                 page,
