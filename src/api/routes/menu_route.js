@@ -8,6 +8,7 @@ const router = new Router()
 router.get("/web/menu", pagesCtrl.webMenus);
 router.get("/sponsors",pagesCtrl.webSponsors);
 router.get("/app/menu", pagesCtrl.appMenus);
-router.get("/app/standing",pagesCtrl.getStanding)
+router.get("/app/standing",pagesCtrl.getStanding);
+
 
 module.exports = router;
