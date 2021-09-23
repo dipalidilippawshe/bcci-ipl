@@ -299,6 +299,22 @@ module.exports = class MatchController {
         }
         res.json(response)
     }
+
+    static async apiWebGetSeasonList(req, res, next) {
+        try {
+            let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
+            console.log(year)
+            let data = await MatchDAO.getSeasonList({ year: year })
+            if (!data) {
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                return
+            }
+            res.json({ success: true, data: data })
+        } catch (e) {
+            console.log(`api, ${e}`)
+            res.status(500).json({ error: e })
+        }
+    }
 }
 
 

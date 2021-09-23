@@ -206,5 +206,42 @@ module.exports = class MatchDAO {
             throw e
         }
     }
+    static async getSeasonList(params) {
+        try {
+            const pipeline = [
+                // {
+                //     $match: {
+                //         "matchInfo.matchDate": new RegExp(params.year, "i")
+                //     }
+                // },
+
+                {
+                    $group: {
+                        _id: {
+                            "$substr": [
+                                "$matchInfo.matchDate",
+                                0,
+                                4
+                            ]
+                        },
+                    }
+                },
+                { $sort: { "_id": 1 } },
+                {
+                    $project: { "year": "$_id", _id: 0 }
+                }
+
+            ]
+            console.dir(pipeline, { depth: null, color: true })
+            //  console.log(franchise_years)
+            return await matches.aggregate(pipeline).toArray()
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
+        }
+    }
 
 }

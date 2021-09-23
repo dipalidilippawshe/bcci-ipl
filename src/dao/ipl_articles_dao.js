@@ -212,6 +212,21 @@ module.exports = class ArticlesDAO {
             throw e                     
         }
     }
+
+    static async getIplArticleByTeamId(id) {
+     
+        try {
+       
+        return await iplArticles.find({'references.id':id} ).toArray();
+        // return await iplArticles.find({ "$references.id": id });
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e                     
+        }
+    }
 }
 
 
