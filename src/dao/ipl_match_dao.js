@@ -41,21 +41,24 @@ module.exports = class MatchDAO {
         let queryParams = {}
         queryParams.query = {}
         if (filters) {
-            console.log("filters: ",filters);
+            console.log("filters: ", filters);
             if ("matchState" in filters) {
                 queryParams.query["matchInfo.matchState"] = { $in: filters["matchState"] }
             }
-            if ("startDate" in filters && "endDate" in filters) {
+            if (filters["startDate"] && filters["endDate"]) {
                 console.log("In start and end dates");
                 queryParams.query["matchInfo.matchDate"] = { $gte: filters["startDate"], $lte: filters["endDate"] }
             } if ("team" in filters) { //Men or Women
                 queryParams.query["matchInfo.teams.team.type"] = { $in: filters["team"] }
             }
-            if("matchId" in filters){
-                queryParams.query["matchId.id"] = parseInt(filters["matchId"]) 
+            if ("matchId" in filters) {
+                queryParams.query["matchId.id"] = parseInt(filters["matchId"])
+            }
+            if ("team_id" in filters) {
+                queryParams.query["matchInfo.teams.team.id"] = filters["team_id"]
             }
         }
-        console.dir(queryParams, { depth: null, color: true })
+        console.log(queryParams)
         let { query = {}, project = {}, sort = DEFAULT_SORT } = queryParams
         let cursor
         try {

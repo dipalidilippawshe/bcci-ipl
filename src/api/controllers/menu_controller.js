@@ -25,9 +25,7 @@ module.exports = class PagesController {
             errors.general = "Internal error, please try again later"
         }
         else {
-            //processPageData(pageFromDB, req, res, next);
-            console.log("In page data here me;;;... ");
-            res.send({ status: true, message: "Received pagedata", Data: menuFromDB });
+            res.send({ status: true, message: "Received pagedata", data: menuFromDB });
         }
 
     }
@@ -39,17 +37,14 @@ module.exports = class PagesController {
             errors.general = "Internal error, please try again later"
         }
         else {
-            //processPageData(pageFromDB, req, res, next);
-            console.log("In page data here me;;;... ");
-            res.send({ status: true, message: "Received pagedata", Data: menuFromDB });
+            res.send({ status: true, message: "Received data", data: menuFromDB });
         }
 
     }
-    static async getStanding(req,res,next)
-    {
+    static async getStanding(req, res, next) {
 
-        const standings = await MenusDAO.getStadings(); 
-        res.status(200).json({data:standings});
+        const standings = await MenusDAO.getStadings();
+        res.status(200).json({ data: standings });
     }
 
 
