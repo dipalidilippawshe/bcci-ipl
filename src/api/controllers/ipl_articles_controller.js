@@ -63,10 +63,9 @@ module.exports = class IPLArticlesController {
 
     static async apiWebGetIplArticleList(req, res, next) {
         console.log("in articles");
-        let idType = await Object.keys(req.query)[0];
-        console.log(idType);
-        if (idType != 'teamId') {
-            const ARTICLES_PER_PAGE = 20
+        // let idType = await Object.keys(req.query)[0];
+     
+         const ARTICLES_PER_PAGE = 20
             let page
             try {
                 page = req.query.page ? parseInt(req.query.page, 10) : "0"
@@ -105,31 +104,16 @@ module.exports = class IPLArticlesController {
                 total_results: totalNumArticles,
             }
             res.json(response)
-        }
-        else {
-            try {
-                let teamId = req.query.teamId && parseInt(req.query.teamId) || "0"
-
-                // console.log("id is  "+teamId);
-                const articles = await IplArticlesDAO.getIplArticleByTeamId(teamId);
-                if (!articles) {
-                    res.status(404).json({ success: false, error: config.error_codes["1001"] })
-                    return
-                }
-                res.status(200).json({ success: true, data: articles })
-            } catch (e) {
-                console.log(e);
-                res.status(500).json({ success: false, error: e })
-            }
-        }
+       
+       
 
     }
 
     static async apiWebGetIplArticleById(req, res, next) {
 
         try {
-            console.log(req.params);
-            let id = req.params.id && parseInt(req.params.id) || "0"
+          
+            let id = req.params.ID && parseInt(req.params.ID) || "0"
 
             let Iplarticle = await IplArticlesDAO.getIplArticleByID(parseInt(id))
             if (!Iplarticle) {
@@ -145,5 +129,23 @@ module.exports = class IPLArticlesController {
 
 
     }
+    static async apiWebGetIplArticleTeamById(req, res, next) {
 
+        try {
+            console.log(req.params);
+            let id = req.params.ID && parseInt(req.params.ID) || "0"
+            let Iplarticle = await IplArticlesDAO.getIplArticleByTeamId(parseInt(id))
+            if (!Iplarticle) {
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                return
+            }
+            res.json({ success: true, data: Iplarticle })
+        } catch (e) {
+            console.log(`api, ${e}`)
+            res.status(500).json({ error: e })
+        }
+
+
+
+    }
 }
