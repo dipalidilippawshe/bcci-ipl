@@ -7,5 +7,6 @@ router.get("/web/", PhotosCtrl.apiWebGetPhotos)
 
 router.get("/app/detail/:ID", PhotosCtrl.apiAppGetPhotoById)
 router.get("/web/detail/:ID", PhotosCtrl.apiWebGetPhotoById)
+router.get("/web/matchImages/:ID",PhotosCtrl.apiWebMatchImagesById)
 
 module.exports = router
