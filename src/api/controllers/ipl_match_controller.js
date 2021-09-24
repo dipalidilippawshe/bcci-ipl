@@ -317,7 +317,50 @@ module.exports = class MatchController {
         }
     }
 
-  
+    static async apiWebArchiveByTeam(req, res, next) {
+        console.log("////////////////////////")
+        const FIXTURES_PER_PAGE = 20
+        let page
+        try {
+            page = req.query.page ? parseInt(req.query.page, 10) : "0"
+        } catch (e) {
+            console.error(`Got bad value for page:, ${e}`)
+            page = 0
+        }
+
+        let filters = {};
+        filters.startDate = req.query.startDate && new Date(req.query.startDate) !== "Invalid Date" ? new Date(req.query.startDate).toISOString() : undefined
+        filters.endDate = req.query.endDate && new Date(req.query.endDate) !== "Invalid Date" ? new Date(req.query.endDate).toISOString() : undefined
+        filters.team = req.query.team ? [req.query.team] : ["m", "w"]
+        if (req.params.franchise_id) {
+            filters.team_id = req.params.franchise_id
+        }
+        filters.matchState = ["C"]
+
+
+        console.log(filters)
+        const { matchesList, totalNumMatches } = await MatchDAO.getArchiveData({
+            filters, page,
+            FIXTURES_PER_PAGE
+        })
+        for (var i in matchesList) {
+            filters["year"] = matchesList[i].year
+            matchesList[i].TopRunScorer = await MatchDAO.getTopBatsmenByTeamAndYear(filters)
+            matchesList[i].TopWktTaker = await MatchDAO.getTopBolwerByTeamAndYear(filters)
+
+        }
+        let response = {
+            success: true,
+            data: matchesList,
+            page: page,
+            filters: {},
+            entries_per_page: FIXTURES_PER_PAGE,
+            total_results: totalNumMatches,
+        }
+        res.json(response)
+
+    }
+
 }
 
 
