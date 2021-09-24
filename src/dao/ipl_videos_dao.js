@@ -414,6 +414,27 @@ module.exports = class IplVideosDAO {
         }
     }
 
+    static async videoByMatchID(id){
+        try{
+            console.log("In video by match ID me");
+            const pipeline = [
+                {
+                    $match: {
+                        "references.sid": id
+                    }
+                }
+            ]
+            console.dir(pipeline, { depth: null, color: true })
+            //  console.log(franchise_years)
+            return await videos.aggregate(pipeline).toArray()
+        }catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
+        }
+    }
 }
 
 /**

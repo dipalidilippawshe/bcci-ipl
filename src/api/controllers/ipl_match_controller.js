@@ -1,6 +1,7 @@
 const MatchDAO = require("../../dao/ipl_match_dao")
 const RecordDAO = require("../../dao/ipl_franchise_years_dao")
 const franchiseDAO = require("../../dao/ipl_franchise_dao")
+const videosDAO = require("../../dao/ipl_videos_dao");
 const config = require("config")
 
 module.exports = class MatchController {
@@ -359,6 +360,53 @@ module.exports = class MatchController {
         }
         res.json(response)
 
+    }
+
+    static async apiAppGetVideoByMatchId(req, res, next) {
+        try {
+            const FIXTURES_PER_PAGE = 20
+            let page
+            try {
+                page = req.query.page ? parseInt(req.query.page, 10) : "0"
+            } catch (e) {
+                console.error(`Got bad value for page:, ${e}`)
+                page = 0
+            }
+            console.log("In apiAppGetVideoByMatchId", req.params.ID);
+            let id = req.params.ID;
+            if (!id) {
+                res.status({ success: false, data: [], message: "Please send match ID" })
+            } else {
+                console.log("In else me");
+                let data = await videosDAO.videoByMatchID(id)
+                if (!data) {
+                    res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                    return
+                }
+                res.json({ success: true, data: data })
+
+            }
+        } catch (e) {
+            console.log(`api, ${e}`)
+            res.status(500).json({ error: e })
+        }
+
+    }
+    static async apiScheduleById(req, res, next) {
+        try {
+            let id = req.params.ID; //This is team ID
+            let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
+            console.log(year)
+            let data = await MatchDAO.getScheduleList(year, id)
+            if (!data) {
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                return
+            }
+            res.json({ success: true, data: data })
+        } catch (e) {
+            console.log(`api, ${e}`)
+            res.status(500).json({ error: e })
+        }
     }
 
 }
