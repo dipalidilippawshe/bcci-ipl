@@ -9,7 +9,7 @@ router.post("/app/fixtures", iplMatchCtrl.apiAppGetFixtures);
 router.post("/app/results", iplMatchCtrl.apiAppGetResults);
 //result match id wise videos data
 router.get("/app/videoByMatch/:ID", iplMatchCtrl.apiAppGetVideoByMatchId)
-
+router.get("/web/teamSchedule/:ID",iplMatchCtrl.apiScheduleById)
 
 router.get("/web/:type", iplMatchCtrl.apiWebGetMatch)
 router.get("/web/detail/:ID", iplMatchCtrl.apiWebGetMatchById)

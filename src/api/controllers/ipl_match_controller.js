@@ -348,6 +348,22 @@ module.exports = class MatchController {
         }
        
     }
+    static async apiScheduleById(req,res,next){
+        try {
+            let id = req.params.ID; //This is team ID
+            let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
+            console.log(year)
+            let data = await MatchDAO.getScheduleList(year, id)
+            if (!data) {
+                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                return
+            }
+            res.json({ success: true, data: data })
+        } catch (e) {
+            console.log(`api, ${e}`)
+            res.status(500).json({ error: e })
+        }
+    }
   
 }
 
