@@ -38,7 +38,7 @@ module.exports = class MatchController {
                 FIXTURES_PER_PAGE
             })
             let response = {
-                success: true,
+                status: true,
                 data: matchesList,
                 page: page,
                 filters: {},
@@ -55,7 +55,7 @@ module.exports = class MatchController {
             })
             //  console.log(matchesList)
             let response = {
-                success: true,
+                status: true,
                 data: matchesList,
                 page: page,
                 filters: {},
@@ -71,10 +71,10 @@ module.exports = class MatchController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let article = await MatchDAO.getMatchByID(parseInt(id))
             if (!article) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ success: true, data: article })
+            res.json({ status: true, data: article })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
@@ -118,7 +118,7 @@ module.exports = class MatchController {
                 FIXTURES_PER_PAGE
             })
             let response = {
-                success: true,
+                status: true,
                 data: matchesList,
                 page: page,
                 filters: {},
@@ -135,7 +135,7 @@ module.exports = class MatchController {
             })
             //  console.log(matchesList)
             let response = {
-                success: true,
+                status: true,
                 data: matchesList,
                 page: page,
                 filters: {},
@@ -151,10 +151,10 @@ module.exports = class MatchController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let article = await MatchDAO.getMatchByID(parseInt(id))
             if (!article) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ success: true, data: article })
+            res.json({ status: true, data: article })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })

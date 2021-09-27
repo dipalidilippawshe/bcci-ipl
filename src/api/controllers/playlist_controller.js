@@ -51,7 +51,7 @@ module.exports = class IplVideosController {
                 res.status(404).json({ succcess: false, error: config.error_codes["1001"] });
             }
             else {
-                res.status(200).json({ success: true, data: playList });
+                res.status(200).json({ status: true, data: playList });
             }
         }
         catch (e) {
@@ -66,7 +66,7 @@ module.exports = class IplVideosController {
                 res.status(404).json({ succcess: false, error: config.error_codes["1001"] })
             }
             else {
-                res.json({ success: true, data: playList })
+                res.json({ status: true, data: playList })
             }
         }
         catch (e) {

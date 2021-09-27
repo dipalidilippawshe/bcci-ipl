@@ -42,7 +42,7 @@ module.exports = class MatchController {
                 FIXTURES_PER_PAGE
             })
             let response = {
-                success: true,
+                status: true,
                 data: matchesList,
                 page: page,
                 filters: {},
@@ -59,7 +59,7 @@ module.exports = class MatchController {
             })
             //  console.log(matchesList)
             let response = {
-                success: true,
+                status: true,
                 data: matchesList,
                 page: page,
                 filters: {},
@@ -75,10 +75,10 @@ module.exports = class MatchController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let article = await MatchDAO.getMatchByID(parseInt(id))
             if (!article) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ success: true, data: article })
+            res.json({ status: true, data: article })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
@@ -126,7 +126,7 @@ module.exports = class MatchController {
                 FIXTURES_PER_PAGE
             })
             let response = {
-                success: true,
+                status: true,
                 data: matchesList,
                 page: page,
                 filters: {},
@@ -143,7 +143,7 @@ module.exports = class MatchController {
             })
             //  console.log(matchesList)
             let response = {
-                success: true,
+                status: true,
                 data: matchesList,
                 page: page,
                 filters: {},
@@ -159,10 +159,10 @@ module.exports = class MatchController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let article = await MatchDAO.getMatchByID(parseInt(id))
             if (!article) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ success: true, data: article })
+            res.json({ status: true, data: article })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
@@ -176,10 +176,10 @@ module.exports = class MatchController {
 
             let article = await RecordDAO.getFranchiseByID({ id: parseInt(id), year: year })
             if (!article) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ success: true, data: article })
+            res.json({ status: true, data: article })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
@@ -194,10 +194,10 @@ module.exports = class MatchController {
 
             let article = await RecordDAO.getFranchiseByID({ id: parseInt(id), year: year })
             if (!article) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ success: true, data: article })
+            res.json({ status: true, data: article })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
@@ -211,10 +211,10 @@ module.exports = class MatchController {
 
             let article = await RecordDAO.getTeams({ year: year })
             if (!article) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ success: true, data: article })
+            res.json({ status: true, data: article })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
@@ -227,10 +227,10 @@ module.exports = class MatchController {
             console.log(year)
             let article = await MatchDAO.getVenue({ year: year })
             if (!article) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ success: true, data: article })
+            res.json({ status: true, data: article })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
@@ -260,7 +260,7 @@ module.exports = class MatchController {
             FIXTURES_PER_PAGE
         })
         let response = {
-            success: true,
+            status: true,
             data: matchesList,
             page: page,
             filters: {},
@@ -268,7 +268,7 @@ module.exports = class MatchController {
             total_results: totalNumMatches,
         }
         if(matchesList.length<=0){
-            res.status(404).json({ success: false, error: config.error_codes["1001"] })
+            res.status(404).json({ status: false, error: config.error_codes["1001"] })
             return
         }
         res.json(response)
@@ -298,7 +298,7 @@ module.exports = class MatchController {
         })
         console.log("matchlist count: ",matchesList.length);
         let response = {
-            success: true,
+            status: true,
             data: matchesList,
             page: page,
             filters: {},
@@ -306,7 +306,7 @@ module.exports = class MatchController {
             total_results: totalNumMatches,
         }
         if(matchesList.length<=0){
-            res.status(404).json({ success: false, error: config.error_codes["1001"] })
+            res.status(404).json({ status: false, error: config.error_codes["1001"] })
             return
         }
         res.json(response)
@@ -318,10 +318,10 @@ module.exports = class MatchController {
             console.log(year)
             let data = await MatchDAO.getSeasonList({ year: year })
             if (!data) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ success: true, data: data })
+            res.json({ status: true, data: data })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
@@ -354,6 +354,10 @@ module.exports = class MatchController {
             filters, page,
             FIXTURES_PER_PAGE
         })
+        if(matchesList.length<=0){
+            res.status(404).json({ status: false, error: config.error_codes["1001"] })
+            return
+        }
         for (var i in matchesList) {
             filters["year"] = matchesList[i].year
             matchesList[i].TopRunScorer = await MatchDAO.getTopBatsmenByTeamAndYear(filters)
@@ -361,13 +365,14 @@ module.exports = class MatchController {
 
         }
         let response = {
-            success: true,
+            status: true,
             data: matchesList,
             page: page,
             filters: {},
             entries_per_page: FIXTURES_PER_PAGE,
             total_results: totalNumMatches,
         }
+
         res.json(response)
 
     }
@@ -385,15 +390,15 @@ module.exports = class MatchController {
             console.log("In apiAppGetVideoByMatchId", req.params.ID);
             let id = req.params.ID;
             if (!id) {
-                res.status({ success: false, data: [], message: "Please send match ID" })
+                res.status({ status: false, data: [], message: "Please send match ID" })
             } else {
                 console.log("In else me");
                 let data = await videosDAO.videoByMatchID(id)
                 if (!data) {
-                    res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                    res.status(404).json({ status: false, error: config.error_codes["1001"] })
                     return
                 }
-                res.json({ success: true, data: data })
+                res.json({ status: true, data: data })
 
             }
         } catch (e) {
@@ -409,10 +414,10 @@ module.exports = class MatchController {
             console.log(year)
             let data = await MatchDAO.getScheduleList(year, id)
             if (!data) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ success: true, data: data })
+            res.json({ status: true, data: data })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })

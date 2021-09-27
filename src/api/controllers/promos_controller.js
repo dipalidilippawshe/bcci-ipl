@@ -6,10 +6,10 @@ module.exports = class PromosController {
             const id = req.params.id ? req.params.id : "0";
             const promo = await promoDao.getPromoById(parseInt(id));
             if (!promo) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
             }
             else {
-                res.status(200).json({ success: true, data: promo })
+                res.status(200).json({ status: true, data: promo })
             }
 
         }
@@ -22,10 +22,10 @@ module.exports = class PromosController {
             const id = req.params.id ? req.params.id : "0";
             const promo = await promoDao.getPromoById(parseInt(id));
             if (!promo) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
             }
             else {
-                res.status(200).json({ success: true, data: promo })
+                res.status(200).json({ status: true, data: promo })
             }
 
         }

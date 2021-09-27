@@ -64,10 +64,10 @@ module.exports = class IplVideosController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let video = await IplVideosDAO.getVideoByID(parseInt(id))
             if (!video) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ success: true, data: video })
+            res.json({ status: true, data: video })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
@@ -102,10 +102,10 @@ module.exports = class IplVideosController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let video = await IplVideosDAO.getPromoByID(parseInt(id))
             if (!video) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ success: true, data: video })
+            res.json({ status: true, data: video })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
@@ -179,10 +179,10 @@ module.exports = class IplVideosController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let video = await IplVideosDAO.getVideoByID(parseInt(id))
             if (!video) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ success: true, data: video })
+            res.json({ status: true, data: video })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
@@ -216,10 +216,10 @@ module.exports = class IplVideosController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let video = await IplVideosDAO.getPromoByID(parseInt(id))
             if (!video) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ success: true, data: video })
+            res.json({ status: true, data: video })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })

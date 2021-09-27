@@ -57,7 +57,7 @@ module.exports = class IplVideosDAO {
                 return res;
 
             } else {
-                return ({ success: false, data: null });
+                return ({ status: false, data: null });
             }
 
         } catch (e) {

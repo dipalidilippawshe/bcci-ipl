@@ -12,7 +12,7 @@ module.exports = class PagesController {
         else {
             //processPageData(pageFromDB, req, res, next);
             console.log("In page data here me;;;... ");
-            res.send({ success: true, message: "Received pagedata", Data: menuFromDB });
+            res.send({ status: true, message: "Received pagedata", Data: menuFromDB });
         }
 
     }
@@ -25,7 +25,7 @@ module.exports = class PagesController {
             errors.general = "Internal error, please try again later"
         }
         else {
-            res.send({ success: true, message: "Received pagedata", data: menuFromDB });
+            res.send({ status: true, message: "Received pagedata", data: menuFromDB });
         }
 
     }
@@ -37,7 +37,7 @@ module.exports = class PagesController {
             errors.general = "Internal error, please try again later"
         }
         else {
-            res.send({ success: true, message: "Received data", data: menuFromDB });
+            res.send({ status: true, message: "Received data", data: menuFromDB });
         }
 
     }
@@ -46,11 +46,11 @@ module.exports = class PagesController {
         const standings = await MenusDAO.getStadings(); 
         if(!standings)
         {
-            res.status(404).json({ success: false, error: config.error_codes["1001"] })
+            res.status(404).json({ status: false, error: config.error_codes["1001"] })
             return
         }
        
-        res.status(200).json({success:true,data:standings});
+        res.status(200).json({status:true,data:standings});
     }
 
 

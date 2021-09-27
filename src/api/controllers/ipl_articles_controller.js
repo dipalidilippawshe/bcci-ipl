@@ -35,7 +35,7 @@ module.exports = class IPLArticlesController {
             ARTICLES_PER_PAGE
         })
         let response = {
-            success: true,
+            status: true,
             data: articlesList,
             page: page,
             filters: {},
@@ -51,10 +51,10 @@ module.exports = class IPLArticlesController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let iplArticle = await IplArticlesDAO.getIplArticleByID(parseInt(id))
             if (!iplArticle) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ success: true, data: iplArticle })
+            res.json({ status: true, data: iplArticle })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
@@ -96,7 +96,7 @@ module.exports = class IPLArticlesController {
             ARTICLES_PER_PAGE
         })
         let response = {
-            success: true,
+            status: true,
             data: articlesList,
             page: page,
             filters: {},
@@ -117,10 +117,10 @@ module.exports = class IPLArticlesController {
 
             let Iplarticle = await IplArticlesDAO.getIplArticleByID(parseInt(id))
             if (!Iplarticle) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ success: true, data: Iplarticle })
+            res.json({ status: true, data: Iplarticle })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
@@ -136,10 +136,10 @@ module.exports = class IPLArticlesController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let Iplarticle = await IplArticlesDAO.getIplArticleByTeamId(parseInt(id))
             if (!Iplarticle || Iplarticle.length<=0) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ success: true, data: Iplarticle })
+            res.json({ status: true, data: Iplarticle })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
