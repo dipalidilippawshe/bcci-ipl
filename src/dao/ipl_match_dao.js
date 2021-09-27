@@ -47,7 +47,12 @@ module.exports = class MatchDAO {
             }
             if (filters["startDate"] && filters["endDate"]) {
                 console.log("In start and end dates");
-                queryParams.query["matchInfo.matchDate"] = { $gte: filters["startDate"], $lte: filters["endDate"] }
+
+                // queryParams.query["matchInfo.matchDate"] = { $gte: filters["startDate"], $lte: filters["endDate"] }
+                // queryParams.query["$expr"] = {
+                //     "$gte": [{ "$dateFromString": { "dateString": "$matchInfo.matchDate" } }, filters["startDate"]],
+                //     "$lte": [{ "$dateFromString": { "dateString": "$matchInfo.matchDate" } }, filters["endDate"]]
+                // }
             } if ("team" in filters) { //Men or Women
                 queryParams.query["matchInfo.teams.team.type"] = { $in: filters["team"] }
             }
@@ -57,7 +62,7 @@ module.exports = class MatchDAO {
             if ("team_id" in filters) {
                 queryParams.query["matchInfo.teams.team.id"] = parseInt(filters["team_id"])
             }
-            if ("year" in filters) {
+            if ("year" in filters && !filters["startDate"] && !filters["endDate"]) {
                 queryParams.query["matchInfo.matchDate"] = new RegExp(filters["year"], "i")
             }
         }
