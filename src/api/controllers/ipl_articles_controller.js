@@ -135,7 +135,7 @@ module.exports = class IPLArticlesController {
             console.log(req.params);
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let Iplarticle = await IplArticlesDAO.getIplArticleByTeamId(parseInt(id))
-            if (!Iplarticle) {
+            if (!Iplarticle || Iplarticle.length<=0) {
                 res.status(404).json({ success: false, error: config.error_codes["1001"] })
                 return
             }

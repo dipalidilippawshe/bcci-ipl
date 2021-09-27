@@ -19,7 +19,6 @@ module.exports = class IplRecordsDAO {
         }
     }
 
-
     static async getFranchiseByID(params) {
         try {
             const pipeline = [
@@ -98,11 +97,19 @@ module.exports = class IplRecordsDAO {
                 {
                     $addFields: {
                         "franchises_name": "$franchises.name",
-                        "franchises_abbreviation": "$franchises.abbreviation"
+                        "franchises_abbreviation": "$franchises.abbreviation",
+                        "franchises_owner":"$franchises.owner",
+                        "franchises_venue":"$franchises.venue",
+                        "franchises_coach":"$franchises.coach",
+                        "franchises_captain":"$franchises.captain",
+                        "franchises_logo":"$franchises.logo",
+                        "franchises_social":"$franchises.social"
+
                     }
                 },
                 {
-                    $project: { "franchise_id": 1, "franchises_name": 1, "franchises_abbreviation": 1, _id: 0 }
+                    $project: { "franchise_id": 1, "franchises_name": 1, "franchises_abbreviation": 1,"franchises_owner":1,
+                    "franchises_venue":1, "franchises_coach":1,"franchises_captain":1,"franchises_logo":1,"franchises_social":1,_id: 0 }
                 }
 
             ]
