@@ -188,6 +188,7 @@ module.exports = class MatchController {
 
     static async apiWebGetFranchiseById(req, res, next) {
         try {
+            console.log("In frenchise by id..",req.params.ID);
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
 
@@ -266,6 +267,10 @@ module.exports = class MatchController {
             entries_per_page: FIXTURES_PER_PAGE,
             total_results: totalNumMatches,
         }
+        if(matchesList.length<=0){
+            res.status(404).json({ success: false, error: config.error_codes["1001"] })
+            return
+        }
         res.json(response)
     }
 
@@ -291,6 +296,7 @@ module.exports = class MatchController {
             page,
             FIXTURES_PER_PAGE
         })
+        console.log("matchlist count: ",matchesList.length);
         let response = {
             success: true,
             data: matchesList,
@@ -298,6 +304,10 @@ module.exports = class MatchController {
             filters: {},
             entries_per_page: FIXTURES_PER_PAGE,
             total_results: totalNumMatches,
+        }
+        if(matchesList.length<=0){
+            res.status(404).json({ success: false, error: config.error_codes["1001"] })
+            return
         }
         res.json(response)
     }

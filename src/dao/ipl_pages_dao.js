@@ -11,8 +11,10 @@ module.exports = class IplPagesDAO {
     }
     static async homeIplPages(slug) {
         try {
-
-            return await iplPages.find({ slug: slug }).limit(1).skip(1).toArray();
+            console.log("slug is: ",slug);
+            var page = iplPages.findOne({slug: slug });
+            return page;
+           // return await iplPages.find({ slug: slug }).limit(1).skip(1).toArray();
 
         }
         catch (e) {
