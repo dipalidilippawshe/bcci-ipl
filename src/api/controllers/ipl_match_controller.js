@@ -193,7 +193,9 @@ module.exports = class MatchController {
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
 
             let article = await RecordDAO.getFranchiseByID({ id: parseInt(id), year: year })
-            if (!article) {
+            console.log("in articles",article);
+            if (!article || article.length<=0) {
+                console.log("in uidididi",article);
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
