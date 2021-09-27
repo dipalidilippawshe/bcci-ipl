@@ -291,14 +291,14 @@ module.exports = class IplVideosDAO {
             const displayCursor = cursor.limit(videosPerPage)
             const videoList = await displayCursor.toArray()
 
-            if (videoList && videoList.length > 0) {
-                const totalNumIplVideos = await videos.find(mongoquery).count();
-                let res = { list: videoList, total: totalNumIplVideos };
-                return res;
+            //if (videoList && videoList.length > 0) {
+            const totalNumIplVideos = await videos.find(mongoquery).count();
+            let res = { list: videoList, total: totalNumIplVideos };
+            return res;
 
-            } else {
-                return ({ status: false, data: null });
-            }
+            // } else {
+            //     return ({ status: false, data: null });
+            // }
 
         } catch (e) {
             console.error(`Something went wrong in getVideoByID: ${e}`)

@@ -148,6 +148,7 @@ module.exports = class IplVideosController {
             page = 1;
         let limit = 20
         const respo = await IplVideosDAO.getIplVideosByFilter(type, page, limit);
+        console.log(".....", respo)
         let response = {
             status: true,
             message: "Retrived data!",
