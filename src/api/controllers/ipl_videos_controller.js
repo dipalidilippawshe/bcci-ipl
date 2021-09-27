@@ -3,14 +3,22 @@ const IplVideosDAO = require("../../dao/ipl_videos_dao")
 const config = require("config")
 module.exports = class IplVideosController {
     static async apiAppGetIplVideos(req, res, next) {
-        const MOVIES_PER_PAGE = 20
-        const { videosList, totalNumIplVideos } = await IplVideosDAO.getIplVideos()
+        var type = req.params.type;
+        if (!type) {
+            res.json({ status: false, message: "please specify video type" });
+        }
+        if (req.query.page)
+            var page = req.query.page
+        else
+            page = 1;
+        let limit = 20
+        const respo = await IplVideosDAO.getIplVideosByFilter(type, page, limit);
         let response = {
-            videos: videosList,
-            page: 0,
-            filters: {},
-            entries_per_page: MOVIES_PER_PAGE,
-            total_results: totalNumIplVideos,
+            status: true,
+            message: "Retrived data!",
+            videos: respo.list,
+            page: page,
+            total_results: respo.total,
         }
         res.json(response)
     }
@@ -23,8 +31,8 @@ module.exports = class IplVideosController {
             var page = req.query.page
         else
             page = 1;
-
-        const respo = await IplVideosDAO.getIplVideosByFilter(type, page);
+        let limit = 20
+        const respo = await IplVideosDAO.getIplVideosByFilter(type, page, limit);
         let response = {
             status: true,
             message: "Retrived data!",
@@ -68,15 +76,23 @@ module.exports = class IplVideosController {
 
     static async apiAppGetPromos(req, res, next) {
         console.log("in oromos apis");
-        const MOVIES_PER_PAGE = 20
-        const { videosList, totalNumIplVideos } = await IplVideosDAO.getPromos()
+        let page
+        try {
+            page = req.query.page ? parseInt(req.query.page, 10) : "0"
+        } catch (e) {
+            console.error(`Got bad value for page:, ${e}`)
+            page = 0
+        }
+        const LIMIT_PER_PAGE = 20
+        const filter = null
+        const { videosList, totalNumIplVideos } = await IplVideosDAO.getPromos(filter, page, LIMIT_PER_PAGE)
         let response = {
             status: true,
             message: "data received!",
             videos: videosList,
-            page: 0,
+            page: page,
             filters: {},
-            entries_per_page: MOVIES_PER_PAGE,
+            entries_per_page: LIMIT_PER_PAGE,
             total_results: totalNumIplVideos,
         }
         res.json(response)
@@ -102,13 +118,21 @@ module.exports = class IplVideosController {
 
 
     static async apiWebGetIplVideos(req, res, next) {
-        const MOVIES_PER_PAGE = 20
-        const { videosList, totalNumIplVideos } = await IplVideosDAO.getIplVideos()
+        const LIMIT_PER_PAGE = 20
+        let page
+        try {
+            page = req.query.page ? parseInt(req.query.page, 10) : "0"
+        } catch (e) {
+            console.error(`Got bad value for page:, ${e}`)
+            page = 0
+        }
+        const filter = null
+        const { videosList, totalNumIplVideos } = await IplVideosDAO.getIplVideos(filter, page, LIMIT_PER_PAGE)
         let response = {
             videos: videosList,
-            page: 0,
+            page: page,
             filters: {},
-            entries_per_page: MOVIES_PER_PAGE,
+            entries_per_page: LIMIT_PER_PAGE,
             total_results: totalNumIplVideos,
         }
         res.json(response)
@@ -122,8 +146,8 @@ module.exports = class IplVideosController {
             var page = req.query.page
         else
             page = 1;
-
-        const respo = await IplVideosDAO.getIplVideosByFilter(type, page);
+        let limit = 20
+        const respo = await IplVideosDAO.getIplVideosByFilter(type, page, limit);
         let response = {
             status: true,
             message: "Retrived data!",
@@ -166,16 +190,23 @@ module.exports = class IplVideosController {
     }
 
     static async apiWebGetPromos(req, res, next) {
-        console.log("in oromos apis");
-        const MOVIES_PER_PAGE = 20
-        const { videosList, totalNumIplVideos } = await IplVideosDAO.getPromos()
+        let page
+        try {
+            page = req.query.page ? parseInt(req.query.page, 10) : "0"
+        } catch (e) {
+            console.error(`Got bad value for page:, ${e}`)
+            page = 0
+        }
+        const LIMIT_PER_PAGE = 20
+        const filter = null
+        const { videosList, totalNumIplVideos } = await IplVideosDAO.getPromos(filter, page, LIMIT_PER_PAGE)
         let response = {
             status: true,
             message: "data received!",
             videos: videosList,
-            page: 0,
+            page: page,
             filters: {},
-            entries_per_page: MOVIES_PER_PAGE,
+            entries_per_page: LIMIT_PER_PAGE,
             total_results: totalNumIplVideos,
         }
         res.json(response)

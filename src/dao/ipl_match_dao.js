@@ -244,27 +244,195 @@ module.exports = class MatchDAO {
         }
     }
 
-   static async getScheduleList(year,id){
-       console.log("Year is: ",year, " id is : ",id);
-    try {
-        const pipeline = [
-            {
-                $match: {
-                    $and:[{"matchInfo.matchDate": new RegExp(year, "i")},
-                          {"matchInfo.teams.team.id":parseInt(id)}]
-                }
-            }          
-        ]
-        console.dir(pipeline, { depth: null, color: true })
-        //  console.log(franchise_years)
-        return await matches.aggregate(pipeline).toArray()
-    } catch (e) {
-        if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
-            return null
+    static async getArchiveData({ filters = null,
+        page = 0,
+        matchesPerPage = 20 }) {
+        try {
+            const countingPipeline = [
+                {
+                    $match: {
+                        "matchInfo.teams.team.type": { $in: filters["team"] },
+                        // "matchInfo.description": { $eq: "Final" },
+                        "matchInfo.teams.team.id": { $eq: parseInt(filters["team_id"]) },
+
+                        "matchInfo.matchDate": { $not: new RegExp(new Date().getFullYear(), "i") }
+                    }
+                },
+                // {
+                //     $addFields: {
+                //         matchDate: { "$substr": ["$matchInfo.matchDate", 0, 4] }
+                //     }
+                // },
+                {
+                    $group: {
+                        _id: {
+                            "$substr": [
+                                "$matchInfo.matchDate",
+                                0,
+                                4
+                            ]
+                        },
+                        //description: { $addToSet: "$matchInfo.description" },
+                        // teams: {
+                        //     "$cond": [
+                        //         { "$eq": ["$matchInfo.description", "Final"] },
+                        //         "$matchInfo.teams",
+                        //         0
+                        //     ]
+                        // },
+                        // status: {
+                        //     "$cond": [
+                        //         { "$eq": ["$matchInfo.description", "Final"] },
+                        //         "$matchInfo.matchStatus",
+                        //         0
+                        //     ]
+                        // },
+                    }
+                },
+                {
+                    $project: { "year": "$_id", description: 1 }
+                },
+                { '$sort': { '_id': -1 } },
+
+            ]
+            const pipeline = [...countingPipeline/* ,
+            { $skip: matchesPerPage * page }
+                , { $limit: matchesPerPage } */]
+
+            console.dir(pipeline, { depth: null, color: true })
+            const matchesList = await (await matches.aggregate(pipeline)).toArray()
+            //console.log(results)
+            // const totalNumMatches = await (await matches.aggregate([...countingPipeline, { $count: "count" }])).next()
+            return {
+                matchesList,
+                totalNumMatches: 0//totalNumMatches.count,
+            }
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
         }
-        console.error(`Something went wrong in getVideoByID: ${e}`)
-        throw e
     }
-   }
+
+    static async getTopBatsmenByTeamAndYear(filters) {
+        try {
+            const countingPipeline = [
+                {
+                    $match: {
+                        "matchInfo.teams.team.type": { $in: filters["team"] },
+                        "matchInfo.teams.team.id": { $eq: parseInt(filters["team_id"]) },
+                        "matchInfo.matchDate": new RegExp(filters["year"], "i")
+                    }
+                },
+                { $unwind: "$innings" },
+                { $unwind: "$innings.scorecard.battingStats" },
+                // { $unwind: "$innings.scorecard.bowlingStats" },
+                {
+                    $match: {
+                        "matchInfo.teams.team.id": { $eq: parseInt(filters["team_id"]) }
+                    }
+                },
+                { $project: { "matchInfo.matchDate": 1, "innings.scorecard.battingStats": 1, "innings.scorecard.bowlingStats": 1, "matchId": 1 } },
+                {
+                    $group:
+                    {
+                        _id: "$innings.scorecard.battingStats.playerId",
+                        totalRuns: { $sum: "$innings.scorecard.battingStats.r" },
+                        //totalWikcets: { $sum: "$innings.scorecard.bowlingStats.w" },
+                    }
+                },
+                {
+                    $project: { "player_id": "$_id", totalRuns: 1, _id: 0 }
+                },
+                { '$sort': { 'totalRuns': -1 } },
+
+            ]
+            const pipeline = [...countingPipeline/* ,
+            { $skip: matchesPerPage * page }
+                , { $limit: matchesPerPage } */]
+
+            console.dir(pipeline, { depth: null, color: true })
+            const matchesList = await (await matches.aggregate(pipeline)).toArray()
+            //console.log(results)
+            // const totalNumMatches = await (await matches.aggregate([...countingPipeline, { $count: "count" }])).next()
+            return matchesList.length ? matchesList[0] : {}
+
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
+        }
+    }
+    static async getTopBolwerByTeamAndYear(filters) {
+        try {
+            const countingPipeline = [
+                {
+                    $match: {
+                        "matchInfo.teams.team.type": { $in: filters["team"] },
+                        "matchInfo.teams.team.id": { $eq: parseInt(filters["team_id"]) },
+                        "matchInfo.matchDate": new RegExp(filters["year"], "i")
+                    }
+                },
+                { $unwind: "$innings" },
+                { $unwind: "$innings.scorecard.bowlingStats" },
+                {
+                    $match: {
+                        "matchInfo.teams.team.id": { $eq: parseInt(filters["team_id"]) }
+                    }
+                },
+                { $project: { "matchInfo.matchDate": 1, "innings.scorecard.battingStats": 1, "innings.scorecard.bowlingStats": 1, "matchId": 1 } },
+                {
+                    $group:
+                    {
+                        _id: "$innings.scorecard.bowlingStats.playerId",
+                        totalWikcets: { $sum: "$innings.scorecard.bowlingStats.w" },
+                    }
+                },
+                {
+                    $project: { "player_id": "$_id", totalWikcets: 1, _id: 0 }
+                },
+                { '$sort': { 'totalWikcets': -1 } },
+
+            ]
+            const pipeline = [...countingPipeline]
+
+            console.dir(pipeline, { depth: null, color: true })
+            const matchesList = await (await matches.aggregate(pipeline)).toArray()
+            return matchesList.length ? matchesList[0] : {}
+
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
+        }
+    }
+    static async getScheduleList(year, id) {
+        console.log("Year is: ", year, " id is : ", id);
+        try {
+            const pipeline = [
+                {
+                    $match: {
+                        $and: [{ "matchInfo.matchDate": new RegExp(year, "i") },
+                        { "matchInfo.teams.team.id": parseInt(id) }]
+                    }
+                }
+            ]
+            console.dir(pipeline, { depth: null, color: true })
+            //  console.log(franchise_years)
+            return await matches.aggregate(pipeline).toArray()
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
+        }
+    }
 
 }

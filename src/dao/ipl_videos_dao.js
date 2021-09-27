@@ -274,13 +274,13 @@ module.exports = class IplVideosDAO {
      * @param {String} type 
      * @returns 
      */
-    static async getIplVideosByFilter(type, page) {
+    static async getIplVideosByFilter(type, page, limit = 20) {
         try {
             if (!type) {
                 type = "latest";
             }
             page = parseInt(page);
-            var videosPerPage = 20;
+            var videosPerPage = limit;
 
             var skip = (page - 1) * videosPerPage;
             const mongoquery = { "tags.label": { $regex: new RegExp(type, "i") } };
@@ -414,8 +414,8 @@ module.exports = class IplVideosDAO {
         }
     }
 
-    static async videoByMatchID(id){
-        try{
+    static async videoByMatchID(id) {
+        try {
             console.log("In video by match ID me");
             const pipeline = [
                 {
@@ -427,7 +427,7 @@ module.exports = class IplVideosDAO {
             console.dir(pipeline, { depth: null, color: true })
             //  console.log(franchise_years)
             return await videos.aggregate(pipeline).toArray()
-        }catch (e) {
+        } catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
                 return null
             }

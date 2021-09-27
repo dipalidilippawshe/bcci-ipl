@@ -318,21 +318,65 @@ module.exports = class MatchController {
         }
     }
 
-    static async apiAppGetVideoByMatchId(req,res,next){
-        try{
+    static async apiWebArchiveByTeam(req, res, next) {
+        console.log("////////////////////////")
+        const FIXTURES_PER_PAGE = 20
+        let page
+        try {
+            page = req.query.page ? parseInt(req.query.page, 10) : "0"
+        } catch (e) {
+            console.error(`Got bad value for page:, ${e}`)
+            page = 0
+        }
+
+        let filters = {};
+        filters.startDate = req.query.startDate && new Date(req.query.startDate) !== "Invalid Date" ? new Date(req.query.startDate).toISOString() : undefined
+        filters.endDate = req.query.endDate && new Date(req.query.endDate) !== "Invalid Date" ? new Date(req.query.endDate).toISOString() : undefined
+        filters.team = req.query.team ? [req.query.team] : ["m", "w"]
+        if (req.params.franchise_id) {
+            filters.team_id = req.params.franchise_id
+        }
+        filters.matchState = ["C"]
+
+
+        console.log(filters)
+        const { matchesList, totalNumMatches } = await MatchDAO.getArchiveData({
+            filters, page,
+            FIXTURES_PER_PAGE
+        })
+        for (var i in matchesList) {
+            filters["year"] = matchesList[i].year
+            matchesList[i].TopRunScorer = await MatchDAO.getTopBatsmenByTeamAndYear(filters)
+            matchesList[i].TopWktTaker = await MatchDAO.getTopBolwerByTeamAndYear(filters)
+
+        }
+        let response = {
+            success: true,
+            data: matchesList,
+            page: page,
+            filters: {},
+            entries_per_page: FIXTURES_PER_PAGE,
+            total_results: totalNumMatches,
+        }
+        res.json(response)
+
+    }
+
+    static async apiAppGetVideoByMatchId(req, res, next) {
+        try {
             const FIXTURES_PER_PAGE = 20
-              let page
-              try {
-                  page = req.query.page ? parseInt(req.query.page, 10) : "0"
-              } catch (e) {
-                  console.error(`Got bad value for page:, ${e}`)
-                  page = 0
-              }
-            console.log("In apiAppGetVideoByMatchId",req.params.ID);
+            let page
+            try {
+                page = req.query.page ? parseInt(req.query.page, 10) : "0"
+            } catch (e) {
+                console.error(`Got bad value for page:, ${e}`)
+                page = 0
+            }
+            console.log("In apiAppGetVideoByMatchId", req.params.ID);
             let id = req.params.ID;
-            if(!id){
-                res.status({success:false, data:[],message:"Please send match ID"})
-            }else{
+            if (!id) {
+                res.status({ success: false, data: [], message: "Please send match ID" })
+            } else {
                 console.log("In else me");
                 let data = await videosDAO.videoByMatchID(id)
                 if (!data) {
@@ -340,15 +384,15 @@ module.exports = class MatchController {
                     return
                 }
                 res.json({ success: true, data: data })
-                
+
             }
-        }catch (e) {
+        } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
         }
-       
+
     }
-    static async apiScheduleById(req,res,next){
+    static async apiScheduleById(req, res, next) {
         try {
             let id = req.params.ID; //This is team ID
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
@@ -364,7 +408,7 @@ module.exports = class MatchController {
             res.status(500).json({ error: e })
         }
     }
-  
+
 }
 
 
