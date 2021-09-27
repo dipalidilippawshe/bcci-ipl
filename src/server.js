@@ -11,7 +11,7 @@ const iplMatches = require("../src/api/routes/ipl_match_route")
 const iplVideos = require("../src/api/routes/ipl_videos_route")
 const bios = require("../src/api/routes/bios_route");
 const promos = require('../src/api/routes/promos_route');
-const playlist =require("../src/api/routes/playlist_route");
+const playlist = require("../src/api/routes/playlist_route");
 const iplArticles = require("./api/routes/ipl_articles_routes")
 const iplPhotos = require("../src/api/routes/ipl_photos_route")
 const playlists = require("../src/api/routes/playlist_route");
@@ -30,19 +30,18 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use("/api/v1/bios", bios);
 app.use("/api/v1/ipl_matches", iplMatches);
 app.use("/api/v1/ipl_videos", iplVideos);
-app.use("/api/v1/promos",promos);
-app.use("/api/v1/playlist",playlist)
+app.use("/api/v1/promos", promos);
+app.use("/api/v1/playlist", playlist)
 
 app.use("/api/v1/pages", pages);
 app.use("/api/v1/ipl_matches", iplMatches);
 app.use("/api/v1/ipl_videos", iplVideos);
-app.use("/api/v1/ipl_Articles",iplArticles);
 app.use("/api/v1/matches", matches);
 app.use("/api/v1/ipl_articles", iplArticles);
 app.use("/api/v1/ipl_photos", iplPhotos);
-app.use("/api/v1/playlists",playlists);
-app.use("/api/v1/home",iplPagesHome);
-app.use("/api/v1/menu",menus)
+app.use("/api/v1/playlists", playlists);
+app.use("/api/v1/home", iplPagesHome);
+app.use("/api/v1/menu", menus)
 app.use("*", (req, res) => res.status(404).json({ error: "api not found" }))
 
 module.exports = app
