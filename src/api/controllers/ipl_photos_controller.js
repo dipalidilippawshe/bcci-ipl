@@ -7,13 +7,20 @@ module.exports = class PhotosController {
             return
         }
         const PHOTOS_PER_PAGE = 20
-        const { imageList, totalNumImages } = await PhotosDAO.getPhotos({ filters: req.query })
+        let page
+        try {
+            page = req.query.page ? parseInt(req.query.page, 10) : "0"
+        } catch (e) {
+            console.error(`Got bad value for page:, ${e}`)
+            page = 0
+        }
+        const { imageList, totalNumImages } = await PhotosDAO.getPhotos({ filters: req.query, page, PHOTOS_PER_PAGE })
 
         let response = {
             status: true,
             message: "Images retrived successfully!!",
             images: imageList,
-            page: 0,
+            page: page,
             filters: {},
             entries_per_page: PHOTOS_PER_PAGE,
             total_results: totalNumImages,
@@ -27,13 +34,20 @@ module.exports = class PhotosController {
             return
         }
         const PHOTOS_PER_PAGE = 20
-        const { imageList, totalNumImages } = await PhotosDAO.getPhotos({ filters: req.query })
+        let page
+        try {
+            page = req.query.page ? parseInt(req.query.page, 10) : "0"
+        } catch (e) {
+            console.error(`Got bad value for page:, ${e}`)
+            page = 0
+        }
+        const { imageList, totalNumImages } = await PhotosDAO.getPhotos({ filters: req.query, page, PHOTOS_PER_PAGE })
 
         let response = {
             status: true,
             message: "Images retrived successfully!!",
             data: imageList,
-            page: 0,
+            page: page,
             filters: {},
             entries_per_page: PHOTOS_PER_PAGE,
             total_results: totalNumImages,
