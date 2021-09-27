@@ -188,6 +188,7 @@ module.exports = class MatchController {
 
     static async apiWebGetFranchiseById(req, res, next) {
         try {
+            console.log("In frenchise by id..",req.params.ID);
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
 

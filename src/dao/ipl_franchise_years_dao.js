@@ -22,11 +22,13 @@ module.exports = class IplRecordsDAO {
     static async getFranchiseByID(params) {
         try {
             const pipeline = [
+                // {
+                //     $match: {
+                //        $and:[{"year": params.year.toString()},{"franchise_id": params.id.toString()}]
+                //     }
+                // },
                 {
-                    $match: {
-                        "year": params.year.toString(),
-                        "franchise_id": params.id.toString()
-                    }
+                    $match:{"year": params.year.toString(),"franchise_id": params.id.toString()}
                 },
                 {
                     $lookup:
@@ -46,9 +48,6 @@ module.exports = class IplRecordsDAO {
                         foreignField: "id",
                         as: "players"
                     }
-                },
-                {
-                    
                 }
             ]
             console.log(pipeline)
