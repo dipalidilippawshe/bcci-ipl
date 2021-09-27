@@ -212,11 +212,11 @@ module.exports = class MatchController {
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
 
             let article = await RecordDAO.getTeams({ year: year })
-            if (!article) {
+            if (!article || article.length<=0) {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ status: true, data: article })
+            res.json({ status: true,year:year, data: article })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
