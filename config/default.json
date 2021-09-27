@@ -1,6 +1,7 @@
 {
     "mongodb_uri": "mongodb://bcciadmin:SOh3TbYhx8ypJPxmt1oOfV@52.66.77.143:27017/bcci?retryWrites=true&w=majority",
     "error_codes": {
-        "1001": "Data not found."
+        "1001": "Data not found.",
+        "1002": "Query parameter tag is required."
     }
 }

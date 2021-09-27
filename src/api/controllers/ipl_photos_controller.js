@@ -2,6 +2,10 @@ const PhotosDAO = require("../../dao/ipl_photos_dao")
 const config = require("config")
 module.exports = class PhotosController {
     static async apiAppGetPhotos(req, res, next) {
+        if (!req.query.tag) {
+            res.status(404).json({ success: false, error: config.error_codes["1002"] })
+            return
+        }
         const PHOTOS_PER_PAGE = 20
         const { imageList, totalNumImages } = await PhotosDAO.getPhotos({ filters: req.query })
 
@@ -18,8 +22,12 @@ module.exports = class PhotosController {
     }
 
     static async apiWebGetPhotos(req, res, next) {
+        if (!req.query.tag) {
+            res.status(404).json({ success: false, error: config.error_codes["1002"] })
+            return
+        }
         const PHOTOS_PER_PAGE = 20
-        const { imageList, totalNumImages } = await PhotosDAO.getPhotos()
+        const { imageList, totalNumImages } = await PhotosDAO.getPhotos({ filters: req.query })
 
         let response = {
             status: true,
