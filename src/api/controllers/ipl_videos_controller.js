@@ -49,7 +49,7 @@ module.exports = class IplVideosController {
             let id = req.body.id || {}
             let video = await IplVideosDAO.getVideoByID(parseInt(id))
             if (!video) {
-                res.status(404).json({ error: "Data not found" })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
             res.json({ video_url: video.video_url ? video.video_url : "" })
@@ -164,10 +164,10 @@ module.exports = class IplVideosController {
             let id = req.body.id || {}
             let video = await IplVideosDAO.getVideoByID(parseInt(id))
             if (!video) {
-                res.status(404).json({ error: "Data not found" })
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ video_url: video.video_url ? video.video_url : "" })
+            res.json({ status: true, video_url: video.video_url ? video.video_url : "" })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
