@@ -37,13 +37,13 @@ module.exports = class IplVideosDAO {
     static async getPlaylistsByFilter(type, page) {
         try {
             if (!type) {
-               return "error";
+                return "error";
             }
             page = parseInt(page);
             var videosPerPage = 20;
 
             var skip = (page - 1) * videosPerPage;
-            const mongoquery = { "content_type": type } ;
+            const mongoquery = { "content_type": type };
 
             //page logic here..
             var cursor = await videos.find(mongoquery).limit(videosPerPage).skip(skip);
@@ -51,23 +51,23 @@ module.exports = class IplVideosDAO {
             const displayCursor = cursor.limit(videosPerPage)
             const videoList = await displayCursor.toArray()
 
-            if (videoList && videoList.length > 0) {
-                const totalNumIplVideos = await videos.find(mongoquery).count();
-                let res = { list: videoList, total: totalNumIplVideos };
-                return res;
+            //if (videoList && videoList.length > 0) {
+            const totalNumIplVideos = await videos.find(mongoquery).count();
+            let res = { list: videoList, total: totalNumIplVideos };
+            return res;
 
-            } else {
-                return ({ status: false, data: null });
-            }
+            // } else {
+            //     return ({ status: false, data: null });
+            // }
 
         } catch (e) {
             console.error(`Something went wrong in getVideoByID: ${e}`)
             throw e
         }
     }
-   
+
     static async getPlayListByid(id) {
-      
+
         try {
             const pipeline = [
                 {
