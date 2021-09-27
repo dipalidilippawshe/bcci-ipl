@@ -5,10 +5,11 @@ module.exports = class IplPagesController {
         try {
             let slug = "home-web"
             const homeIplPages = await iplDao.homeIplPages(slug);
+            console.log("In homeiPL pages me11: ",homeIplPages);
             // console.log("--------- controlllers .js----------------");
             // console.log(homeIplPages);
             if (homeIplPages) {
-
+                console.log("In homeiPL pages me: ",homeIplPages);
                 res.json({ success: true, data: homeIplPages })
                 return
             }
