@@ -97,10 +97,10 @@ module.exports = class MatchController {
         }
 
         let filters = {};
-        filters.startDate = req.query.startDate && new Date(req.query.startDate) !== "Invalid Date" ? new Date(req.query.startDate).toISOString() : undefined
-        filters.endDate = req.query.endDate && new Date(req.query.endDate) !== "Invalid Date" ? new Date(req.query.endDate).toISOString() : undefined
+        // filters.startDate = req.query.startDate && new Date(req.query.startDate) !== "Invalid Date" ? new Date(req.query.startDate).getFullYear() : undefined
+        //filters.endDate = req.query.endDate && new Date(req.query.endDate) !== "Invalid Date" ? new Date(req.query.endDate).getFullYear() : undefined
         filters.team = req.query.team ? [req.query.team] : ["m", "w"]
-        console.log(req.query.startDate, new Date(req.query.startDate))
+        //console.log(req.query.startDate, new Date(req.query.startDate))
         if (req.params.type !== "" && req.params.type === "results") {
             filters.matchState = ["C"]
         } else if (req.params.type !== "" && req.params.type === "fixtures") {
