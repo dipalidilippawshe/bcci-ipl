@@ -253,7 +253,7 @@ module.exports = class MatchController {
         var filters = req.body;
         filters.matchState = ["U"];
         filters.team = req.body.team ? [req.body.team] : ["m", "w"]
-        filters.team_id = req.body.team_id ? req.body.team_id:"",
+        //filters.team_id = req.body.team_id ? req.body.team_id:"",
         filters.startDate = new Date("2008-01-01").toISOString();
         filters.endDate = new Date("2021-01-01").toISOString();
         console.log("In apis list: ", filters);
