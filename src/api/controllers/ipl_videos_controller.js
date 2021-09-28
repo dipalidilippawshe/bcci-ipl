@@ -46,6 +46,7 @@ module.exports = class IplVideosController {
 
     static async apiAppGetPlayUrlById(req, res, next) {
         try {
+            console.log("id is: ",req.body.id)
             let id = req.body.id || {}
             let video = await IplVideosDAO.getVideoByID(parseInt(id))
             if (!video) {
