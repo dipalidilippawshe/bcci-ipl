@@ -274,7 +274,7 @@ module.exports = class IplVideosDAO {
      * @param {String} type 
      * @returns 
      */
-    static async getIplVideosByFilter(type, page, limit = 20) {
+    static async getIplVideosByFilter(type, page, limit = 20,teamId) {
         try {
             if (!type) {
                 type = "latest";
@@ -283,8 +283,10 @@ module.exports = class IplVideosDAO {
             var videosPerPage = limit;
 
             var skip = (page - 1) * videosPerPage;
-            const mongoquery = { "tags.label": { $regex: new RegExp(type, "i") } };
-
+            let mongoquery = { "tags.label": { $regex: new RegExp(type, "i") } };
+            if(teamId){
+              
+            }
             //page logic here..
             var cursor = await videos.find(mongoquery).limit(videosPerPage).skip(skip);
 

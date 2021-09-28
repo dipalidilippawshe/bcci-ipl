@@ -24,6 +24,9 @@ module.exports = class IplVideosController {
     }
     static async getAppIplVideos(req, res, next) {
         var type = req.params.type;
+        if(req.params.teamId){
+            var teamId = req.params.teamId;
+        }
         if (!type) {
             res.json({ status: false, message: "please specify video type" });
         }
@@ -32,7 +35,7 @@ module.exports = class IplVideosController {
         else
             page = 1;
         let limit = 20
-        const respo = await IplVideosDAO.getIplVideosByFilter(type, page, limit);
+        const respo = await IplVideosDAO.getIplVideosByFilter(type, page, limit,teamId);
         let response = {
             status: true,
             message: "Retrived data!",
