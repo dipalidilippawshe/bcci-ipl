@@ -4,7 +4,7 @@ const IplVideosCtrl = require("../controllers/ipl_videos_controller")
 const router = new Router()
 
 router.get("/app/", IplVideosCtrl.apiAppGetIplVideos)
-router.get("/app/:type/:teamId", IplVideosCtrl.getAppIplVideos)
+router.get("/app/:type", IplVideosCtrl.getAppIplVideos)
 router.post("/app/playurl", IplVideosCtrl.apiAppGetPlayUrlById)
 router.get("/app/detail/:ID", IplVideosCtrl.apiAppGetVideoById)
 //router.get("/app/promos/list", IplVideosCtrl.apiAppGetPromos)
