@@ -453,6 +453,19 @@ module.exports = class IplVideosDAO {
             throw e
         }
     }
+    static async videoByTeamID(id) {
+        try {
+        
+            return await videos.find( {"references.id": id}).toArray();
+
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
+        }
+    }
 }
 
 /**

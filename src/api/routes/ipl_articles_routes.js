@@ -6,6 +6,7 @@ const router = new Router();
 router.get("/app/:type", IplArticleCtrl.apiAppGetIplArticleList)
 router.get("/app/detail/:ID", IplArticleCtrl.apiAppGetIplArticleById)
 router.get("/app/details/:id")
+router.get("/app/teamnews/:ID", IplArticleCtrl.apiAppGetIplArticleTeamById);
 
 router.get("/web/:type", IplArticleCtrl.apiWebGetIplArticleList)
 router.get("/web/detail/:ID", IplArticleCtrl.apiWebGetIplArticleById);

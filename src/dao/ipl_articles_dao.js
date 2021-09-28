@@ -226,7 +226,7 @@ module.exports = class ArticlesDAO {
             console.error(`Something went wrong in getVideoByID: ${e}`)
             throw e                     
         }
-    }
+    }  
 }
 
 
