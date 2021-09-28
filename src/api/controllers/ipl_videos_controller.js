@@ -13,6 +13,7 @@ module.exports = class IplVideosController {
             page = 1;
         let limit = 20
         let filters = { type: type, match_id: req.query.match_id, player_id: req.query.player_id, season_id: req.query.season_id, team_id: req.query.team_id }
+
         const respo = await IplVideosDAO.getIplVideosByFilter(filters, page, limit);
         let response = {
             status: true,
@@ -151,6 +152,7 @@ module.exports = class IplVideosController {
             page = 1;
         let limit = 20
         let filters = { type: type, match_id: req.query.match_id, player_id: req.query.player_id, season_id: req.query.season_id, team_id: req.query.team_id }
+        console.log(filters)
         const respo = await IplVideosDAO.getIplVideosByFilter(filters, page, limit);
         console.log(".....", respo)
         let response = {

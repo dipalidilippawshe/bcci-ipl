@@ -284,24 +284,26 @@ module.exports = class IplVideosDAO {
 
             var skip = (page - 1) * videosPerPage;
             const mongoquery = { "tags.label": { $regex: new RegExp(filters.type, "i") } };
-            if (!filters.match_id) {
-                mongoquery["references.id"] = { $regex: new RegExp(filters.match_id, "i") }
+            if (filters.match_id) {
+                mongoquery["references.id"] = { $eq: parseInt(filters.match_id) }
                 mongoquery["references.type"] = { $eq: "CRICKET_MATCH" }
 
             }
-            if (!filters.player_id) {
-                mongoquery["references.id"] = { $regex: new RegExp(filters.player_id, "i") }
+            if (filters.player_id) {
+                mongoquery["references.id"] = { $eq: parseInt(filters.player_id) }
                 mongoquery["references.type"] = { $eq: "CRICKET_PLAYER" }
             }
-            if (!filters.team_id) {
-                mongoquery["references.id"] = { $regex: new RegExp(filters.team_id, "i") }
+            if (filters.team_id) {
+                mongoquery["references.id"] = { $eq: parseInt(filters.team_id) }
                 mongoquery["references.type"] = { $eq: "CRICKET_TEAM" }
             }
-            if (!filters.season_id) {
-                mongoquery["references.id"] = { $regex: new RegExp(filters.season_id, "i") }
+            if (filters.season_id) {
+                mongoquery["references.id"] = { $eq: parseInt(filters.season_id) }
                 mongoquery["references.type"] = { $eq: "CRICKET_TOURNAMENT" }
             }
+
             //page logic here..
+            console.log(filters.season_id, mongoquery)
             var cursor = await videos.find(mongoquery).limit(videosPerPage).skip(skip);
 
             const displayCursor = cursor.limit(videosPerPage)
