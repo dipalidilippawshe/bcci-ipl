@@ -209,11 +209,12 @@ module.exports = class MatchDAO {
                                 4
                             ]
                         },
+                        "tournament_id": { $first: "$matchId.tournamentId.id" }
                     }
                 },
                 { $sort: { "_id": 1 } },
                 {
-                    $project: { "year": "$_id", _id: 0 }
+                    $project: { "year": "$_id", "tournament_id": 1, _id: 0 }
                 }
 
             ]
@@ -319,17 +320,28 @@ module.exports = class MatchDAO {
                         "matchInfo.teams.team.id": { $eq: parseInt(filters["team_id"]) }
                     }
                 },
-                { $project: { "matchInfo.matchDate": 1, "innings.scorecard.battingStats": 1, "innings.scorecard.bowlingStats": 1, "matchId": 1 } },
+                { $project: { "matchInfo.matchDate": 1, "innings.scorecard.battingStats": 1, "matchId": 1 } },
                 {
                     $group:
                     {
-                        _id: "$innings.scorecard.battingStats.playerId",
+
+                        _id: /* { "$toString": */ "$innings.scorecard.battingStats.playerId" /* } */,
                         totalRuns: { $sum: "$innings.scorecard.battingStats.r" },
                         //totalWikcets: { $sum: "$innings.scorecard.bowlingStats.w" },
                     }
                 },
+
+                /* {
+                    $lookup:
+                    {
+                        from: "players",
+                        localField: "_id",
+                        foreignField: "id",
+                        as: "players"
+                    }
+                }, */
                 {
-                    $project: { "player_id": "$_id", totalRuns: 1, _id: 0 }
+                    $project: { "player_id": "$_id", players: 1, totalRuns: 1, _id: 0 }
                 },
                 { '$sort': { 'totalRuns': -1 } },
 
@@ -369,7 +381,7 @@ module.exports = class MatchDAO {
                         "matchInfo.teams.team.id": { $eq: parseInt(filters["team_id"]) }
                     }
                 },
-                { $project: { "matchInfo.matchDate": 1, "innings.scorecard.battingStats": 1, "innings.scorecard.bowlingStats": 1, "matchId": 1 } },
+                { $project: { "matchInfo.matchDate": 1, "innings.scorecard.bowlingStats": 1, "matchId": 1 } },
                 {
                     $group:
                     {
