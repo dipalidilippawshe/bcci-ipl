@@ -188,14 +188,14 @@ module.exports = class MatchController {
 
     static async apiWebGetFranchiseById(req, res, next) {
         try {
-            console.log("In frenchise by id..",req.params.ID);
+            console.log("In frenchise by id..", req.params.ID);
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
 
             let article = await RecordDAO.getFranchiseByID({ id: parseInt(id), year: year })
-            console.log("in articles",article);
-            if (!article || article.length<=0) {
-                console.log("in uidididi",article);
+            console.log("in articles", article);
+            if (!article || article.length <= 0) {
+                console.log("in uidididi", article);
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
@@ -212,11 +212,11 @@ module.exports = class MatchController {
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
 
             let article = await RecordDAO.getTeams({ year: year })
-            if (!article || article.length<=0) {
+            if (!article || article.length <= 0) {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ status: true,year:year, data: article })
+            res.json({ status: true, year: year, data: article })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
@@ -269,7 +269,7 @@ module.exports = class MatchController {
             entries_per_page: FIXTURES_PER_PAGE,
             total_results: totalNumMatches,
         }
-        if(matchesList.length<=0){
+        if (matchesList.length <= 0) {
             res.status(404).json({ status: false, error: config.error_codes["1001"] })
             return
         }
@@ -298,7 +298,7 @@ module.exports = class MatchController {
             page,
             FIXTURES_PER_PAGE
         })
-        console.log("matchlist count: ",matchesList.length);
+        console.log("matchlist count: ", matchesList.length);
         let response = {
             status: true,
             data: matchesList,
@@ -307,7 +307,7 @@ module.exports = class MatchController {
             entries_per_page: FIXTURES_PER_PAGE,
             total_results: totalNumMatches,
         }
-        if(matchesList.length<=0){
+        if (matchesList.length <= 0) {
             res.status(404).json({ status: false, error: config.error_codes["1001"] })
             return
         }
@@ -356,7 +356,7 @@ module.exports = class MatchController {
             filters, page,
             FIXTURES_PER_PAGE
         })
-        if(matchesList.length<=0){
+        if (matchesList.length <= 0) {
             res.status(404).json({ status: false, error: config.error_codes["1001"] })
             return
         }
@@ -418,8 +418,9 @@ module.exports = class MatchController {
             if (!data) {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
+            } else {
+                res.json({ status: true, data: data })
             }
-            res.json({ status: true, data: data })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
