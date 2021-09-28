@@ -364,6 +364,7 @@ module.exports = class MatchController {
         }
         for (var i in matchesList) {
             filters["year"] = matchesList[i].year
+            matchesList[i].team_id = filters.team_id
             matchesList[i].TopRunScorer = await MatchDAO.getTopBatsmenByTeamAndYear(filters)
             matchesList[i].TopWktTaker = await MatchDAO.getTopBolwerByTeamAndYear(filters)
 

@@ -12,7 +12,9 @@ module.exports = class IplVideosController {
         else
             page = 1;
         let limit = 20
-        const respo = await IplVideosDAO.getIplVideosByFilter(type, page, limit);
+        let filters = { type: type, match_id: req.query.match_id, player_id: req.query.player_id, season_id: req.query.season_id, team_id: req.query.team_id }
+
+        const respo = await IplVideosDAO.getIplVideosByFilter(filters, page, limit);
         let response = {
             status: true,
             message: "Retrived data!",
@@ -32,7 +34,8 @@ module.exports = class IplVideosController {
         else
             page = 1;
         let limit = 20
-        const respo = await IplVideosDAO.getIplVideosByFilter(type, page, limit);
+        let filters = { type: type, match_id: req.query.match_id, player_id: req.query.player_id, season_id: req.query.season_id, team_id: req.query.team_id }
+        const respo = await IplVideosDAO.getIplVideosByFilter(filters, page, limit);
         let response = {
             status: true,
             message: "Retrived data!",
@@ -46,7 +49,7 @@ module.exports = class IplVideosController {
 
     static async apiAppGetPlayUrlById(req, res, next) {
         try {
-            console.log("id is: ",req.body.id)
+            console.log("id is: ", req.body.id)
             let id = req.body.id || {}
             let video = await IplVideosDAO.getVideoByID(parseInt(id))
             if (!video) {
@@ -148,7 +151,9 @@ module.exports = class IplVideosController {
         else
             page = 1;
         let limit = 20
-        const respo = await IplVideosDAO.getIplVideosByFilter(type, page, limit);
+        let filters = { type: type, match_id: req.query.match_id, player_id: req.query.player_id, season_id: req.query.season_id, team_id: req.query.team_id }
+        console.log(filters)
+        const respo = await IplVideosDAO.getIplVideosByFilter(filters, page, limit);
         console.log(".....", respo)
         let response = {
             status: true,
