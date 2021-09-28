@@ -88,5 +88,18 @@ module.exports = class PhotosDAO {
             throw e
         }
     }
+    static async getMatchImagesByID(id) {
+        try {
+           
+            return await images.find({$and:[{'references.id':id},{'references.type':"CRICKET_MATCH"}]}).toArray();
+        
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
+        }
+    }
 
 }
