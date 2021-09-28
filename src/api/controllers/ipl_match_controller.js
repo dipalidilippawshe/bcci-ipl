@@ -174,7 +174,7 @@ module.exports = class MatchController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
 
-            let article = await RecordDAO.getFranchiseByID({ id: parseInt(id), year: year })
+            let article = await MatchDAO.getSquadListByID({ id: parseInt(id), year: year })
             if (!article) {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
@@ -192,7 +192,7 @@ module.exports = class MatchController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
 
-            let article = await RecordDAO.getFranchiseByID({ id: parseInt(id), year: year })
+            let article = await MatchDAO.getSquadListByID({ id: parseInt(id), year: year })
             console.log("in articles", article);
             if (!article || article.length <= 0) {
                 console.log("in uidididi", article);
@@ -209,7 +209,7 @@ module.exports = class MatchController {
     static async apiWebGetTeams(req, res, next) {
         try {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
-            let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
+            let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : "2021"
 
             let article = await RecordDAO.getTeams({ year: year })
             if (!article || article.length <= 0) {
@@ -421,6 +421,23 @@ module.exports = class MatchController {
             } else {
                 res.json({ status: true, data: data })
             }
+        } catch (e) {
+            console.log(`api, ${e}`)
+            res.status(500).json({ error: e })
+        }
+    }
+
+    static async apiAppGetTeams(req, res, next) {
+        try {
+            let id = req.params.ID && parseInt(req.params.ID) || "0"
+            let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : "2021"
+
+            let article = await RecordDAO.getTeams({ year: year })
+            if (!article || article.length <= 0) {
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
+                return
+            }
+            res.json({ status: true, year: year, data: article })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })

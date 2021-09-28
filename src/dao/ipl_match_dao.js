@@ -169,26 +169,6 @@ module.exports = class MatchDAO {
         }
     }
 
-    static async getFranchiseByID(id) {
-        try {
-            const pipeline = [
-                {
-                    $match: {
-                        "matchInfo.teams.team.id": id
-                    }
-                }
-            ]
-            console.log(pipeline)
-            return await matches.aggregate(pipeline).toArray()
-        } catch (e) {
-            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
-                return null
-            }
-            console.error(`Something went wrong in getVideoByID: ${e}`)
-            throw e
-        }
-    }
-
     static async getVenue(params) {
         try {
             const pipeline = [
@@ -440,4 +420,43 @@ module.exports = class MatchDAO {
         }
     }
 
+
+    static async getSquadListByID(params) {
+        try {
+            const pipeline = [
+
+                {
+                    $match: { "matchInfo.matchDate": new RegExp(params.year, "i"), "matchInfo.teams.team.id": params.id }
+                },
+                { $unwind: "$matchInfo.teams" },
+                {
+                    $match: { "matchInfo.teams.team.id": params.id }
+                },
+                { $unwind: "$matchInfo.teams.players" },
+                {
+                    $group: {
+                        _id: "$matchInfo.teams.team.id",
+                        "fullName": { $first: "$matchInfo.teams.team.fullName" },
+                        "shortName": { $first: "$matchInfo.teams.team.shortName" },
+                        "abbreviation": { $first: "$matchInfo.teams.team.abbreviation" },
+                        "type": { $first: "$matchInfo.teams.team.type" },
+                        "primaryColor": { $first: "$matchInfo.teams.team.primaryColor" },
+                        "secondaryColor": { $first: "$matchInfo.teams.team.secondaryColor" },
+                        "captain": { $first: "$matchInfo.teams.captain" },
+                        "wicketKeeper": { $first: "$matchInfo.teams.wicketKeeper" },
+                        "players": { $addToSet: "$matchInfo.teams.players" }
+                    }
+                }
+            ]
+            console.log(pipeline)
+            //  console.log(franchise_years)
+            return await matches.aggregate(pipeline).toArray()
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
+        }
+    }
 }
