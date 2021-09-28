@@ -19,56 +19,15 @@ module.exports = class IplRecordsDAO {
         }
     }
 
-    static async getFranchiseByID(params) {
-        try {
-            const pipeline = [
-                // {
-                //     $match: {
-                //        $and:[{"year": params.year.toString()},{"franchise_id": params.id.toString()}]
-                //     }
-                // },
-                {
-                    $match:{"year": params.year.toString(),"franchise_id": params.id.toString()}
-                },
-                {
-                    $lookup:
-                    {
-                        from: "records",
-                        localField: "id",
-                        foreignField: "franchise_year_id",
-                        as: "records"
-                    }
-                },
-                //{ $unwind: "$records" },
-                {
-                    $lookup:
-                    {
-                        from: "players",
-                        localField: "records.player_id",
-                        foreignField: "id",
-                        as: "players"
-                    }
-                }
-            ]
-            console.log(pipeline)
-            //  console.log(franchise_years)
-            return await franchise_years.aggregate(pipeline).toArray()
-        } catch (e) {
-            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
-                return null
-            }
-            console.error(`Something went wrong in getVideoByID: ${e}`)
-            throw e
-        }
-    }
 
     static async getTeams(params) {
         try {
+            let match = parseInt(params.year) ? {
+                "year": params.year.toString()
+            } : {};
             const pipeline = [
                 {
-                    $match: {
-                        "year": params.year.toString()
-                    }
+                    $match: match
                 },
                 /* {
                     $group: {
@@ -97,18 +56,20 @@ module.exports = class IplRecordsDAO {
                     $addFields: {
                         "franchises_name": "$franchises.name",
                         "franchises_abbreviation": "$franchises.abbreviation",
-                        "franchises_owner":"$franchises.owner",
-                        "franchises_venue":"$franchises.venue",
-                        "franchises_coach":"$franchises.coach",
-                        "franchises_captain":"$franchises.captain",
-                        "franchises_logo":"$franchises.logo",
-                        "franchises_social":"$franchises.social"
-
+                        "franchises_owner": "$franchises.owner",
+                        "franchises_venue": "$franchises.venue",
+                        "franchises_coach": "$franchises.coach",
+                        "franchises_captain": "$franchises.captain",
+                        "franchises_logo": "$franchises.logo",
+                        "franchises_social": "$franchises.social",
+                        "franchises_is_playing": "$franchises.is_playing"
                     }
                 },
                 {
-                    $project: { "franchise_id": 1, "franchises_name": 1, "franchises_abbreviation": 1,"franchises_owner":1,
-                    "franchises_venue":1, "franchises_coach":1,"franchises_captain":1,"franchises_logo":1,"franchises_social":1,_id: 0 }
+                    $project: {
+                        "franchise_id": 1, "franchises_name": 1, "franchises_abbreviation": 1, "franchises_owner": 1,
+                        "franchises_venue": 1, "franchises_coach": 1, "franchises_captain": 1, "franchises_logo": 1, "franchises_social": 1, "franchises_is_playing": 1, _id: 0
+                    }
                 }
 
             ]
@@ -123,6 +84,10 @@ module.exports = class IplRecordsDAO {
             throw e
         }
     }
+
+
+
+
 }
 
 
