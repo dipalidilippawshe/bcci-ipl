@@ -390,8 +390,6 @@ module.exports = class MatchDAO {
             throw e
         }
     }
-
-
     static async getSquadListByID(params) {
         try {
             const pipeline = [
@@ -451,5 +449,52 @@ module.exports = class MatchDAO {
             console.error(`Something went wrong in getVideoByID: ${e}`)
             throw e
         }
+    }
+    static async playerInfo(name){
+        try{
+        const countingPipeline = [
+           
+               {
+                 $match: {
+                     "matchInfo.teams.players.fullName": name
+                 
+                 }
+             },
+            { $unwind: "$matchInfo.teams" },
+            { $unwind: "$matchInfo.teams.players" },
+            // { $unwind: "$innings" },
+            // { $unwind: "$innings.scorecard.bowlingStats" },
+            {
+                $match: {
+                    'matchInfo.teams.players.fullName':name
+                }
+            },
+            { $project: { "matchInfo.matchDate": 1, "matchInfo.teams.players": 1,"matchId": 1 } },
+            {
+                $group:
+                {
+                    _id: "$matchInfo.teams.players.id",
+                    player_detail: { $first: "$matchInfo.teams.players" },
+                    //totalRuns: { $sum: "$innings.scorecard.battingStats.r" },
+                }
+            },
+            {
+                $project: { "player_id": "$_id", player_detail: 1, _id: 0 }
+            }
+        ]
+
+        const pipeline = [...countingPipeline]
+            const matchesList = await matches.aggregate(pipeline).toArray()
+            console.log(matchesList);
+            //return matchesList.length ? matchesList[0] : {}
+
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
+        }
+
     }
 }

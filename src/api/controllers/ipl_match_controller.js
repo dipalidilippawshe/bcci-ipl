@@ -488,9 +488,33 @@ module.exports = class MatchController {
             }
     
             let filters = {};
+            if(req.query.stats)
+                filters.stats = req.query.stats
+            
+            if(req.query.season)
+                filters.season = req.query.season;
+                
+            if(req.query.team)
+                 filters.team = req.query.team;
+
+            if(req.query.player)
+                 filters.player = req.query.player;
+
+            
 
     }
 
+    static async getAppPlayersDetails(req,res,next){
+        var player = req.body.player;
+        if(!player){
+            res.status(404).json({ status: false, error: config.error_codes["1003"] })
+            return
+        }
+
+        let details = MatchDAO.playerInfo(player);
+       // console.log("details: ",details);
+        //res.json({status:true,data:details});
+    }
 }
 
 
