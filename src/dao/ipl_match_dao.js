@@ -452,4 +452,33 @@ module.exports = class MatchDAO {
             throw e
         }
     }
+    static async getIplMatchesFilterByType(type, page, id) {
+        let query = {};
+        let videosPerPage =20;
+        var skip = (page - 1) * videosPerPage;
+        try {
+            if (type == "season") {
+                query = { 'matchId.tournamentId.id': id }
+            }
+            else if (type == "team") {
+                query = { 'matchInfo.teams.team.id': id }
+            }
+            else if (type = "venue") {
+                query = { 'matchInfo.venue.id': id }
+            }
+           const totalMatches = await matches.find(query).count();
+           let matchesResult = await matches.find(query).limit(videosPerPage).skip(skip).toArray();
+    
+          let results = { list: matchesResult, total: totalMatches };
+          return results
+           
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
+        }
+
+    }
 }

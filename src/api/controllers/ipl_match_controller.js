@@ -107,6 +107,39 @@ module.exports = class MatchController {
     }
 
     static async apiWebGetMatch(req, res, next) {
+
+        if(req.params.type =='season' || req.params.type == "team" ||req.params.type == "venue")
+        {
+            try {
+
+                
+                let page =  req.query.page?req.query.page:1;
+                let id = req.query.id && parseInt(req.query.id) || "0";
+
+                let matches =await MatchDAO.getIplMatchesFilterByType(req.params.type,page,parseInt(id))
+             
+                if (!matches) {
+                    res.status(404).json({ status: false, error: config.error_codes["1001"] })
+                    return
+                }
+                let response = {
+                    status: true,
+                    message: "Retrived data!",
+                    matches: matches.list,
+                    page: page,
+                    entries_per_page: 20,
+                    total_results: matches.total,
+                }
+                res.json(response);
+            } catch (e) {
+                console.log(`api, ${e}`)
+                res.status(500).json({ error: e })
+            }
+            
+            
+              
+        }
+        else{
         console.log("CALLINGIN..");
         const FIXTURES_PER_PAGE = 20
         let page
@@ -173,6 +206,7 @@ module.exports = class MatchController {
             }
             res.json(response)
         }
+      }
     }
 
     static async apiWebGetMatchById(req, res, next) {
