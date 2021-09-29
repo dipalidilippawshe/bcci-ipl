@@ -230,25 +230,17 @@ module.exports = class MatchDAO {
         }
     }
 
-    static async getArchiveData({ filters = null,
-        page = 0,
-        matchesPerPage = 20 }) {
+    static async getArchiveData({ filters = null }) {
         try {
             const countingPipeline = [
                 {
                     $match: {
                         "matchInfo.teams.team.type": { $in: filters["team"] },
-                        // "matchInfo.description": { $eq: "Final" },
                         "matchInfo.teams.team.id": { $eq: parseInt(filters["team_id"]) },
 
                         "matchInfo.matchDate": { $not: new RegExp(new Date().getFullYear(), "i") }
                     }
                 },
-                // {
-                //     $addFields: {
-                //         matchDate: { "$substr": ["$matchInfo.matchDate", 0, 4] }
-                //     }
-                // },
                 {
                     $group: {
                         _id: {
@@ -257,22 +249,7 @@ module.exports = class MatchDAO {
                                 0,
                                 4
                             ]
-                        },
-                        //description: { $addToSet: "$matchInfo.description" },
-                        // teams: {
-                        //     "$cond": [
-                        //         { "$eq": ["$matchInfo.description", "Final"] },
-                        //         "$matchInfo.teams",
-                        //         0
-                        //     ]
-                        // },
-                        // status: {
-                        //     "$cond": [
-                        //         { "$eq": ["$matchInfo.description", "Final"] },
-                        //         "$matchInfo.matchStatus",
-                        //         0
-                        //     ]
-                        // },
+                        }
                     }
                 },
                 {
@@ -281,14 +258,9 @@ module.exports = class MatchDAO {
                 { '$sort': { '_id': -1 } },
 
             ]
-            const pipeline = [...countingPipeline/* ,
-            { $skip: matchesPerPage * page }
-                , { $limit: matchesPerPage } */]
+            const pipeline = [...countingPipeline]
 
-            console.dir(pipeline, { depth: null, color: true })
             const matchesList = await (await matches.aggregate(pipeline)).toArray()
-            //console.log(results)
-            // const totalNumMatches = await (await matches.aggregate([...countingPipeline, { $count: "count" }])).next()
             return {
                 matchesList,
                 totalNumMatches: 0//totalNumMatches.count,
@@ -313,47 +285,32 @@ module.exports = class MatchDAO {
                     }
                 },
                 { $unwind: "$innings" },
+                { $unwind: "$matchInfo.teams" },
                 { $unwind: "$innings.scorecard.battingStats" },
-                // { $unwind: "$innings.scorecard.bowlingStats" },
                 {
                     $match: {
                         "matchInfo.teams.team.id": { $eq: parseInt(filters["team_id"]) }
                     }
                 },
-                { $project: { "matchInfo.matchDate": 1, "innings.scorecard.battingStats": 1, "matchId": 1 } },
+                { $project: { "matchInfo.matchDate": 1, "matchInfo.teams.players": 1, "innings.scorecard.battingStats": 1, "matchId": 1 } },
                 {
                     $group:
                     {
 
-                        _id: /* { "$toString": */ "$innings.scorecard.battingStats.playerId" /* } */,
+                        _id: "$innings.scorecard.battingStats.playerId",
+                        player_detail: { $first: "$matchInfo.teams.players" },
+
                         totalRuns: { $sum: "$innings.scorecard.battingStats.r" },
-                        //totalWikcets: { $sum: "$innings.scorecard.bowlingStats.w" },
                     }
                 },
-
-                /* {
-                    $lookup:
-                    {
-                        from: "players",
-                        localField: "_id",
-                        foreignField: "id",
-                        as: "players"
-                    }
-                }, */
                 {
-                    $project: { "player_id": "$_id", players: 1, totalRuns: 1, _id: 0 }
+                    $project: { "player_id": "$_id", player_detail: 1, totalRuns: 1, _id: 0 }
                 },
                 { '$sort': { 'totalRuns': -1 } },
 
             ]
-            const pipeline = [...countingPipeline/* ,
-            { $skip: matchesPerPage * page }
-                , { $limit: matchesPerPage } */]
-
-            console.dir(pipeline, { depth: null, color: true })
+            const pipeline = [...countingPipeline]
             const matchesList = await (await matches.aggregate(pipeline)).toArray()
-            //console.log(results)
-            // const totalNumMatches = await (await matches.aggregate([...countingPipeline, { $count: "count" }])).next()
             return matchesList.length ? matchesList[0] : {}
 
         } catch (e) {
@@ -375,22 +332,24 @@ module.exports = class MatchDAO {
                     }
                 },
                 { $unwind: "$innings" },
+                { $unwind: "$matchInfo.teams" },
                 { $unwind: "$innings.scorecard.bowlingStats" },
                 {
                     $match: {
                         "matchInfo.teams.team.id": { $eq: parseInt(filters["team_id"]) }
                     }
                 },
-                { $project: { "matchInfo.matchDate": 1, "innings.scorecard.bowlingStats": 1, "matchId": 1 } },
+                { $project: { "matchInfo.matchDate": 1, "matchInfo.teams.players": 1, "innings.scorecard.bowlingStats": 1, "matchId": 1 } },
                 {
                     $group:
                     {
                         _id: "$innings.scorecard.bowlingStats.playerId",
+                        player_detail: { $first: "$matchInfo.teams.players" },
                         totalWikcets: { $sum: "$innings.scorecard.bowlingStats.w" },
                     }
                 },
                 {
-                    $project: { "player_id": "$_id", totalWikcets: 1, _id: 0 }
+                    $project: { "player_id": "$_id", player_detail: 1, totalWikcets: 1, _id: 0 }
                 },
                 { '$sort': { 'totalWikcets': -1 } },
 
@@ -485,12 +444,12 @@ module.exports = class MatchDAO {
             console.dir(pipeline, { depth: null, color: true })
             return await matches.aggregate(pipeline).toArray()
         }
-      catch (e) {
-        if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
-            return null
+        catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
         }
-        console.error(`Something went wrong in getVideoByID: ${e}`)
-        throw e
     }
-}
 }
