@@ -453,10 +453,16 @@ module.exports = class IplVideosDAO {
             throw e
         }
     }
-    static async videoByTeamID(id) {
+    static async videoByTeamID(id, page) {
         try {
-        
-            return await videos.find( {"references.id": id}).toArray();
+          
+            let pageLimit = 20;
+            let skip = (page - 1) * pageLimit;
+            let query = { "references.id": id }
+            let total = await videos.find(query).count();
+
+            let data = await videos.find(query).limit(pageLimit).skip(skip).toArray();
+            return { data: data, total: total };
 
         } catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {

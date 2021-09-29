@@ -8,14 +8,25 @@ module.exports = class IPLArticlesController {
         {
             try {
                 let type= req.params.type == "teamId"?"CRICKET_TEAM":req.params.type == "playerId"?"CRICKET_PLAYER":req.params.type == "matchId"?"CRICKET_MATCH":req.params.type == "season"?"CRICKET_TOURNAMENT":"";                        
-                
+                let page =req.query.page?req.query.page:1;
+
                 let id = req.query.id && parseInt(req.query.id) || "0"
-                let Iplarticle = await IplArticlesDAO.getIplArticleByTeamId(type,parseInt(id))
+                let Iplarticle = await IplArticlesDAO.getIplArticleByTeamId(type,page,parseInt(id))
+                
                 if (!Iplarticle || Iplarticle.length<=0) {
                     res.status(404).json({ status: false, error: config.error_codes["1001"] })
                     return
                 }
-                res.json({ status: true, data: Iplarticle })
+                let pageLimit = 20;
+              
+                let response = {
+                    status: true,
+                    data: Iplarticle.data,
+                    page: page,
+                    entries_per_page: pageLimit,
+                    total_results: Iplarticle.total_results,
+                }
+                res.json(response);
             } catch (e) {
                 console.log(`api, ${e}`)
                 res.status(500).json({ error: e })
@@ -91,58 +102,92 @@ module.exports = class IPLArticlesController {
 
     static async apiWebGetIplArticleList(req, res, next) {
         console.log("in articles");
-        // let idType = await Object.keys(req.query)[0];
-        if(req.params.type="articleByTeam")
+
+        if(req.params.type =='teamId' || req.params.type == "playerId" ||req.params.type == "matchId")
         {
-            const { articlesList, totalNumArticles } = await IplArticlesDAO.getIplArticles({
-                filters,
-                page,
-                ARTICLES_PER_PAGE
-            }) 
-        }
+           
+            try {
+                let type= req.params.type == "teamId"?"CRICKET_TEAM":req.params.type == "playerId"?"CRICKET_PLAYER":req.params.type == "matchId"?"CRICKET_MATCH":req.params.type == "season"?"CRICKET_TOURNAMENT":"";                        
+                let page =req.query.page?req.query.page:1;
 
-        const ARTICLES_PER_PAGE = 20
-        let page
-        try {
-            page = req.query.page ? parseInt(req.query.page, 10) : "0"
-        } catch (e) {
-            console.error(`Got bad value for page:, ${e}`)
-            page = 0
+                let id = req.query.id && parseInt(req.query.id) || "0"
+                let Iplarticle = await IplArticlesDAO.getIplArticleByTeamId(type,page,parseInt(id))
+                if (!Iplarticle || Iplarticle.length<=0) {
+                    res.status(404).json({ status: false, error: config.error_codes["1001"] })
+                    return
+                }
+                let response = {
+                    status: true,
+                    data: Iplarticle.data,
+                    page: page,
+                    entries_per_page: 20,
+                    total_results: Iplarticle.total_results,
+                }
+                res.json(response);
+            } catch (e) {
+                console.log(`api, ${e}`)
+                res.status(500).json({ error: e })
+            }
         }
+        else{
+  // let idType = await Object.keys(req.query)[0];
+  if(req.params.type == "articleByTeam")
+  {
+    
+      const { articlesList, totalNumArticles } = await IplArticlesDAO.getIplArticles({
+          filters,
+          page,
+          ARTICLES_PER_PAGE
+      }) 
+  }
 
-        // "feature", 355
-        // "featured", 186
-        // "features-and-interviews", 187
-        // "press-conference", 20
-        // "press-releases", 214
-        // "bcci", 2
-        // "bcci-news", 347
-        const filterValues = {
-            "features": ["feature", "featured", "features-and-interviews"],
-            "press-releases": ["press-conference", "press-releases"],
-            "bcci-news": ["bcci", "bcci-news"]
+  const ARTICLES_PER_PAGE = 20
+  let page
+  try {
+      page = req.query.page ? parseInt(req.query.page, 10) : "0"
+  } catch (e) {
+      console.error(`Got bad value for page:, ${e}`)
+      page = 0
+  }
+
+  // "feature", 355
+  // "featured", 186
+  // "features-and-interviews", 187
+  // "press-conference", 20
+  // "press-releases", 214
+  // "bcci", 2
+  // "bcci-news", 347
+  const filterValues = {
+      "features": ["feature", "featured", "features-and-interviews"],
+      "press-releases": ["press-conference", "press-releases"],
+      "bcci-news": ["bcci", "bcci-news"]
+  }
+
+  let filters = {};
+        // if (req.params.type !== "" && filterValues[req.params.type]) {
+        //     filters.tag = filterValues[req.params.type]
+        // }
+        if (req.params.type !== "") {
+          
+            filters.tag = req.params.type;      
         }
-        let filters = {};
-        if (req.params.type !== "" && filterValues[req.params.type]) {
-            filters.tag = filterValues[req.params.type]
-        }
-        const { articlesList, totalNumArticles } = await IplArticlesDAO.getIplArticles({
-            filters,
-            page,
-            ARTICLES_PER_PAGE
-        })
-        let response = {
-            status: true,
-            data: articlesList,
-            page: page,
-            filters: {},
-            entries_per_page: ARTICLES_PER_PAGE,
-            total_results: totalNumArticles,
-        }
-        res.json(response)
+  const { articlesList, totalNumArticles } = await IplArticlesDAO.getIplArticles({
+      filters,
+      page,
+      ARTICLES_PER_PAGE
+  })
+  let response = {
+      status: true,
+      data: articlesList,
+      page: page,
+      filters: {},
+      entries_per_page: ARTICLES_PER_PAGE,
+      total_results: totalNumArticles,
+  }
+  res.json(response)
 
-
-
+      }
+   
     }
 
     static async apiWebGetIplArticleById(req, res, next) {
@@ -170,7 +215,7 @@ module.exports = class IPLArticlesController {
         try {
             console.log(req.params);
             let id = req.params.ID && parseInt(req.params.ID) || "0"
-            let Iplarticle = await IplArticlesDAO.getIplArticleByTeamId(parseInt(id))
+            let Iplarticle = await IplArticlesDAO.getIplArticleByTeamIds(parseInt(id))
             if (!Iplarticle || Iplarticle.length<=0) {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
@@ -185,7 +230,7 @@ module.exports = class IPLArticlesController {
 
     }
     static async apiAppGetIplArticleTeamById(req, res, next) {
-
+    
         try {
             console.log(req.params);
             let id = req.params.ID && parseInt(req.params.ID) || "0"

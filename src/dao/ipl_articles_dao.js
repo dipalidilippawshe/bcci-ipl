@@ -213,11 +213,39 @@ module.exports = class ArticlesDAO {
         }
     }
 
-    static async getIplArticleByTeamId(type, id) {
+    static async getIplArticleByTeamId(type,page, id) {
      
         try {
-         
-            return await iplArticles.find({$and:[{'references.id':{$eq:id}},{"references.type":{$eq:type}}]}).toArray();
+         let pageLimit =20;
+            let skip = (page-1)*pageLimit;
+            
+            let query = {$and:[{'references.id':{$eq:id}},{"references.type":{$eq:type}}]};
+            
+            let total = await iplArticles.find(query).count();
+            let data = await iplArticles.find(query).limit(pageLimit).skip(skip).toArray();
+           
+            return{data:data,total_results:total}
+        
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e                     
+        }
+    }  
+    static async getIplArticleByTeamIds(id) {
+     
+        try {
+         let pageLimit =20;
+            let skip = (page-1)*pageLimit;
+            
+            let query = {'references.id':id};
+            
+            let total = await iplArticles.find(query).count();
+            let data = await iplArticles.find(query).limit(pageLimit).skip(skip).toArray();
+           
+            return{data:data,total_results:total}
         
         } catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
