@@ -49,17 +49,23 @@ module.exports = class IplVideosController {
         }
         else {
             try {
+                let page =req.query.page?req.query.page:1;
+
                 let id = req.query.id && parseInt(req.query.id) || "0"
-                let video = await IplVideosDAO.videoByTeamID(parseInt(id))
-                if (!video) {
+                let videos = await IplVideosDAO.videoByTeamID(parseInt(id),page)
+                if (!videos) {
                     res.status(404).json({ status: false, error: config.error_codes["1001"] })
                     return
                 }
-                if (!video) {
-                    res.status(404).json({ status: false, error: config.error_codes["1001"] })
-                    return
+               
+                let response = {
+                    status: true,
+                    message: "Retrived data!",
+                    data: videos.data,
+                    page: page,
+                    total_results: videos.total,
                 }
-                res.json({ status: true, data: video })
+                res.json(response)
             } catch (e) {
                 console.log(`api, ${e}`)
                 res.status(500).json({ error: e })

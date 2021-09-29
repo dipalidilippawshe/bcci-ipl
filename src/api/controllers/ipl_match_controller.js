@@ -6,8 +6,9 @@ const config = require("config")
 
 module.exports = class MatchController {
     static async apiAppGetMatch(req, res, next) {
+        const FIXTURES_PER_PAGE = 20
         if (req.params.type != "team_results") {
-            const FIXTURES_PER_PAGE = 20
+            
             let page
             try {
                 page = req.query.page ? parseInt(req.query.page, 10) : "0"
@@ -72,16 +73,25 @@ module.exports = class MatchController {
         }
         else {
             try {
-
+                let page =req.query.page?req.query.page:1;
+                
                 let id = req.query.id; //This is team ID
                 let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
                 console.log(year)
-                let data = await MatchDAO.getTeamResultsByid(year, id)
+                let data = await MatchDAO.getTeamResultsByid(year,page, id)
                 if (!data) {
                     res.status(404).json({ status: false, error: config.error_codes["1001"] })
                     return
                 } else {
-                    res.json({ status: true, data: data })
+                    let response = {
+                        status: true,
+                        data: data.data,
+                        page: page,
+                        filters: {},
+                        entries_per_page: FIXTURES_PER_PAGE,
+                        // total_results: data.total,
+                    }
+                    res.json(response);
                 }
             } catch (e) {
                 console.log(`api, ${e}`)
@@ -107,6 +117,39 @@ module.exports = class MatchController {
     }
 
     static async apiWebGetMatch(req, res, next) {
+
+        if(req.params.type =='season' || req.params.type == "team" ||req.params.type == "venue")
+        {
+            try {
+
+                
+                let page =  req.query.page?req.query.page:1;
+                let id = req.query.id && parseInt(req.query.id) || "0";
+
+                let matches =await MatchDAO.getIplMatchesFilterByType(req.params.type,page,parseInt(id))
+             
+                if (!matches) {
+                    res.status(404).json({ status: false, error: config.error_codes["1001"] })
+                    return
+                }
+                let response = {
+                    status: true,
+                    message: "Retrived data!",
+                    matches: matches.list,
+                    page: page,
+                    entries_per_page: 20,
+                    total_results: matches.total,
+                }
+                res.json(response);
+            } catch (e) {
+                console.log(`api, ${e}`)
+                res.status(500).json({ error: e })
+            }
+            
+            
+              
+        }
+        else{
         console.log("CALLINGIN..");
         const FIXTURES_PER_PAGE = 20
         let page
@@ -173,6 +216,7 @@ module.exports = class MatchController {
             }
             res.json(response)
         }
+      }
     }
 
     static async apiWebGetMatchById(req, res, next) {

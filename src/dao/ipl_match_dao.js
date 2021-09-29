@@ -428,9 +428,11 @@ module.exports = class MatchDAO {
             throw e
         }
     }
-    static async getTeamResultsByid(year, id) {
+    static async getTeamResultsByid(year, page, id) {
         console.log("Year is: ", year, " id is : ", id);
         try {
+            let pageLimit = 20;
+            let skip = (page - 1) * pageLimit;
             const pipeline = [
                 {
                     $match: {
@@ -440,7 +442,9 @@ module.exports = class MatchDAO {
                 }
             ]
             console.dir(pipeline, { depth: null, color: true })
-            return await matches.aggregate(pipeline).toArray()
+          
+            let data = await matches.aggregate(pipeline).limit(pageLimit).skip(skip).toArray();
+            return { data: data }; //update total
         }
         catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
@@ -487,6 +491,35 @@ module.exports = class MatchDAO {
             const matchesList = await matches.aggregate(pipeline).toArray()
             console.log(matchesList);
             //return matchesList.length ? matchesList[0] : {}
+
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
+        }
+
+    }
+    static async getIplMatchesFilterByType(type, page, id) {
+        let query = {};
+        let videosPerPage = 20;
+        var skip = (page - 1) * videosPerPage;
+        try {
+            if (type == "season") {
+                query = { 'matchId.tournamentId.id': id }
+            }
+            else if (type == "team") {
+                query = { 'matchInfo.teams.team.id': id }
+            }
+            else if (type = "venue") {
+                query = { 'matchInfo.venue.id': id }
+            }
+            const totalMatches = await matches.find(query).count();
+            let matchesResult = await matches.find(query).limit(videosPerPage).skip(skip).toArray();
+
+            let results = { list: matchesResult, total: totalMatches };
+            return results
 
         } catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
