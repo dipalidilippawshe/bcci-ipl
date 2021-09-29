@@ -28,4 +28,8 @@ router.get("/web/franchise/teams-list", iplMatchCtrl.apiWebGetTeams)
 router.get("/web/franchise/venue-list", iplMatchCtrl.apiWebGetVenue)
 router.get("/web/franchise/season-list", iplMatchCtrl.apiWebGetSeasonList)
 router.get("/web/archive/:franchise_id", iplMatchCtrl.apiWebArchiveByTeam)
+
+
+//stats apis
+router.get("/app/stats",iplMatchCtrl.getAppStatsData);
 module.exports = router

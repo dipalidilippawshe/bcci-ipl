@@ -469,6 +469,28 @@ module.exports = class MatchController {
         }
     }
 
+    static async getAppStatsData(req,res,next){
+        /**
+         * filters needs to be added are
+         * Filter1 - Most Runs / Most Wickets / Most Fours / Most Sixes / Most Fifties / Most Centuries / Best Bowling Innings /Best Bowling Average / Best Bowling Economy / Highest Scores innings 
+            =>  Filter2 - Season
+            => Filter3 - Teams
+            => Filter4 - Players
+         */
+            console.log("in get appstats");
+            const FIXTURES_PER_PAGE = 20
+            let page
+            try {
+                page = req.query.page ? parseInt(req.query.page, 10) : "0"
+            } catch (e) {
+                console.error(`Got bad value for page:, ${e}`)
+                page = 0
+            }
+    
+            let filters = {};
+
+    }
+
 }
 
 
