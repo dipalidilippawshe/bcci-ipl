@@ -25,44 +25,46 @@ module.exports = class IplVideosController {
         res.json(response)
     }
     static async getAppIplVideos(req, res, next) {
-        if(req.params.type != "teamByvideos")
-        {
-        var type = req.params.type;
-        if (!type) {
-            res.json({ status: false, message: "please specify video type" });
-        }
-        if (req.query.page)
-            var page = req.query.page
-        else
-            page = 1;
-        let limit = 20
-        let filters = { type: type, match_id: req.query.match_id, player_id: req.query.player_id, season_id: req.query.season_id, team_id: req.query.team_id }
-        const respo = await IplVideosDAO.getIplVideosByFilter(filters, page, limit);
-        let response = {
-            status: true,
-            message: "Retrived data!",
-            videos: respo.list,
-            page: page,
-            total_results: respo.total,
-        }
-        res.json(response)
-    }
-    else
-    {
-        try {
-            let id = req.query.id && parseInt(req.query.id) || "0"
-            let video = await IplVideosDAO.videoByTeamID(parseInt(id))
-         
-            if (!video) {
-                res.status(404).json({ status: false, error: config.error_codes["1001"] })
-                return
+        if (req.params.type != "teamByvideos") {
+            var type = req.params.type;
+            if (!type) {
+                res.json({ status: false, message: "please specify video type" });
             }
-            res.json({ status: true, data: video })
-        } catch (e) {
-            console.log(`api, ${e}`)
-            res.status(500).json({ error: e })
-        }  
-    }
+            if (req.query.page)
+                var page = req.query.page
+            else
+                page = 1;
+            let limit = 20
+            let filters = { type: type, match_id: req.query.match_id, player_id: req.query.player_id, season_id: req.query.season_id, team_id: req.query.team_id }
+            const respo = await IplVideosDAO.getIplVideosByFilter(filters, page, limit);
+
+            let response = {
+                status: true,
+                message: "Retrived data!",
+                videos: respo.list,
+                page: page,
+                total_results: respo.total,
+            }
+            res.json(response)
+        }
+        else {
+            try {
+                let id = req.query.id && parseInt(req.query.id) || "0"
+                let video = await IplVideosDAO.videoByTeamID(parseInt(id))
+                if (!video) {
+                    res.status(404).json({ status: false, error: config.error_codes["1001"] })
+                    return
+                }
+                if (!video) {
+                    res.status(404).json({ status: false, error: config.error_codes["1001"] })
+                    return
+                }
+                res.json({ status: true, data: video })
+            } catch (e) {
+                console.log(`api, ${e}`)
+                res.status(500).json({ error: e })
+            }
+        }
     }
 
 
