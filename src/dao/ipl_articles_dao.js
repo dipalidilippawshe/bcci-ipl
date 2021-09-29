@@ -213,12 +213,12 @@ module.exports = class ArticlesDAO {
         }
     }
 
-    static async getIplArticleByTeamId(id) {
+    static async getIplArticleByTeamId(type, id) {
      
         try {
-       
-        return await iplArticles.find({'references.id':id} ).toArray();
-        // return await iplArticles.find({ "$references.id": id });
+         
+            return await iplArticles.find({$and:[{'references.id':{$eq:id}},{"references.type":{$eq:type}}]}).toArray();
+        
         } catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
                 return null

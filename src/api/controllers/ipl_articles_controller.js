@@ -4,7 +4,24 @@ const config = require("config");
 module.exports = class IPLArticlesController {
     static async apiAppGetIplArticleList(req, res, next) {
         
-        if(req.params.type !='teamId')
+        if(req.params.type =='teamId' || req.params.type == "playerId" ||req.params.type == "matchId")
+        {
+            try {
+                let type= req.params.type == "teamId"?"CRICKET_TEAM":req.params.type == "playerId"?"CRICKET_PLAYER":req.params.type == "matchId"?"CRICKET_MATCH":req.params.type == "season"?"CRICKET_TOURNAMENT":"";                        
+                
+                let id = req.query.id && parseInt(req.query.id) || "0"
+                let Iplarticle = await IplArticlesDAO.getIplArticleByTeamId(type,parseInt(id))
+                if (!Iplarticle || Iplarticle.length<=0) {
+                    res.status(404).json({ status: false, error: config.error_codes["1001"] })
+                    return
+                }
+                res.json({ status: true, data: Iplarticle })
+            } catch (e) {
+                console.log(`api, ${e}`)
+                res.status(500).json({ error: e })
+            }
+        }
+        else
         {
         console.log("API iplarticles");
         const ARTICLES_PER_PAGE = 20
@@ -53,22 +70,7 @@ module.exports = class IPLArticlesController {
         }
         res.json(response)
     }
-    else
-    {
-        try {
-           
-            let id = req.query.id && parseInt(req.query.id) || "0"
-            let Iplarticle = await IplArticlesDAO.getIplArticleByTeamId(parseInt(id))
-            if (!Iplarticle || Iplarticle.length<=0) {
-                res.status(404).json({ status: false, error: config.error_codes["1001"] })
-                return
-            }
-            res.json({ status: true, data: Iplarticle })
-        } catch (e) {
-            console.log(`api, ${e}`)
-            res.status(500).json({ error: e })
-        }
-    }
+  
     }
 
     static async apiAppGetIplArticleById(req, res, next) {
@@ -90,6 +92,14 @@ module.exports = class IPLArticlesController {
     static async apiWebGetIplArticleList(req, res, next) {
         console.log("in articles");
         // let idType = await Object.keys(req.query)[0];
+        if(req.params.type="articleByTeam")
+        {
+            const { articlesList, totalNumArticles } = await IplArticlesDAO.getIplArticles({
+                filters,
+                page,
+                ARTICLES_PER_PAGE
+            }) 
+        }
 
         const ARTICLES_PER_PAGE = 20
         let page
