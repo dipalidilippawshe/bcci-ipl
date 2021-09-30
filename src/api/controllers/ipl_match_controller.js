@@ -567,6 +567,45 @@ module.exports = class MatchController {
         // console.log("details: ",details);
         //res.json({status:true,data:details});
     }
+
+    static async apiAppGetResultsByMatchId(req, res, next) {
+        //results
+        console.log("IN RESULTS....");
+        const FIXTURES_PER_PAGE = 20;
+        let page
+        try {
+            page = req.query.page ? parseInt(req.query.page, 10) : "0"
+        } catch (e) {
+            console.error(`Got bad value for page:, ${e}`)
+            page = 0
+        }
+        var filters = { matchId: req.params.match_id };
+        filters.year = req.query.year && parseInt(req.query.year) || new Date().getFullYear()
+        const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
+            filters,
+            page,
+            FIXTURES_PER_PAGE
+        })
+        var MatchVideos = []
+        let matchVideoFilter = { match_id: req.params.match_id }
+        let matchVideoPage = 1
+        let matchLimitPage = 1
+        MatchVideos = await videosDAO.getIplVideosByFilter(matchVideoFilter, matchVideoPage, matchLimitPage)
+        let response = {
+            status: true,
+            data: matchesList,
+            match_video: MatchVideos && MatchVideos.list ? MatchVideos.list : [],
+            page: page,
+            filters: {},
+            entries_per_page: FIXTURES_PER_PAGE,
+            total_results: totalNumMatches,
+        }
+        if (matchesList.length <= 0) {
+            res.status(404).json({ status: false, error: config.error_codes["1001"] })
+            return
+        }
+        res.json(response)
+    }
 }
 
 
