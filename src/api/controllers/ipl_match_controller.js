@@ -89,7 +89,7 @@ module.exports = class MatchController {
                         page: page,
                         filters: {},
                         entries_per_page: FIXTURES_PER_PAGE,
-                        // total_results: data.total,
+                        total_results: data.total,
                     }
                     res.json(response);
                 }
@@ -243,7 +243,28 @@ module.exports = class MatchController {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ status: true, data: article })
+            //  console.log("article is: ",article);
+            let frenchise = await franchiseDAO.getfrenchiseDetails(id);
+            if (!frenchise || frenchise == null) {
+                return res.json({ status: true, data: article })
+            } else {
+                console.log("elsing me...");
+                var returnData = article;
+                returnData[0].logo = frenchise.logo;
+                returnData[0].owner = frenchise.owner;
+                returnData[0].venue = frenchise.venue;
+
+                //winning years of team
+                let won = await MatchDAO.findWinsByTeam(parseInt(id), frenchise.name);
+
+                console.log("returnData: ", won);
+                returnData[0].wonYears = won;
+                returnData[0].previousWin = won[won.length - 1];
+                return res.json({ status: true, data: returnData })
+                //console.log("frenchise is; ", frenchise);
+            }
+
+            // res.json({ status: true, data: article })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
@@ -566,26 +587,54 @@ module.exports = class MatchController {
         const FIXTURES_PER_PAGE = 20
         let page
         try {
-            page = req.query.page ? parseInt(req.query.page, 10) : "0"
+            page = req.body.page ? parseInt(req.body.page, 10) : "0"
         } catch (e) {
             console.error(`Got bad value for page:, ${e}`)
             page = 0
         }
 
         let filters = {};
-        if (req.query.stats)
-            filters.stats = req.query.stats
+        if (req.body.stats)
+            filters.stats = req.body.stats
+        else
+            filters.stats = "runs"
 
-        if (req.query.season)
-            filters.season = req.query.season;
+        if (req.body.season)
+            filters.year = req.body.season;
+        else
+            filters.year = "2021"
 
-        if (req.query.team)
-            filters.team = req.query.team;
+        if (req.body.team)
+            filters.team = req.body.team;
+        else
+            filters.team = "all"
 
-        if (req.query.player)
-            filters.player = req.query.player;
+        if (req.body.player)
+            filters.player = req.body.player;
+        else
+            filters.player = "all"
 
 
+        let teams = await MatchDAO.statsData(filters);
+        if (teams.length <= 0) {
+            res.status(404).json({ status: false, error: config.error_codes["1001"] })
+            return
+        }
+        var players = [];
+        //process this data into single list of players
+        for (let i = 0; i <= teams.length - 1; i++) {
+
+            teams[i].player_detail.forEach(element => {
+                element.teamId = teams[i]._id;
+                element.teamName = teams[i].team_details.fullName;
+                players.push(element)
+            });
+        }
+
+        //get Totals per player
+        // let processedPlayers = MatchDAO.getProcessPlayersData(players);
+        console.log("players: ", players);
+        res.json({ status: true, data: players });
 
     }
 

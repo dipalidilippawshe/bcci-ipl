@@ -237,7 +237,6 @@ module.exports = class MatchDAO {
             throw e
         }
     }
-
     static async getArchiveData({ filters = null }) {
         try {
             const countingPipeline = [
@@ -281,7 +280,6 @@ module.exports = class MatchDAO {
             throw e
         }
     }
-
     static async getTopBatsmenByTeamAndYear(filters) {
         try {
             const countingPipeline = [
@@ -426,6 +424,8 @@ module.exports = class MatchDAO {
                 }
             ]
             console.log(pipeline)
+
+
             //  console.log(franchise_years)
             return await matches.aggregate(pipeline).toArray()
         } catch (e) {
@@ -449,10 +449,20 @@ module.exports = class MatchDAO {
                     }
                 }
             ]
-            console.dir(pipeline, { depth: null, color: true })
+            const countMatches = [
+                {
+                    $match: {
+                        $and: [{ "matchInfo.matchDate": new RegExp(year, "i") },
+                        { "matchInfo.teams.team.id": parseInt(id) }]
+                    }
+                }, { $count: "total" }
+            ]
+            // console.dir(pipeline, { depth: null, color: true })
+
+            let total = await matches.aggregate(countMatches).toArray();
 
             let data = await matches.aggregate(pipeline).limit(pageLimit).skip(skip).toArray();
-            return { data: data }; //update total
+            return { data: data, total: total[0].total };
         }
         catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
@@ -578,6 +588,71 @@ module.exports = class MatchDAO {
             }
             console.error(`Something went wrong in getVideoByID: ${e}`)
             throw e
+        }
+    }
+    static async findWinsByTeam(id, name) {
+        var stringToUse = name + " won"
+        var match = await matches.distinct("matchInfo.matchDate", { "matchInfo.matchStatus.text": { $regex: new RegExp(stringToUse, "i") } });
+        let years = ["2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023"];
+        let won = [];
+        for (let j = 0; j <= years.length - 1; j++) {
+            for (let k = 0; k <= match.length - 1; k++) {
+                if (match[k].includes(years[j])) {
+                    if (won.includes(years[j])) {
+                    } else {
+                        won.push(years[j]);
+                    }
+                } else {
+                    // console.log("In else method...");
+                }
+            }
+
+            if (j == years.length - 1) {
+                return won;
+            }
+        }
+    }
+
+    static async statsData(filters) {
+        let pipeline = [{
+            $match: { "matchInfo.matchDate": new RegExp(filters["year"], "i") }
+        },
+        { $unwind: "$matchInfo.teams" },
+        { $unwind: "$innings" },
+        { $unwind: "$innings.scorecard.bowlingStats" },
+        { $project: { "matchInfo.matchDate": 1, "matchInfo.teams": 1, "innings.scorecard.bowlingStats": 1, "matchId": 1 } },
+        {
+            $group:
+            {
+                _id: "$matchInfo.teams.team.id",
+                team_details: { $first: "$matchInfo.teams.team" },
+                player_detail: { $first: "$matchInfo.teams.players" },
+
+            }
+        }
+        ]
+
+        const matchList = await matches.aggregate(pipeline).toArray()
+        return matchList;
+    }
+
+    static async getProcessPlayersData(players) {
+        for (let i = o; i <= players.length - 1; i++) {
+            var query = [
+                {
+                    $match: {
+                        "matchInfo.teams.players": players[i].id
+                    },
+
+                }, { $unwind: "$innings" }, { $unwind: "$innings.scorecard.bowlingStats" },
+                {
+                    $group:
+                    {
+                        _id: "$innings.scorecard.bowlingStats.playerId",
+                        totalWickets: { $sum: "$innings.scorecard.bowlingStats.w" },
+                    }
+                }
+            ]
         }
     }
 }

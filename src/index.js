@@ -18,6 +18,7 @@ const FranchiseYearsDAO = require("./dao/ipl_franchise_years_dao")
 const playlistDAO = require("./dao/playlist_dao")
 const MenusDAO = require("./dao/menus_dao")
 const AuctionDAO = require("./dao/auction_dao")
+const FrenchiseDAO = require("./dao/ipl_franchise_dao");
 
 const port = 5001
 console.log("config: ", config.mongodb_uri);
@@ -45,6 +46,7 @@ MongoClient.connect(
   await playlistDAO.injectDB(client)
   await MenusDAO.injectDB(client)
   await AuctionDAO.injectDB(client)
+  await FrenchiseDAO.injectDB(client)
   app.listen(port, () => {
     console.log(`listening on port ${port}`)
   })

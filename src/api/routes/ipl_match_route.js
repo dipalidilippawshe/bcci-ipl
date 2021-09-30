@@ -32,6 +32,6 @@ router.get("/web/archive/:franchise_id", iplMatchCtrl.apiWebArchiveByTeam)
 
 
 //stats apis
-router.get("/app/stats", iplMatchCtrl.getAppStatsData);
+router.post("/app/stats", iplMatchCtrl.getAppStatsData);
 router.post("/app/playersdetails", iplMatchCtrl.getAppPlayersDetails);
 module.exports = router
