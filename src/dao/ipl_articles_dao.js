@@ -234,7 +234,7 @@ module.exports = class ArticlesDAO {
             throw e                     
         }
     }  
-    static async getIplArticleByTeamIds(id) {
+    static async getIplArticleByTeamsId(page,id) {
      
         try {
          let pageLimit =20;
@@ -245,7 +245,7 @@ module.exports = class ArticlesDAO {
             let total = await iplArticles.find(query).count();
             let data = await iplArticles.find(query).limit(pageLimit).skip(skip).toArray();
            
-            return{data:data,total_results:total}
+            return{data:data,total:total}
         
         } catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {

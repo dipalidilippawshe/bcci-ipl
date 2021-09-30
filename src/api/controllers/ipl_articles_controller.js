@@ -211,16 +211,26 @@ module.exports = class IPLArticlesController {
 
     }
     static async apiWebGetIplArticleTeamById(req, res, next) {
-
+        
+        const ARTICLES_PER_PAGE = 20
         try {
-            console.log(req.params);
+            let page =req.query.page?req.query.page:1;
+           
             let id = req.params.ID && parseInt(req.params.ID) || "0"
-            let Iplarticle = await IplArticlesDAO.getIplArticleByTeamIds(parseInt(id))
+            let Iplarticle = await IplArticlesDAO.getIplArticleByTeamsId(page,parseInt(id))
             if (!Iplarticle || Iplarticle.length<=0) {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ status: true, data: Iplarticle })
+            let response = {
+                status: true,
+                data: Iplarticle.data,
+                page: page,
+                filters: {},
+                entries_per_page: ARTICLES_PER_PAGE,
+                total_results: Iplarticle.total,
+            }
+            res.json(response)
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
@@ -232,14 +242,25 @@ module.exports = class IPLArticlesController {
     static async apiAppGetIplArticleTeamById(req, res, next) {
     
         try {
-            console.log(req.params);
+            const ARTICLES_PER_PAGE = 20
+
+            let page =req.query.page?req.query.page:1;
             let id = req.params.ID && parseInt(req.params.ID) || "0"
-            let Iplarticle = await IplArticlesDAO.getIplArticleByTeamId(parseInt(id))
+            let Iplarticle = await IplArticlesDAO.getIplArticleByTeamsId(page,parseInt(id))
+            
             if (!Iplarticle || Iplarticle.length<=0) {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ status: true, data: Iplarticle })
+            let response = {
+                status: true,
+                data: Iplarticle.data,
+                page: page,
+                filters: {},
+                entries_per_page: ARTICLES_PER_PAGE,
+                total_results: Iplarticle.total,
+            }
+            res.json(response)
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })

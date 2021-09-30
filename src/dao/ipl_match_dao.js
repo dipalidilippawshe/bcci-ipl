@@ -441,10 +441,20 @@ module.exports = class MatchDAO {
                     }
                 }
             ]
-            console.dir(pipeline, { depth: null, color: true })
-          
+            const countMatches = [
+                {
+                    $match: {
+                        $and: [{ "matchInfo.matchDate": new RegExp(year, "i") },
+                        { "matchInfo.teams.team.id": parseInt(id) }]
+                    }
+                },{$count:"total"}
+            ]
+            // console.dir(pipeline, { depth: null, color: true })
+            
+            let total = await matches.aggregate(countMatches).toArray();
+           
             let data = await matches.aggregate(pipeline).limit(pageLimit).skip(skip).toArray();
-            return { data: data }; //update total
+            return { data: data ,total:total[0].total}; 
         }
         catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
