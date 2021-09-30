@@ -179,9 +179,9 @@ async function processFrenchise(frenchises) {
         for (let i = 0; i <= frenchises.length - 1; i++) {
             var obj = frenchises[i];
             let won = [];
-            console.log(frenchises[i].franchises_name);
+            // console.log(frenchises[i].franchises_name);
             var stringToUse = frenchises[i].franchises_name + " won"
-            console.log("stringToUse: ", stringToUse);
+            // console.log("stringToUse: ", stringToUse);
             var match = await matches.distinct("matchInfo.matchDate", { "matchInfo.matchStatus.text": { $regex: new RegExp(stringToUse, "i") } });
             let years = ["2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023"];
             for (let j = 0; j <= years.length - 1; j++) {
@@ -194,7 +194,7 @@ async function processFrenchise(frenchises) {
                             //console.log("do nothing");
                         } else {
                             won.push(years[j]);
-                            console.log("pushing");
+                            //console.log("pushing");
                         }
                     } else {
                         // console.log("In else method...");
@@ -204,12 +204,12 @@ async function processFrenchise(frenchises) {
 
 
             }
-            console.log("+++++++++++++++++++++++++++++++++++++");
+            //console.log("+++++++++++++++++++++++++++++++++++++");
             obj.wonYears = won;
             //console.log(" frenchises.wonYears us: ", frenchises.wonYears);
             returnData.push(obj);
             if (returnData.length == frenchises.length) {
-                console.log("Final return");
+                // console.log("Final return");
                 return returnData;
 
             }

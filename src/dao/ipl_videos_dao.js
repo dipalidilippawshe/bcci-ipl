@@ -303,7 +303,7 @@ module.exports = class IplVideosDAO {
             }
 
             //page logic here..
-            console.log(filters.season_id, mongoquery)
+            console.log("final qu", mongoquery)
             var cursor = await videos.find(mongoquery).limit(videosPerPage).skip(skip);
 
             const displayCursor = cursor.limit(videosPerPage)

@@ -8,7 +8,7 @@ module.exports = class MatchController {
     static async apiAppGetMatch(req, res, next) {
         const FIXTURES_PER_PAGE = 20
         if (req.params.type != "team_results") {
-            
+
             let page
             try {
                 page = req.query.page ? parseInt(req.query.page, 10) : "0"
@@ -34,7 +34,7 @@ module.exports = class MatchController {
                 filters.matchState = ["U", "L"]
                 filters.sort = -1
             }
-
+            filters.year = req.query.year && parseInt(req.query.year) || new Date().getFullYear()
             console.log(filters)
             if (["results", "fixtures"].includes(req.params.type)) {
 
@@ -73,12 +73,12 @@ module.exports = class MatchController {
         }
         else {
             try {
-                let page =req.query.page?req.query.page:1;
-                
+                let page = req.query.page ? req.query.page : 1;
+
                 let id = req.query.id; //This is team ID
                 let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
                 console.log(year)
-                let data = await MatchDAO.getTeamResultsByid(year,page, id)
+                let data = await MatchDAO.getTeamResultsByid(year, page, id)
                 if (!data) {
                     res.status(404).json({ status: false, error: config.error_codes["1001"] })
                     return
@@ -118,16 +118,15 @@ module.exports = class MatchController {
 
     static async apiWebGetMatch(req, res, next) {
 
-        if(req.params.type =='season' || req.params.type == "team" ||req.params.type == "venue")
-        {
+        if (req.params.type == 'season' || req.params.type == "team" || req.params.type == "venue") {
             try {
 
-                
-                let page =  req.query.page?req.query.page:1;
+
+                let page = req.query.page ? req.query.page : 1;
                 let id = req.query.id && parseInt(req.query.id) || "0";
 
-                let matches =await MatchDAO.getIplMatchesFilterByType(req.params.type,page,parseInt(id))
-             
+                let matches = await MatchDAO.getIplMatchesFilterByType(req.params.type, page, parseInt(id))
+
                 if (!matches) {
                     res.status(404).json({ status: false, error: config.error_codes["1001"] })
                     return
@@ -145,78 +144,78 @@ module.exports = class MatchController {
                 console.log(`api, ${e}`)
                 res.status(500).json({ error: e })
             }
-            
-            
-              
-        }
-        else{
-        console.log("CALLINGIN..");
-        const FIXTURES_PER_PAGE = 20
-        let page
-        try {
-            page = req.query.page ? parseInt(req.query.page, 10) : "0"
-        } catch (e) {
-            console.error(`Got bad value for page:, ${e}`)
-            page = 0
-        }
 
-        let filters = {};
-        // filters.startDate = req.query.startDate && new Date(req.query.startDate) !== "Invalid Date" ? new Date(req.query.startDate).getFullYear() : undefined
-        //filters.endDate = req.query.endDate && new Date(req.query.endDate) !== "Invalid Date" ? new Date(req.query.endDate).getFullYear() : undefined
-        filters.team = req.query.team ? [req.query.team] : ["m", "w"]
-        //console.log(req.query.startDate, new Date(req.query.startDate))
-        if (req.params.type !== "" && req.params.type === "results") {
-            filters.matchState = ["C"]
-        } else if (req.params.type !== "" && req.params.type === "fixtures") {
-            console.log("I m in else iffff");
-            filters.matchState = ["U", "L"]
-        } else if (req.params.type !== "" && req.params.type === "series-and-tournaments") {
-            filters.matchState = ["U", "L"]
-            filters.sort = 1
-        } else if (req.params.type == "archive") {
-            filters.matchState = ["U", "L"]
-            filters.sort = -1
-        }
 
-        console.log(filters)
-        if (["results", "fixtures"].includes(req.params.type)) {
-            if (req.query.franchise_id) {
-                filters.team_id = req.query.franchise_id
+
+        }
+        else {
+            console.log("CALLINGIN..");
+            const FIXTURES_PER_PAGE = 20
+            let page
+            try {
+                page = req.query.page ? parseInt(req.query.page, 10) : "0"
+            } catch (e) {
+                console.error(`Got bad value for page:, ${e}`)
+                page = 0
             }
-            filters.year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
-            const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
-                filters,
-                page,
-                FIXTURES_PER_PAGE
-            })
-            let response = {
-                status: true,
-                data: matchesList,
-                page: page,
-                filters: {},
-                entries_per_page: FIXTURES_PER_PAGE,
-                total_results: totalNumMatches,
-            }
-            res.json(response)
 
-        } else {
-
-            const { matchesList, totalNumMatches } = await MatchDAO.getSeriesnTournaments({
-                filters, page,
-                FIXTURES_PER_PAGE
-            })
-            //  console.log(matchesList)
-            let response = {
-                status: true,
-                data: matchesList,
-                page: page,
-                filters: {},
-                entries_per_page: FIXTURES_PER_PAGE,
-                total_results: totalNumMatches,
+            let filters = {};
+            // filters.startDate = req.query.startDate && new Date(req.query.startDate) !== "Invalid Date" ? new Date(req.query.startDate).getFullYear() : undefined
+            //filters.endDate = req.query.endDate && new Date(req.query.endDate) !== "Invalid Date" ? new Date(req.query.endDate).getFullYear() : undefined
+            filters.team = req.query.team ? [req.query.team] : ["m", "w"]
+            //console.log(req.query.startDate, new Date(req.query.startDate))
+            if (req.params.type !== "" && req.params.type === "results") {
+                filters.matchState = ["C"]
+            } else if (req.params.type !== "" && req.params.type === "fixtures") {
+                console.log("I m in else iffff");
+                filters.matchState = ["U", "L"]
+            } else if (req.params.type !== "" && req.params.type === "series-and-tournaments") {
+                filters.matchState = ["U", "L"]
+                filters.sort = 1
+            } else if (req.params.type == "archive") {
+                filters.matchState = ["U", "L"]
+                filters.sort = -1
             }
-            res.json(response)
+
+            console.log(filters)
+            if (["results", "fixtures"].includes(req.params.type)) {
+                if (req.query.franchise_id) {
+                    filters.team_id = req.query.franchise_id
+                }
+                filters.year = req.query.year && parseInt(req.query.year) || new Date().getFullYear()
+                const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
+                    filters,
+                    page,
+                    FIXTURES_PER_PAGE
+                })
+                let response = {
+                    status: true,
+                    data: matchesList,
+                    page: page,
+                    filters: {},
+                    entries_per_page: FIXTURES_PER_PAGE,
+                    total_results: totalNumMatches,
+                }
+                res.json(response)
+
+            } else {
+
+                const { matchesList, totalNumMatches } = await MatchDAO.getSeriesnTournaments({
+                    filters, page,
+                    FIXTURES_PER_PAGE
+                })
+                //  console.log(matchesList)
+                let response = {
+                    status: true,
+                    data: matchesList,
+                    page: page,
+                    filters: {},
+                    entries_per_page: FIXTURES_PER_PAGE,
+                    total_results: totalNumMatches,
+                }
+                res.json(response)
+            }
         }
-      }
     }
 
     static async apiWebGetMatchById(req, res, next) {
@@ -322,6 +321,7 @@ module.exports = class MatchController {
             filters.team_id = req.body.team_id;
         filters.startDate = new Date("2008-01-01").toISOString();
         filters.endDate = new Date("2021-01-01").toISOString();
+        filters.year = req.query.year && parseInt(req.query.year) || new Date().getFullYear()
         console.log("In apis list: ", filters);
         const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
             filters,
@@ -359,16 +359,24 @@ module.exports = class MatchController {
         filters.team = req.body.team ? [req.body.team] : ["m", "w"]
         filters.startDate = new Date("2020-01-01").toISOString();
         filters.endDate = new Date("2021-01-01").toISOString();
-        console.log("In apis list: ", filters);
+        filters.year = req.query.year && parseInt(req.query.year) || new Date().getFullYear()
         const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
             filters,
             page,
             FIXTURES_PER_PAGE
         })
-        console.log("matchlist count: ", matchesList.length);
+        var MatchVideos = []
+        if (req.body.matchId) {
+            let matchVideoFilter = { match_id: req.body.matchId }
+            let matchVideoPage = 1
+            let matchLimitPage = 1
+            MatchVideos = await videosDAO.getIplVideosByFilter(matchVideoFilter, matchVideoPage, matchLimitPage)
+
+        }
         let response = {
             status: true,
             data: matchesList,
+            match_video: MatchVideos && MatchVideos.list ? MatchVideos.list : [],
             page: page,
             filters: {},
             entries_per_page: FIXTURES_PER_PAGE,
@@ -513,7 +521,7 @@ module.exports = class MatchController {
         }
     }
 
-    static async getAppStatsData(req,res,next){
+    static async getAppStatsData(req, res, next) {
         /**
          * filters needs to be added are
          * Filter1 - Most Runs / Most Wickets / Most Fours / Most Sixes / Most Fifties / Most Centuries / Best Bowling Innings /Best Bowling Average / Best Bowling Economy / Highest Scores innings 
@@ -521,42 +529,42 @@ module.exports = class MatchController {
             => Filter3 - Teams
             => Filter4 - Players
          */
-            console.log("in get appstats");
-            const FIXTURES_PER_PAGE = 20
-            let page
-            try {
-                page = req.query.page ? parseInt(req.query.page, 10) : "0"
-            } catch (e) {
-                console.error(`Got bad value for page:, ${e}`)
-                page = 0
-            }
-    
-            let filters = {};
-            if(req.query.stats)
-                filters.stats = req.query.stats
-            
-            if(req.query.season)
-                filters.season = req.query.season;
-                
-            if(req.query.team)
-                 filters.team = req.query.team;
+        console.log("in get appstats");
+        const FIXTURES_PER_PAGE = 20
+        let page
+        try {
+            page = req.query.page ? parseInt(req.query.page, 10) : "0"
+        } catch (e) {
+            console.error(`Got bad value for page:, ${e}`)
+            page = 0
+        }
 
-            if(req.query.player)
-                 filters.player = req.query.player;
+        let filters = {};
+        if (req.query.stats)
+            filters.stats = req.query.stats
 
-            
+        if (req.query.season)
+            filters.season = req.query.season;
+
+        if (req.query.team)
+            filters.team = req.query.team;
+
+        if (req.query.player)
+            filters.player = req.query.player;
+
+
 
     }
 
-    static async getAppPlayersDetails(req,res,next){
+    static async getAppPlayersDetails(req, res, next) {
         var player = req.body.player;
-        if(!player){
+        if (!player) {
             res.status(404).json({ status: false, error: config.error_codes["1003"] })
             return
         }
 
         let details = MatchDAO.playerInfo(player);
-       // console.log("details: ",details);
+        // console.log("details: ",details);
         //res.json({status:true,data:details});
     }
 }
