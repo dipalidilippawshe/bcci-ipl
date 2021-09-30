@@ -513,6 +513,52 @@ module.exports = class MatchController {
         }
     }
 
+    static async getAppStatsData(req,res,next){
+        /**
+         * filters needs to be added are
+         * Filter1 - Most Runs / Most Wickets / Most Fours / Most Sixes / Most Fifties / Most Centuries / Best Bowling Innings /Best Bowling Average / Best Bowling Economy / Highest Scores innings 
+            =>  Filter2 - Season
+            => Filter3 - Teams
+            => Filter4 - Players
+         */
+            console.log("in get appstats");
+            const FIXTURES_PER_PAGE = 20
+            let page
+            try {
+                page = req.query.page ? parseInt(req.query.page, 10) : "0"
+            } catch (e) {
+                console.error(`Got bad value for page:, ${e}`)
+                page = 0
+            }
+    
+            let filters = {};
+            if(req.query.stats)
+                filters.stats = req.query.stats
+            
+            if(req.query.season)
+                filters.season = req.query.season;
+                
+            if(req.query.team)
+                 filters.team = req.query.team;
+
+            if(req.query.player)
+                 filters.player = req.query.player;
+
+            
+
+    }
+
+    static async getAppPlayersDetails(req,res,next){
+        var player = req.body.player;
+        if(!player){
+            res.status(404).json({ status: false, error: config.error_codes["1003"] })
+            return
+        }
+
+        let details = MatchDAO.playerInfo(player);
+       // console.log("details: ",details);
+        //res.json({status:true,data:details});
+    }
 }
 
 
