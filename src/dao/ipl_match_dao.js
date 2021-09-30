@@ -538,4 +538,46 @@ module.exports = class MatchDAO {
         }
 
     }
+
+    static async getTeams(params) {
+        try {
+            const pipeline = [
+                {
+                    $match: { "matchInfo.matchDate": new RegExp(params.year, "i") }
+                },
+                { $unwind: "$matchInfo.teams" },
+                {
+                    $addFields: {
+                        team: "$matchInfo.teams.team",
+                    }
+                },
+
+                {
+                    $group: {
+                        "_id": "$team.type",
+                        "franchises": {
+                            "$addToSet": "$team"
+                        },
+                    }
+                },
+
+
+                {
+                    $project: { "team_type": "$_id", "franchises": 1, _id: 0 }
+                },
+                { $sort: { "franchises.id": 1 } }
+
+
+            ]
+            console.log(pipeline)
+            //  console.log(franchise_years)
+            return await matches.aggregate(pipeline).toArray()
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
+        }
+    }
 }

@@ -274,13 +274,29 @@ module.exports = class MatchController {
         try {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : "2021"
-
-            let article = await RecordDAO.getTeams({ year: year })
+            //let article = await RecordDAO.getTeams({ year: year })
+            let article = await MatchDAO.getTeams({ year: year })
+            let data = { men: [], women: [] }
+            for (var i in article) {
+                var franchiseWithWiningYears = await RecordDAO.processFrenchise(article[i].franchises)
+                if (article[i].team_type == "m") {
+                    data.men = franchiseWithWiningYears
+                } else if (article[i].team_type == "w") {
+                    data.women = franchiseWithWiningYears
+                }
+            }
+            console.log(req.query.type)
+            if (req.query.type == "m") {
+                data.women = undefined
+            }
+            if (req.query.type == "w") {
+                data.men = undefined
+            }
             if (!article || article.length <= 0) {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ status: true, year: year, data: article })
+            res.json({ status: true, year: year, data: data })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
@@ -509,12 +525,29 @@ module.exports = class MatchController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : "2021"
 
-            let article = await RecordDAO.getTeams({ year: year })
+            //let article = await RecordDAO.getTeams({ year: year })
+            let article = await MatchDAO.getTeams({ year: year })
+            let data = { men: [], women: [] }
+            for (var i in article) {
+                var franchiseWithWiningYears = await RecordDAO.processFrenchise(article[i].franchises)
+                if (article[i].team_type == "m") {
+                    data.men = franchiseWithWiningYears
+                } else if (article[i].team_type == "w") {
+                    data.women = franchiseWithWiningYears
+                }
+            }
+            console.log(req.query.type)
+            if (req.query.type == "m") {
+                data.women = undefined
+            }
+            if (req.query.type == "w") {
+                data.men = undefined
+            }
             if (!article || article.length <= 0) {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ status: true, year: year, data: article })
+            res.json({ status: true, year: year, data: data })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
