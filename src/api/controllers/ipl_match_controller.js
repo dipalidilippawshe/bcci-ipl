@@ -89,7 +89,7 @@ module.exports = class MatchController {
                         page: page,
                         filters: {},
                         entries_per_page: FIXTURES_PER_PAGE,
-                        // total_results: data.total,
+                        total_results: data.total,
                     }
                     res.json(response);
                 }
