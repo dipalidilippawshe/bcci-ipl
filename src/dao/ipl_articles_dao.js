@@ -147,16 +147,29 @@ module.exports = class ArticlesDAO {
         page = 0,
         articlesPerPage = 20,
     } = {}) {
-        let queryParams = {}
-        if (filters) {
-            if ("tag" in filters) {
-                queryParams = this.tagSearchQuery(filters["tag"])
+
+        let queryParams = { query: {} }
+        if (filters.tag) {
+            //filters logic to be added.
+            queryParams.query["tags.label"] = { $in: [filters.tag] }
+        }
+        // if (filters.year) {
+        //     //filters logic to be added.
+        //     queryParams.query["date"] = new RegExp(filters.year, "i")
+        // }
+
+        if (filters.startDate && filters.endDate) {
+            //filters logic to be added.
+            queryParams.query["publishFrom"] = {
+                $gte: filters.startDate.getTime(),
+                $lte: filters.endDate.getTime()
             }
         }
 
         let { query = {}, project = {}, sort = DEFAULT_SORT } = queryParams
+        console.log(query)
         let cursor
-              
+
         try {
             cursor = await iplArticles
                 .find(query)
@@ -191,7 +204,7 @@ module.exports = class ArticlesDAO {
      * @returns {MflixVideo | null} Returns either a single video or nothing
      */
     static async getIplArticleByID(id) {
-     
+
         try {
 
             const pipeline = [
@@ -209,24 +222,24 @@ module.exports = class ArticlesDAO {
                 return null
             }
             console.error(`Something went wrong in getVideoByID: ${e}`)
-            throw e                     
+            throw e
         }
     }
 
     static async getIplArticleByTeamId(id) {
-     
+
         try {
-       
-        return await iplArticles.find({'references.id':id} ).toArray();
-        // return await iplArticles.find({ "$references.id": id });
+
+            return await iplArticles.find({ 'references.id': id }).toArray();
+            // return await iplArticles.find({ "$references.id": id });
         } catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
                 return null
             }
             console.error(`Something went wrong in getVideoByID: ${e}`)
-            throw e                     
+            throw e
         }
-    }  
+    }
 }
 
 
