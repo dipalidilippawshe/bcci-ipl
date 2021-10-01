@@ -588,20 +588,26 @@ module.exports = class MatchDAO {
     }
 
     static async getProcessPlayersData(players){
-        for(let i=o;i<=players.length-1;i++){
-            var query = [
+        for(let i=0;i<=players.length-1;i++){
+            console.log("id: ",players[i].id);
+            var pipeline = [
                 {$match: {
-                    "matchInfo.teams.players": players[i].id },
+                    "matchInfo.teams.players.id": players[i].id },
                     
-                },{ $unwind: "$innings" }, { $unwind: "$innings.scorecard.bowlingStats" },
-                {
-                $group:
-                {
-                    _id: "$innings.scorecard.bowlingStats.playerId",
-                    totalWickets: { $sum: "$innings.scorecard.bowlingStats.w" },
                 }
-              }
+                ,{ $unwind: "$innings" }, { $unwind: "$innings.scorecard.bowlingStats" },
+                 {$match:{"innings.scorecard.bowlingStats.playerId":players[i].id}},
+            //     {
+            //     $group:
+            //     {
+            //         _id: "$innings.scorecard.bowlingStats.playerId",
+            //         totalWickets: { $sum: "$innings.scorecard.bowlingStats.w" },
+            //     }
+            //   }
             ]
+            const total = await matches.aggregate(pipeline).toArray()
+            console.log("Total is: ",total);
+
         }
     }
 }

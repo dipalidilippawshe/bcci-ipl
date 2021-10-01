@@ -592,7 +592,7 @@ module.exports = class MatchController {
 
             //get Totals per player
            // let processedPlayers = MatchDAO.getProcessPlayersData(players);
-            console.log("players: ",players);
+           
             res.json({status:true,data:players});
 
     }
