@@ -14,6 +14,7 @@ const iplArticles = require("./api/routes/ipl_articles_routes")
 const iplPhotos = require("../src/api/routes/ipl_photos_route")
 const playlists = require("../src/api/routes/playlist_route");
 const menus = require("../src/api/routes/menu_route");
+const auctions = require("../src/api/routes/auction_route");
 const app = express()
 
 app.use(cors())
@@ -31,6 +32,7 @@ app.use("/api/v1/ipl_articles", iplArticles);
 app.use("/api/v1/ipl_photos", iplPhotos);
 app.use("/api/v1/playlists", playlists);
 app.use("/api/v1/menu", menus)
+app.use("/api/v1/auction", auctions)
 app.use("*", (req, res) => res.status(404).json({ error: "api not found" }))
 
 module.exports = app

@@ -34,6 +34,13 @@ module.exports = class PhotosDAO {
             //filters logic to be added.
             queryParams.query["tags.label"] = { $in: [filters.tag] }
         }
+        if (filters.startDate && filters.endDate) {
+            //filters logic to be added.
+            queryParams.query["publishFrom"] = {
+                $gte: filters.startDate.getTime(),
+                $lte: filters.endDate.getTime()
+            }
+        }
         var sorting = { _id: -1 }
         let { query = {}, project = {}, sort = sorting } = queryParams
         console.log(query)
@@ -90,9 +97,9 @@ module.exports = class PhotosDAO {
     }
     static async getMatchImagesByID(id) {
         try {
-           
-            return await images.find({$and:[{'references.id':id},{'references.type':"CRICKET_MATCH"}]}).toArray();
-        
+
+            return await images.find({ $and: [{ 'references.id': id }, { 'references.type': "CRICKET_MATCH" }] }).toArray();
+
         } catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
                 return null

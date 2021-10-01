@@ -79,9 +79,9 @@ module.exports = class IplRecordsDAO {
             console.log(pipeline)
             //  console.log(franchise_years)
             let frenchises = await franchise_years.aggregate(pipeline).toArray()
-            let data = processFrenchise(frenchises);
+            let data = this.processFrenchise(frenchises);
             return data;
-          //  return await franchise_years.aggregate(pipeline).toArray()
+            //  return await franchise_years.aggregate(pipeline).toArray()
         } catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
                 return null
@@ -91,54 +91,131 @@ module.exports = class IplRecordsDAO {
         }
     }
 
-   
 
 
-}
+    static async getAuctionDetails(params) {
+        try {
+            let match = parseInt(params.year) ? {
+                "year": params.year.toString()
+            } : {};
+            const pipeline = [
+                {
+                    $match: match
+                },
+                {
+                    $lookup:
+                    {
+                        from: "records",
+                        localField: "id",
+                        foreignField: "franchise_year_id",
+                        as: "records"
+                    }
+                },
+                {
+                    $lookup:
+                    {
+                        from: "franchises",
+                        localField: "franchise_id",
+                        foreignField: "id",
+                        as: "franchises"
+                    }
+                },
+                {
+                    $addFields: {
+                        "franchises_name": { $first: "$franchises.name" },
+                        "franchises_abbreviation": { $first: "$franchises.abbreviation" },
+                        "franchises_owner": { $first: "$franchises.owner" },
+                        "franchises_venue": { $first: "$franchises.venue" },
+                        "franchises_coach": { $first: "$franchises.coach" },
+                        "franchises_captain": { $first: "$franchises.captain" },
+                        "franchises_logo": { $first: "$franchises.logo" },
+                        "franchises_social": { $first: "$franchises.social" },
+                        "franchises_is_playing": { $first: "$franchises.is_playing" },
+                        // "speciality": { $first: "$records.speciality" },
+                        // "reserve_price": { $first: "$records.reserve_price" },
+                        // "status": { $first: "$records.status" },
+                        // "hammer_price": { $first: "$records.hammer_price" },
+                        // "marquee_player": { $first: "$records.marquee_player" },
+                        // "player_id": { $first: "$records.player_id" },
+                    }
+                },
+                {
+                    $lookup:
+                    {
+                        from: "players",
+                        localField: "records.player_id",
+                        foreignField: "id",
+                        as: "players"
+                    }
+                },
+                {
+                    $project: {
+                        "franchises": 0
+                    }
+                }
 
-async function processFrenchise(frenchises) {
-    let returnData = [];
-        if(frenchises.length>0){
-            for(let i=0;i<=frenchises.length-1;i++){
+            ]
+            console.log(pipeline)
+            //  console.log(franchise_years)
+            let frenchises = await franchise_years.aggregate(pipeline).toArray()
+            // let data = this.processFrenchise(frenchises);
+            return frenchises;
+            //  return await franchise_years.aggregate(pipeline).toArray()
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
+        }
+    }
+
+    static async processFrenchise(frenchises) {
+        let returnData = [];
+        if (frenchises.length > 0) {
+            for (let i = 0; i <= frenchises.length - 1; i++) {
                 var obj = frenchises[i];
                 let won = [];
-                console.log(frenchises[i].franchises_name);
-                var stringToUse = frenchises[i].franchises_name +" won"
-                console.log("stringToUse: ",stringToUse);
-                var match = await matches.distinct("matchInfo.matchDate",{"matchInfo.matchStatus.text":{ $regex: new RegExp(stringToUse, "i") }});
-                let years=["2001","2002","2003","2004","2005","2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","2020","2021","2022","2023"];
-                for(let j=0;j<=years.length-1;j++){
-                   // console.log("in out iffifiif",typeof(match[j]))
-                    for(let k=0;k<=match.length-1;k++)
-                    {
-                        if(match[k].includes(years[j])){
-                           // console.log("in iffifiif",match[k])
-                           //console.log("yes....",years[j]);
-                            if(won.includes(years[j])){
+                // console.log(frenchises[i].franchises_name);
+                var stringToUse = frenchises[i].fullName + " won"
+                // console.log("stringToUse: ", stringToUse);
+                var match = await matches.distinct("matchInfo.matchDate", { "matchInfo.description": "Final", "matchInfo.matchStatus.text": { $regex: new RegExp(stringToUse, "i") } });
+                let years = ["2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023"];
+                for (let j = 0; j <= years.length - 1; j++) {
+                    // console.log("in out iffifiif",typeof(match[j]))
+                    for (let k = 0; k <= match.length - 1; k++) {
+                        if (match[k].includes(years[j])) {
+                            // console.log("in iffifiif",match[k])
+                            //console.log("yes....",years[j]);
+                            if (won.includes(years[j])) {
                                 //console.log("do nothing");
-                            }else{
+                            } else {
                                 won.push(years[j]);
-                                console.log("pushing");
+                                //console.log("pushing");
                             }
-                         }else{
+                        } else {
                             // console.log("In else method...");
-                         }
-     
+                        }
+
                     }
-                
-                   
+
+
                 }
-                console.log("+++++++++++++++++++++++++++++++++++++");
+                //console.log("+++++++++++++++++++++++++++++++++++++");
                 obj.wonYears = won;
                 //console.log(" frenchises.wonYears us: ", frenchises.wonYears);
-               returnData.push(obj);
-               if(returnData.length == frenchises.length){
-                   console.log("Final return");
+                returnData.push(obj);
+                if (returnData.length == frenchises.length) {
+                    // console.log("Final return");
                     return returnData;
-                
+
                 }
             }
-           
+
         }
+    }
+
 }
+
+
 

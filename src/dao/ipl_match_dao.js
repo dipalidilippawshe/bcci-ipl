@@ -1,5 +1,5 @@
 let matches
-const DEFAULT_SORT = [["date", -1]]
+const DEFAULT_SORT = [["matchDateMs", -1]]
 module.exports = class MatchDAO {
     static async injectDB(conn) {
 
@@ -58,12 +58,20 @@ module.exports = class MatchDAO {
             }
             if ("matchId" in filters) {
                 queryParams.query["matchId.id"] = parseInt(filters["matchId"])
+            } else {
+                queryParams.project = {
+                    "innings.scorecard.battingStats": 0,
+                    "innings.scorecard.bowlingStats": 0,
+                    "innings.overHistory": 0,
+                    "innings.scorecard.fow": 0,
+                    "innings.scorecard.extras": 0
+                }
             }
             if ("team_id" in filters) {
                 queryParams.query["matchInfo.teams.team.id"] = parseInt(filters["team_id"])
             }
-            if ("year" in filters && !filters["startDate"] && !filters["endDate"]) {
-                queryParams.query["matchInfo.matchDate"] = new RegExp(filters["year"], "i")
+            if ("year" in filters) {
+                queryParams.query["matchInfo.matchDate"] = { $in: [new RegExp(filters["year"], "i"), new RegExp(filters["year"] - 1, "i")] }
             }
         }
         console.log(queryParams)
@@ -417,7 +425,7 @@ module.exports = class MatchDAO {
             ]
             console.log(pipeline)
 
-            
+
             //  console.log(franchise_years)
             return await matches.aggregate(pipeline).toArray()
         } catch (e) {
@@ -447,14 +455,14 @@ module.exports = class MatchDAO {
                         $and: [{ "matchInfo.matchDate": new RegExp(year, "i") },
                         { "matchInfo.teams.team.id": parseInt(id) }]
                     }
-                },{$count:"total"}
+                }, { $count: "total" }
             ]
             // console.dir(pipeline, { depth: null, color: true })
-            
+
             let total = await matches.aggregate(countMatches).toArray();
-           
+
             let data = await matches.aggregate(pipeline).limit(pageLimit).skip(skip).toArray();
-            return { data: data ,total:total[0].total}; 
+            return { data: data, total: total[0].total };
         }
         catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
@@ -464,40 +472,40 @@ module.exports = class MatchDAO {
             throw e
         }
     }
-    static async playerInfo(name){
-        try{
-        const countingPipeline = [
-           
-               {
-                 $match: {
-                     "matchInfo.teams.players.fullName": name
-                 
-                 }
-             },
-            { $unwind: "$matchInfo.teams" },
-            { $unwind: "$matchInfo.teams.players" },
-            // { $unwind: "$innings" },
-            // { $unwind: "$innings.scorecard.bowlingStats" },
-            {
-                $match: {
-                    'matchInfo.teams.players.fullName':name
-                }
-            },
-            { $project: { "matchInfo.matchDate": 1, "matchInfo.teams.players": 1,"matchId": 1 } },
-            {
-                $group:
-                {
-                    _id: "$matchInfo.teams.players.id",
-                    player_detail: { $first: "$matchInfo.teams.players" },
-                    //totalRuns: { $sum: "$innings.scorecard.battingStats.r" },
-                }
-            },
-            {
-                $project: { "player_id": "$_id", player_detail: 1, _id: 0 }
-            }
-        ]
+    static async playerInfo(name) {
+        try {
+            const countingPipeline = [
 
-        const pipeline = [...countingPipeline]
+                {
+                    $match: {
+                        "matchInfo.teams.players.fullName": name
+
+                    }
+                },
+                { $unwind: "$matchInfo.teams" },
+                { $unwind: "$matchInfo.teams.players" },
+                // { $unwind: "$innings" },
+                // { $unwind: "$innings.scorecard.bowlingStats" },
+                {
+                    $match: {
+                        'matchInfo.teams.players.fullName': name
+                    }
+                },
+                { $project: { "matchInfo.matchDate": 1, "matchInfo.teams.players": 1, "matchId": 1 } },
+                {
+                    $group:
+                    {
+                        _id: "$matchInfo.teams.players.id",
+                        player_detail: { $first: "$matchInfo.teams.players" },
+                        //totalRuns: { $sum: "$innings.scorecard.battingStats.r" },
+                    }
+                },
+                {
+                    $project: { "player_id": "$_id", player_detail: 1, _id: 0 }
+                }
+            ]
+
+            const pipeline = [...countingPipeline]
             const matchesList = await matches.aggregate(pipeline).toArray()
             console.log(matchesList);
             //return matchesList.length ? matchesList[0] : {}
@@ -540,45 +548,86 @@ module.exports = class MatchDAO {
         }
 
     }
-    static async findWinsByTeam(id,name){
-        var stringToUse = name +" won"
-        var match = await matches.distinct("matchInfo.matchDate",{"matchInfo.matchStatus.text":{ $regex: new RegExp(stringToUse, "i") }});
-        let years=["2001","2002","2003","2004","2005","2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","2020","2021","2022","2023"];
-        let won=[];
-        for(let j=0;j<=years.length-1;j++){
-             for(let k=0;k<=match.length-1;k++)
-             {
-                 if(match[k].includes(years[j])){
-                     if(won.includes(years[j])){
-                     }else{
-                         won.push(years[j]);
-                     }
-                  }else{
-                     // console.log("In else method...");
-                  }
-             }
 
-             if(j==years.length-1){
+    static async getTeams(params) {
+        try {
+            const pipeline = [
+                {
+                    $match: { "matchInfo.matchDate": new RegExp(params.year, "i") }
+                },
+                { $unwind: "$matchInfo.teams" },
+                {
+                    $addFields: {
+                        team: "$matchInfo.teams.team",
+                    }
+                },
+
+                {
+                    $group: {
+                        "_id": "$team.type",
+                        "franchises": {
+                            "$addToSet": "$team"
+                        },
+                    }
+                },
+
+
+                {
+                    $project: { "team_type": "$_id", "franchises": 1, _id: 0 }
+                },
+                { $sort: { "franchises.id": 1 } }
+
+
+            ]
+            console.log(pipeline)
+            //  console.log(franchise_years)
+            return await matches.aggregate(pipeline).toArray()
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
+        }
+    }
+    static async findWinsByTeam(id, name) {
+        var stringToUse = name + " won"
+        var match = await matches.distinct("matchInfo.matchDate", { "matchInfo.matchStatus.text": { $regex: new RegExp(stringToUse, "i") } });
+        let years = ["2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023"];
+        let won = [];
+        for (let j = 0; j <= years.length - 1; j++) {
+            for (let k = 0; k <= match.length - 1; k++) {
+                if (match[k].includes(years[j])) {
+                    if (won.includes(years[j])) {
+                    } else {
+                        won.push(years[j]);
+                    }
+                } else {
+                    // console.log("In else method...");
+                }
+            }
+
+            if (j == years.length - 1) {
                 return won;
             }
-         }
+        }
     }
 
-    static async statsData(filters){
+    static async statsData(filters) {
         let pipeline = [{
-            $match:{"matchInfo.matchDate": new RegExp(filters["year"], "i")}
-          },
-          { $unwind: "$matchInfo.teams" },
-          { $unwind: "$innings" },
-          { $unwind: "$innings.scorecard.bowlingStats" },
-          { $project: { "matchInfo.matchDate": 1, "matchInfo.teams": 1, "innings.scorecard.bowlingStats": 1,"matchId": 1 } },
-          {
+            $match: { "matchInfo.matchDate": new RegExp(filters["year"], "i") }
+        },
+        { $unwind: "$matchInfo.teams" },
+        { $unwind: "$innings" },
+        { $unwind: "$innings.scorecard.bowlingStats" },
+        { $project: { "matchInfo.matchDate": 1, "matchInfo.teams": 1, "innings.scorecard.bowlingStats": 1, "matchId": 1 } },
+        {
             $group:
             {
                 _id: "$matchInfo.teams.team.id",
-                team_details:{$first:"$matchInfo.teams.team"},
+                team_details: { $first: "$matchInfo.teams.team" },
                 player_detail: { $first: "$matchInfo.teams.players" },
-               
+
             }
         }
         ]
@@ -587,20 +636,22 @@ module.exports = class MatchDAO {
         return matchList;
     }
 
-    static async getProcessPlayersData(players){
-        for(let i=o;i<=players.length-1;i++){
+    static async getProcessPlayersData(players) {
+        for (let i = o; i <= players.length - 1; i++) {
             var query = [
-                {$match: {
-                    "matchInfo.teams.players": players[i].id },
-                    
-                },{ $unwind: "$innings" }, { $unwind: "$innings.scorecard.bowlingStats" },
                 {
-                $group:
+                    $match: {
+                        "matchInfo.teams.players": players[i].id
+                    },
+
+                }, { $unwind: "$innings" }, { $unwind: "$innings.scorecard.bowlingStats" },
                 {
-                    _id: "$innings.scorecard.bowlingStats.playerId",
-                    totalWickets: { $sum: "$innings.scorecard.bowlingStats.w" },
+                    $group:
+                    {
+                        _id: "$innings.scorecard.bowlingStats.playerId",
+                        totalWickets: { $sum: "$innings.scorecard.bowlingStats.w" },
+                    }
                 }
-              }
             ]
         }
     }
