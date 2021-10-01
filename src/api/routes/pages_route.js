@@ -6,6 +6,6 @@ const router = new Router()
 // associate put, delete, and get(id)
 router.get("/app/home", pagesCtrl.appHomepage);
 router.get("/web/home", pagesCtrl.webHomepage);
-
+router.get("/app/video-list", pagesCtrl.appVideoLIstpage);
 
 module.exports = router;

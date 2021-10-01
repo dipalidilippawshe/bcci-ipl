@@ -34,7 +34,25 @@ module.exports = class PagesController {
 
 
   }
+
+  static async appVideoLIstpage(req, res, next) {
+    console.log("At route me...");
+    var slug = "video-list-app"
+    const pageFromDB = await PagesDAO.getPage(slug)
+    if (!pageFromDB) {
+      res.send({ status: false, message: "Error!" });
+      // errors.general = "Internal error, please try again later"
+    }
+    else {
+      //processPageData(pageFromDB, req, res, next);
+      console.log("In page data here me;;;... ");
+      res.send({ status: true, message: "Received pagedata", pageData: pageFromDB });
+    }
+
+
+  }
 }
+
 
 async function processPageData(doc, err, pageName, displayName, user_id, session_id, skip, req, res, next, reg_query, isPremium = '', kids_content) {
   var pagedata = {};
@@ -54,6 +72,5 @@ async function processPageData(doc, err, pageName, displayName, user_id, session
     //return list_data;
     return "123";
   }) : []
-
 
 }

@@ -303,7 +303,7 @@ module.exports = class IplVideosDAO {
             }
 
             //page logic here..
-            console.log(filters.season_id, mongoquery)
+            console.log("final qu", mongoquery)
             var cursor = await videos.find(mongoquery).limit(videosPerPage).skip(skip);
 
             const displayCursor = cursor.limit(videosPerPage)
@@ -455,7 +455,7 @@ module.exports = class IplVideosDAO {
     }
     static async videoByTeamID(id, page) {
         try {
-          
+
             let pageLimit = 20;
             let skip = (page - 1) * pageLimit;
             let query = { "references.id": id }
@@ -472,70 +472,60 @@ module.exports = class IplVideosDAO {
             throw e
         }
     }
+
+    static async getVideos({
+        // here's where the default parameters are set for the getVideos method
+        filters = null,
+        page = 0,
+        videosPerPage = 20,
+    } = {}) {
+        let queryParams = { query: {} }
+        if (filters.tag) {
+            //filters logic to be added.
+            queryParams.query["tags.label"] = { $in: [filters.tag] }
+        }
+        // if (filters.year) {
+        //     //filters logic to be added.
+        //     queryParams.query["date"] = new RegExp(filters.year, "i")
+        // }
+        if (filters.startDate && filters.endDate) {
+            //filters logic to be added.
+            queryParams.query["publishFrom"] = {
+                $gte: filters.startDate.getTime(),
+                $lte: filters.endDate.getTime()
+            }
+        }
+        var sorting = { _id: -1 }
+        let { query = {}, project = {}, sort = sorting } = queryParams
+        console.log(query)
+        let cursor
+        try {
+            cursor = await videos.find(query)
+                .project(project)
+                .sort(sort)
+                .limit(videosPerPage)
+                .skip(page * videosPerPage)
+
+        } catch (e) {
+            console.error(`Unable to issue find command, ${e}`)
+            return { videoList: [], totalNumImages: 0 }
+        }
+
+
+        const displayCursor = cursor.limit(videosPerPage)
+
+        try {
+            const videoList = await displayCursor.toArray()
+
+            const totalNumImages = page === 0 ? await videos.countDocuments(query) : 0
+            console.log("totalNumImages is: ", totalNumImages);
+            return { videoList, totalNumImages }
+        } catch (e) {
+            console.error(
+                `Unable to convert cursor to array or problem counting documents, ${e}`,
+            )
+            return { imageList: [], totalNumImages: 0 }
+        }
+    }
 }
 
-/**
- * This is a parsed query, sort, and project bundle.
- * @typedef QueryParams
- * @property {Object} query - The specified query, transformed accordingly
- * @property {any[]} sort - The specified sort
- * @property {Object} project - The specified project, if any
- */
-
-/**
- * Represents a single country result
- * @typedef CountryResult
- * @property {string} ObjectID - The ObjectID of the video
- * @property {string} title - The title of the video
- */
-
-/**
- * A Video from mflix
- * @typedef MflixVideo
- * @property {string} _id
- * @property {string} title
- * @property {number} year
- * @property {number} runtime
- * @property {Date} released
- * @property {string[]} cast
- * @property {number} metacriticd
- * @property {string} poster
- * @property {string} plot
- * @property {string} fullplot
- * @property {string|Date} lastupdated
- * @property {string} type
- * @property {string[]} languages
- * @property {string[]} directors
- * @property {string[]} writers
- * @property {IMDB} imdb
- * @property {string[]} countries
- * @property {string[]} rated
- * @property {string[]} genres
- * @property {string[]} comments
- */
-
-/**
- * IMDB subdocument
- * @typedef IMDB
- * @property {number} rating
- * @property {number} votes
- * @property {number} id
- */
-
-/**
- * Result set for getIplVideos method
- * @typedef GetIplVideosResult
- * @property {MflixIplVideos[]} videosList
- * @property {number} totalNumResults
- */
-
-/**
- * Faceted Search Return
- *
- * The type of return from faceted search. It will be a single document with
- * 3 fields: rating, runtime, and videos.
- * @typedef FacetedSearchReturn
- * @property {object} rating
- * @property {object} runtime
- * @property {MFlixVideo[]}videos
- */
