@@ -2,6 +2,7 @@ const MatchDAO = require("../../dao/ipl_match_dao")
 const RecordDAO = require("../../dao/ipl_franchise_years_dao")
 const franchiseDAO = require("../../dao/ipl_franchise_dao")
 const videosDAO = require("../../dao/ipl_videos_dao");
+const IplArticlesDAO = require("../../dao/ipl_articles_dao")
 const config = require("config")
 
 module.exports = class MatchController {
@@ -248,7 +249,7 @@ module.exports = class MatchController {
             if (!frenchise || frenchise == null) {
                 return res.json({ status: true, data: article })
             } else {
-                console.log("elsing me...");
+                console.log("elsing me...",frenchise.logo);
                 var returnData = article;
                 returnData[0].logo = frenchise.logo;
                 returnData[0].owner = frenchise.owner;
@@ -260,6 +261,13 @@ module.exports = class MatchController {
                 console.log("returnData: ", won);
                 returnData[0].wonYears = won;
                 returnData[0].previousWin = won[won.length - 1];
+
+                //latest news
+                var page=6;
+                let Iplarticle = await IplArticlesDAO.getIplArticleByTeamsId(page,parseInt(id),year)
+                returnData[0].latestNews = Iplarticle.data;
+                let videos = await videosDAO.videoByTeamID(parseInt(id),page,year);
+                returnData[0].latestVideos = videos.data;
                 return res.json({ status: true, data: returnData })
                 //console.log("frenchise is; ", frenchise);
             }

@@ -479,7 +479,6 @@ module.exports = class MatchDAO {
                 {
                     $match: {
                         "matchInfo.teams.players.fullName": name
-
                     }
                 },
                 { $unwind: "$matchInfo.teams" },
@@ -593,7 +592,7 @@ module.exports = class MatchDAO {
     static async findWinsByTeam(id, name) {
         var stringToUse = name + " won"
         console.log("string to use is: ",stringToUse);
-        var match = await matches.distinct("matchInfo.matchDate", { "matchInfo.description": "Final", "matchInfo.matchStatus.text": { $regex: new RegExp(stringToUse, "i") } });
+        var match = await matches.distinct("matchInfo.matchDate", { "matchInfo.description": "Final","matchInfo.matchStatus.text": { $regex: new RegExp(stringToUse, "i") } ,"matchInfo.teams.team.id":id});
         console.log("match is: ",match);
         let years = ["2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023"];
         let won = [];
