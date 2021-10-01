@@ -109,6 +109,7 @@ module.exports = class IplRecordsDAO {
                 // console.log(frenchises[i].franchises_name);
                 var stringToUse = frenchises[i].fullName + " won"
                 // console.log("stringToUse: ", stringToUse);
+               
                 var match = await matches.distinct("matchInfo.matchDate", { "matchInfo.description": "Final", "matchInfo.matchStatus.text": { $regex: new RegExp(stringToUse, "i") } });
                 let years = ["2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023"];
                 for (let j = 0; j <= years.length - 1; j++) {

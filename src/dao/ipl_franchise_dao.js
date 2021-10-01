@@ -21,7 +21,7 @@ module.exports = class IplRecordsDAO {
 
     static async getfrenchiseDetails(id){
         console.log("ID: ",typeof(id));
-        const frenchise = await records.findOne({id:id.toString()});
+        const frenchise = await franchise.findOne({id:id.toString()});
         return frenchise;
     }
 }

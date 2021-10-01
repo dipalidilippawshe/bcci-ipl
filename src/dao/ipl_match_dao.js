@@ -592,9 +592,12 @@ module.exports = class MatchDAO {
     }
     static async findWinsByTeam(id, name) {
         var stringToUse = name + " won"
-        var match = await matches.distinct("matchInfo.matchDate", { "matchInfo.matchStatus.text": { $regex: new RegExp(stringToUse, "i") } });
+        console.log("string to use is: ",stringToUse);
+        var match = await matches.distinct("matchInfo.matchDate", { "matchInfo.description": "Final", "matchInfo.matchStatus.text": { $regex: new RegExp(stringToUse, "i") } });
+        console.log("match is: ",match);
         let years = ["2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023"];
         let won = [];
+       
         for (let j = 0; j <= years.length - 1; j++) {
             for (let k = 0; k <= match.length - 1; k++) {
                 if (match[k].includes(years[j])) {
@@ -636,23 +639,27 @@ module.exports = class MatchDAO {
         return matchList;
     }
 
-    static async getProcessPlayersData(players) {
-        for (let i = o; i <= players.length - 1; i++) {
-            var query = [
-                {
-                    $match: {
-                        "matchInfo.teams.players": players[i].id
-                    },
-
-                }, { $unwind: "$innings" }, { $unwind: "$innings.scorecard.bowlingStats" },
-                {
-                    $group:
-                    {
-                        _id: "$innings.scorecard.bowlingStats.playerId",
-                        totalWickets: { $sum: "$innings.scorecard.bowlingStats.w" },
-                    }
+    static async getProcessPlayersData(players){
+        for(let i=0;i<=players.length-1;i++){
+            console.log("id: ",players[i].id);
+            var pipeline = [
+                {$match: {
+                    "matchInfo.teams.players.id": players[i].id },
+                    
                 }
+                ,{ $unwind: "$innings" }, { $unwind: "$innings.scorecard.bowlingStats" },
+                 {$match:{"innings.scorecard.bowlingStats.playerId":players[i].id}},
+            //     {
+            //     $group:
+            //     {
+            //         _id: "$innings.scorecard.bowlingStats.playerId",
+            //         totalWickets: { $sum: "$innings.scorecard.bowlingStats.w" },
+            //     }
+            //   }
             ]
+            const total = await matches.aggregate(pipeline).toArray()
+            console.log("Total is: ",total);
+
         }
     }
 }
