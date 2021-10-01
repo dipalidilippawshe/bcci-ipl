@@ -68,6 +68,7 @@ module.exports = class MatchDAO {
                 }
             }
             if ("team_id" in filters) {
+                console.log("in team id mme...");
                 queryParams.query["matchInfo.teams.team.id"] = parseInt(filters["team_id"])
             }
             if ("year" in filters) {
@@ -519,6 +520,7 @@ module.exports = class MatchDAO {
 
     }
     static async getIplMatchesFilterByType(type, page, id) {
+        console.log("getIplMatchesFilterByType",type);
         let query = {};
         let videosPerPage = 20;
         var skip = (page - 1) * videosPerPage;
@@ -532,6 +534,11 @@ module.exports = class MatchDAO {
             else if (type = "venue") {
                 query = { 'matchInfo.venue.id': id }
             }
+            else if(type=="teamId"){
+                console.log("teamid: ",type);
+                query = { 'matchInfo.teams.team.id': id }
+            }
+            
             const totalMatches = await matches.find(query).count();
             let matchesResult = await matches.find(query).limit(videosPerPage).skip(skip).toArray();
 

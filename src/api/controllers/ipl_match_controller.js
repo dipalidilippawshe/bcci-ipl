@@ -118,7 +118,7 @@ module.exports = class MatchController {
     }
 
     static async apiWebGetMatch(req, res, next) {
-
+        console.log("in api webget match");
         if (req.params.type == 'season' || req.params.type == "team" || req.params.type == "venue") {
             try {
 
@@ -164,6 +164,10 @@ module.exports = class MatchController {
             // filters.startDate = req.query.startDate && new Date(req.query.startDate) !== "Invalid Date" ? new Date(req.query.startDate).getFullYear() : undefined
             //filters.endDate = req.query.endDate && new Date(req.query.endDate) !== "Invalid Date" ? new Date(req.query.endDate).getFullYear() : undefined
             filters.team = req.query.team ? [req.query.team] : ["m", "w"]
+            if(req.query.teamId)
+            {
+                filters.team_id = req.query.teamId;
+            }
             //console.log(req.query.startDate, new Date(req.query.startDate))
             if (req.params.type !== "" && req.params.type === "results") {
                 filters.matchState = ["C"]
