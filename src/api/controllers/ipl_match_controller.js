@@ -8,8 +8,44 @@ const config = require("config")
 module.exports = class MatchController {
     static async apiAppGetMatch(req, res, next) {
         const FIXTURES_PER_PAGE = 20
-        if (req.params.type != "team_results") {
+        if (req.params.type == "team_results" || req.params.type == "fixture") {
+            try {
+                let filters = {}
+                let type = req.params.type;
+                if (type == 'fixture') {
+                    filters.matchState = ["U"];
+                }
+                let teamId = req.query.teamId ? req.query.teamId : "";
 
+                let page = req.query.page ? req.query.page : 1;
+                let id = req.query.matchId ? req.query.matchId : ""; //This is team ID
+
+                let idtype = teamId ? { "teamId": teamId } : { "matchId": id }
+
+                let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : new Date().getFullYear();
+                console.log(year)
+                let data = await MatchDAO.getTeamResultsByid(2008, page, idtype, filters)
+                if (!data) {
+                    res.status(404).json({ status: false, error: config.error_codes["1001"] })
+                    return
+                } else {
+                    let response = {
+                        status: true,
+                        data: data.data,
+                        page: page,
+                        filters: {},
+                        entries_per_page: FIXTURES_PER_PAGE,
+                        total_results: data.total,
+                    }
+                    res.json(response);
+                }
+            } catch (e) {
+                console.log(`api, ${e}`)
+                res.status(500).json({ error: e })
+            }
+        }
+        else {
+     
             let page
             try {
                 page = req.query.page ? parseInt(req.query.page, 10) : "0"
@@ -70,33 +106,6 @@ module.exports = class MatchController {
                     total_results: totalNumMatches,
                 }
                 res.json(response)
-            }
-        }
-        else {
-            try {
-                let page = req.query.page ? req.query.page : 1;
-
-                let id = req.query.id; //This is team ID
-                let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
-                console.log(year)
-                let data = await MatchDAO.getTeamResultsByid(year, page, id)
-                if (!data) {
-                    res.status(404).json({ status: false, error: config.error_codes["1001"] })
-                    return
-                } else {
-                    let response = {
-                        status: true,
-                        data: data.data,
-                        page: page,
-                        filters: {},
-                        entries_per_page: FIXTURES_PER_PAGE,
-                        total_results: data.total,
-                    }
-                    res.json(response);
-                }
-            } catch (e) {
-                console.log(`api, ${e}`)
-                res.status(500).json({ error: e })
             }
         }
 
@@ -267,10 +276,10 @@ module.exports = class MatchController {
                 returnData[0].previousWin = won[won.length - 1];
 
                 //latest news
-                var page=6;
-                let Iplarticle = await IplArticlesDAO.getIplArticleByTeamsId(page,parseInt(id),year)
+                var page = 6;
+                let Iplarticle = await IplArticlesDAO.getIplArticleByTeamsId(page, parseInt(id), year)
                 returnData[0].latestNews = Iplarticle.data;
-                let videos = await videosDAO.videoByTeamID(parseInt(id),page,year);
+                let videos = await videosDAO.videoByTeamID(parseInt(id), page, year);
                 returnData[0].latestVideos = videos.data;
                 return res.json({ status: true, data: returnData })
                 //console.log("frenchise is; ", frenchise);
