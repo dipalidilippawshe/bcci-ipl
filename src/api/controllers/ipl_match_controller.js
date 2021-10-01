@@ -657,9 +657,11 @@ module.exports = class MatchController {
             return
         }
 
-        let details = MatchDAO.playerInfo(player);
-        // console.log("details: ",details);
-        //res.json({status:true,data:details});
+        let details = await MatchDAO.playerInfo(player);
+        console.log("details: ",details);
+        details.description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet ut risus quam quis in. Hendrerit proin ac erat nullam id curabitur. Vestibulum massa, enim quam senectus in lectus enim. Tempor amet, non iaculis tincidunt condimentum magna vel dictum. Proin risus laoreet dignissim augue tortor. Aliquam convallis convallis scelerisque adipiscing vestibulum, lorem id tempus. Porttitor quisque congue sit id lectus quis enim, aliquet egestas. Blandit faucibus nec lectus convallis. Aliquam dignissim massa risus nullam. Vitae, ipsum sed amet ornare sit. Et, ultrices pellentesque pulvinar nibh gravida enim ridiculus. Malesuada viverra ultricies molestie amet, maecenas orci vitae mi. Pulvinar ut sagittis sit eu et nullam."+
+        "Odio ultrices ut facilisis ornare faucibus sed. Dictum consectetur egestas lectus pretium viverra varius aliquet. "
+        res.json({status:true,data:details});
     }
 
     static async apiAppGetResultsByMatchId(req, res, next) {
@@ -700,6 +702,7 @@ module.exports = class MatchController {
         }
         res.json(response)
     }
+
 }
 
 
