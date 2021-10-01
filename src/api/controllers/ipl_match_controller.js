@@ -295,7 +295,6 @@ module.exports = class MatchController {
         try {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : "2021"
-            //let article = await RecordDAO.getTeams({ year: year })
             let article = await MatchDAO.getTeams({ year: year })
             let data = { men: [], women: [] }
             for (var i in article) {
@@ -545,8 +544,6 @@ module.exports = class MatchController {
         try {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : "2021"
-
-            //let article = await RecordDAO.getTeams({ year: year })
             let article = await MatchDAO.getTeams({ year: year })
             let data = { men: [], women: [] }
             for (var i in article) {
