@@ -510,42 +510,49 @@ module.exports = class MatchDAO {
             throw e
         }
     }
-    static async playerInfo(name) {
+    static async playerInfo(ID) {
         try {
+            let id = parseInt(ID);
+            console.log("id: ",id );
             const countingPipeline = [
 
                 {
                     $match: {
-                        "matchInfo.teams.players.fullName": name
+                        "matchInfo.teams.players.id": id
                     }
                 },
                 { $unwind: "$matchInfo.teams" },
                 { $unwind: "$matchInfo.teams.players" },
                 // { $unwind: "$innings" },
                 // { $unwind: "$innings.scorecard.bowlingStats" },
+
                 {
                     $match: {
-                        'matchInfo.teams.players.fullName': name
+                        'matchInfo.teams.players.id': id
                     }
                 },
-                { $project: { "matchInfo.matchDate": 1, "matchInfo.teams.players": 1, "matchId": 1 } },
+                { $project: { "matchInfo.matchDate": 1, "matchInfo.teams.players": 1,"matchInfo.teams.team.id":1, "matchId": 1 } },
                 {
                     $group:
                     {
                         _id: "$matchInfo.teams.players.id",
                         player_detail: { $first: "$matchInfo.teams.players" },
-                        //totalRuns: { $sum: "$innings.scorecard.battingStats.r" },
+                        team: { $first: "$matchInfo.teams.team.id" },
                     }
                 },
                 {
-                    $project: { "player_id": "$_id", player_detail: 1, _id: 0 }
+                    $project: { "player_id": "$_id", player_detail: 1, team:1,_id: 0 }
                 }
             ]
-
+            const total = await matches.find({"matchInfo.teams.players.id":id}).count()
             const pipeline = [...countingPipeline]
             const matchesList = await matches.aggregate(pipeline).toArray()
-            console.log(matchesList);
-            //return matchesList.length ? matchesList[0] : {}
+            // console.log(matchesList);
+            // console.log(total);
+            let data= matchesList.length ? matchesList[0] : {}
+            data.matches=total;
+            console.log(data);
+            return data;
 
         } catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
