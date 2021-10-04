@@ -713,7 +713,7 @@ module.exports = class MatchController {
     static async apiAppGetFranchesByMatchId(req, res, next) {
         //franches
      
-        nsole.log("IN fixtures...");
+        console.log("IN fixtures...");
         const FIXTURES_PER_PAGE = 20;
         let page
         try {
