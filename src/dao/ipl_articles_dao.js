@@ -247,14 +247,17 @@ module.exports = class ArticlesDAO {
             throw e
         }
     }
-    static async getIplArticleByTeamsId(page, id) {
+    static async getIplArticleByTeamsId(page, id,year) {
 
         try {
             let pageLimit = 20;
             let skip = (page - 1) * pageLimit;
 
             let query = { 'references.id': id };
-
+            if(year){
+                query = { 'references.id': id ,date: new RegExp(year, "i")};
+                skip =0;
+            }
             let total = await iplArticles.find(query).count();
             let data = await iplArticles.find(query).limit(pageLimit).skip(skip).toArray();
 

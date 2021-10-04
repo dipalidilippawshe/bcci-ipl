@@ -68,6 +68,7 @@ module.exports = class MatchDAO {
                 }
             }
             if ("team_id" in filters) {
+                console.log("in team id mme...");
                 queryParams.query["matchInfo.teams.team.id"] = parseInt(filters["team_id"])
             }
             if ("year" in filters) {
@@ -436,59 +437,94 @@ module.exports = class MatchDAO {
             throw e
         }
     }
-    static async getTeamResultsByid(year, page, id) {
+    static async getTeamResultsByid(year, page, id, filters) {
+
         console.log("Year is: ", year, " id is : ", id);
+        let pageLimit = 20;
         try {
-            let pageLimit = 20;
-            let skip = (page - 1) * pageLimit;
-            const pipeline = [
-                {
-                    $match: {
-                        $and: [{ "matchInfo.matchDate": new RegExp(year, "i") },
-                        { "matchInfo.teams.team.id": parseInt(id) }]
+            if (!filters) {
+
+                let skip = (page - 1) * pageLimit;
+                const pipeline = [
+                    {
+                        $match: {
+                            $and: [{ "matchInfo.matchDate": new RegExp(year, "i") },
+                            { "matchInfo.teams.team.id": parseInt(id) }]
+                        }
                     }
+                ]
+                const countMatches = [
+                    {
+                        $match: {
+                            $and: [{ "matchInfo.matchDate": new RegExp(year, "i") },
+                            { "matchInfo.teams.team.id": parseInt(id) }]
+                        }
+                    }, { $count: "total" }
+                ]
+                // console.dir(pipeline, { depth: null, color: true })
+
+                let total = await matches.aggregate(countMatches).toArray();
+
+                let data = await matches.aggregate(pipeline).limit(pageLimit).skip(skip).toArray();
+                return { data: data, total: total[0].total };
+            }
+            else {
+                let queryParams = {}
+                queryParams.query = {}
+                if ("matchState" in filters) {
+                    queryParams.query["matchInfo.matchState"] = { $in: filters["matchState"] }
                 }
-            ]
-            const countMatches = [
-                {
-                    $match: {
-                        $and: [{ "matchInfo.matchDate": new RegExp(year, "i") },
-                        { "matchInfo.teams.team.id": parseInt(id) }]
-                    }
-                }, { $count: "total" }
-            ]
-            // console.dir(pipeline, { depth: null, color: true })
+                if (id.matchId) {
+                    queryParams.query["matchId.id"] = parseInt(id.matchId)
+                }
 
-            let total = await matches.aggregate(countMatches).toArray();
+                if (id.teamId) {
+                    console.log("in team id mme...");
+                    queryParams.query["matchInfo.teams.team.id"] = parseInt(id.teamId)
+                }
+                if (year) {
+                    queryParams.query["matchInfo.matchDate"] = { $in: [new RegExp(year, "i"), new RegExp(year - 1, "i")] }
+                }
 
-            let data = await matches.aggregate(pipeline).limit(pageLimit).skip(skip).toArray();
-            return { data: data, total: total[0].total };
+                try {
+
+                    let data = await matches.find(queryParams.query).toArray();
+                    console.log(data);
+                    return { data: data, total: 1 };
+
+                } catch (e) {
+                    console.error(`Unable to issue find command, ${e}`)
+                    return { matchesList: [], totalNumMatches: 0 }
+                }
+            }
+
+
+
         }
         catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
                 return null
             }
-            console.error(`Something went wrong in getVideoByID: ${e}`)
+            console.error(`Something went wrong in getting corrent year: ${e}`)
             throw e
         }
     }
-    static async playerInfo(name) {
+    static async playerInfo(ID) {
         try {
+
+            let id = parseInt(ID);
             const countingPipeline = [
 
                 {
                     $match: {
-                        "matchInfo.teams.players.fullName": name
-
+                        "matchInfo.teams.players.id": id
                     }
                 },
                 { $unwind: "$matchInfo.teams" },
                 { $unwind: "$matchInfo.teams.players" },
-                // { $unwind: "$innings" },
-                // { $unwind: "$innings.scorecard.bowlingStats" },
                 {
                     $match: {
-                        'matchInfo.teams.players.fullName': name
+                        'matchInfo.teams.players.id': id
                     }
                 },
                 { $project: { "matchInfo.matchDate": 1, "matchInfo.teams.players": 1, "matchId": 1 } },
@@ -497,18 +533,21 @@ module.exports = class MatchDAO {
                     {
                         _id: "$matchInfo.teams.players.id",
                         player_detail: { $first: "$matchInfo.teams.players" },
-                        //totalRuns: { $sum: "$innings.scorecard.battingStats.r" },
+
                     }
                 },
                 {
                     $project: { "player_id": "$_id", player_detail: 1, _id: 0 }
                 }
             ]
-
+            const total = await matches.find({ "matchInfo.teams.players.id": id }).count()
             const pipeline = [...countingPipeline]
             const matchesList = await matches.aggregate(pipeline).toArray()
-            console.log(matchesList);
-            //return matchesList.length ? matchesList[0] : {}
+
+            let data = matchesList.length ? matchesList[0] : {}
+            data.matches = total;
+            console.log(data);
+            return data;
 
         } catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
@@ -520,6 +559,7 @@ module.exports = class MatchDAO {
 
     }
     static async getIplMatchesFilterByType(type, page, id) {
+        console.log("getIplMatchesFilterByType", type);
         let query = {};
         let videosPerPage = 20;
         var skip = (page - 1) * videosPerPage;
@@ -533,6 +573,11 @@ module.exports = class MatchDAO {
             else if (type = "venue") {
                 query = { 'matchInfo.venue.id': id }
             }
+            else if (type == "teamId") {
+                console.log("teamid: ", type);
+                query = { 'matchInfo.teams.team.id': id }
+            }
+
             const totalMatches = await matches.find(query).count();
             let matchesResult = await matches.find(query).limit(videosPerPage).skip(skip).toArray();
 
@@ -593,7 +638,7 @@ module.exports = class MatchDAO {
     static async findWinsByTeam(id, name) {
         var stringToUse = name + " won"
         console.log("string to use is: ", stringToUse);
-        var match = await matches.distinct("matchInfo.matchDate", { "matchInfo.description": "Final", "matchInfo.matchStatus.text": { $regex: new RegExp(stringToUse, "i") } });
+        var match = await matches.distinct("matchInfo.matchDate", { "matchInfo.description": "Final", "matchInfo.matchStatus.text": { $regex: new RegExp(stringToUse, "i") }, "matchInfo.teams.team.id": id });
         console.log("match is: ", match);
         let years = ["2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023"];
         let won = [];
@@ -820,6 +865,124 @@ module.exports = class MatchDAO {
             console.error(`Something went wrong in getVideoByID: ${e}`)
             throw e
         }
+
+    }
+
+    static async getBattingStatsData(id) {
+
+        const countingPipeline = [
+            {
+                $match: {
+                    "innings.scorecard.battingStats.playerId": id,
+                    "matchInfo.matchState": "C"
+                }
+            },
+            { $unwind: "$innings" },
+            { $unwind: "$innings.scorecard.battingStats" },
+            {
+                $match: { "innings.scorecard.battingStats.playerId": id }
+            },
+            {
+                $project: { "innings.scorecard.battingStats": 1 }
+            },
+            {
+                $group:
+                {
+                    _id: "$innings.scorecard.battingStats.playerId",
+                    r: { $sum: "$innings.scorecard.battingStats.r" },
+                    b: { $sum: "$innings.scorecard.battingStats.b" },
+                    sr: { $sum: "$innings.scorecard.battingStats.sr" },
+                    fours: { $sum: "$innings.scorecard.battingStats.4s" },
+                    sixes: { $sum: "$innings.scorecard.battingStats.6s" }
+                }
+
+            },
+            {
+                $project: { "player_id": "$_id", r: 1, b: 1, sr: 1, fours: 1, sixes: 1, _id: 0 }
+            }
+
+        ]
+        //console.log("pipeline: ",countingPipeline);
+        const pipeline = [...countingPipeline]
+        const matchesList = await matches.aggregate(pipeline).toArray()
+        //console.log("oatchlist in vawling....",matchesList);
+        // console.log(total);
+        let data = matchesList.length ? matchesList[0] : {}
+        return data;
+    }
+
+    static async getBawlingStatsData(id) {
+
+        const countingPipeline = [
+            {
+                $match: {
+                    "innings.scorecard.bowlingStats.playerId": id,
+                    "matchInfo.matchState": "C"
+                }
+            },
+            { $unwind: "$innings" },
+            { $unwind: "$innings.scorecard.bowlingStats" },
+            {
+                $match: { "innings.scorecard.bowlingStats.playerId": id }
+            },
+            {
+                $project: { "innings.scorecard.bowlingStats": 1 }
+            },
+            {
+                $group:
+                {
+                    _id: "$innings.scorecard.bowlingStats.playerId",
+                    ov: { $sum: "$innings.scorecard.bowlingStats.ov" },
+                    r: { $sum: "$innings.scorecard.bowlingStats.r" },
+                    w: { $sum: "$innings.scorecard.bowlingStats.w" },
+                    d: { $sum: "$innings.scorecard.bowlingStats.d" },
+                    maid: { $sum: "$innings.scorecard.bowlingStats.maid" },
+                    e: { $sum: "$innings.scorecard.bowlingStats.e" },
+                    wd: { $sum: "$innings.scorecard.bowlingStats.wd" },
+                    nb: { $sum: "$innings.scorecard.bowlingStats.nb" }
+                }
+
+            },
+            {
+                $project: { "player_id": "$_id", ov: 1, r: 1, w: 1, d: 1, maid: 1, e: 1, wd: 1, nb: 1, _id: 0 }
+            }
+
+        ]
+        //console.log("pipeline: ",countingPipeline);
+        const pipeline = [...countingPipeline]
+        const matchesList = await matches.aggregate(pipeline).toArray()
+        //console.log("oatchlist in vawling....",matchesList);
+        // console.log(total);
+        let data = matchesList.length ? matchesList[0] : {}
+        return data;
+    }
+
+    static async getTeamListByYear(playerId, year) {
+        if (!year) {
+            year = new Date().getFullYear();
+        }
+        year = year.toString();
+        let query = { "matchInfo.matchState": "C", "matchInfo.teams.players.id": parseInt(playerId) };
+        let cursor = await matches.find(query).sort({ _id: -1 });
+        const displayCursor = cursor.limit(1);
+        const articlesList = await displayCursor.toArray()
+
+        var teams = articlesList[0].matchInfo.teams;
+        for (var i = 0; i <= teams.length - 1; i++) {
+
+            const found = teams[i].players.find(element => element.id == playerId);
+            if (found) {
+                var data = {
+                    teamId: teams[i].team.id,
+                    teamName: teams[i].team.fullName,
+                    playersList: teams[i].players
+
+                }
+                return data;
+            }
+        }
+
+        //  console.log("getTeamListByYear....",articlesList);
 
     }
 }

@@ -8,6 +8,7 @@ router.get("/app/franchise/detail/:ID", iplMatchCtrl.apiAppGetFranchiseById)
 router.post("/app/fixtures", iplMatchCtrl.apiAppGetFixtures);
 router.post("/app/results", iplMatchCtrl.apiAppGetResults);
 router.get("/app/results/:match_id", iplMatchCtrl.apiAppGetResultsByMatchId);
+router.get("/app/fixtures/:match_Id",iplMatchCtrl.apiAppGetFranchesByMatchId);
 
 //teams
 //router.get("/app/teams/list", iplMatchCtrl.apiAppGetTeams)
@@ -22,6 +23,7 @@ router.get("/web/teamSchedule/:ID", iplMatchCtrl.apiScheduleById)
 router.get("/web/:type", iplMatchCtrl.apiWebGetMatch)
 router.get("/web/detail/:ID", iplMatchCtrl.apiWebGetMatchById)
 router.get("/web/franchise/detail/:ID", iplMatchCtrl.apiWebGetFranchiseById)
+router.get("/web/squadlist/:ID", iplMatchCtrl.apiWebGetFranchiseById)
 
 //Teams 
 //router.get("/web/teams/list", iplMatchCtrl.apiWebGetTeams)

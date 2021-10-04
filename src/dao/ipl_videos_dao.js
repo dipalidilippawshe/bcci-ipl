@@ -453,14 +453,17 @@ module.exports = class IplVideosDAO {
             throw e
         }
     }
-    static async videoByTeamID(id, page) {
+    static async videoByTeamID(id, page,year) {
         try {
 
             let pageLimit = 20;
             let skip = (page - 1) * pageLimit;
             let query = { "references.id": id }
+            if(year){
+                query = { "references.id": id,date: new RegExp(year, "i") }
+            }
             let total = await videos.find(query).count();
-
+           
             let data = await videos.find(query).limit(pageLimit).skip(skip).toArray();
             return { data: data, total: total };
 
