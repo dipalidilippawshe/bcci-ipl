@@ -8,6 +8,7 @@ router.get("/app/franchise/detail/:ID", iplMatchCtrl.apiAppGetFranchiseById)
 router.post("/app/fixtures", iplMatchCtrl.apiAppGetFixtures);
 router.post("/app/results", iplMatchCtrl.apiAppGetResults);
 router.get("/app/results/:match_id", iplMatchCtrl.apiAppGetResultsByMatchId);
+router.get("/app/fixtures/:match_Id",iplMatchCtrl.apiAppGetFranchesByMatchId);
 
 //teams
 //router.get("/app/teams/list", iplMatchCtrl.apiAppGetTeams)

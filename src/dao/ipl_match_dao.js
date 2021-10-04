@@ -437,39 +437,76 @@ module.exports = class MatchDAO {
             throw e
         }
     }
-    static async getTeamResultsByid(year, page, id) {
+    static async getTeamResultsByid(year, page, id,filters) {
+      
         console.log("Year is: ", year, " id is : ", id);
+        let pageLimit = 20;
         try {
-            let pageLimit = 20;
-            let skip = (page - 1) * pageLimit;
-            const pipeline = [
-                {
-                    $match: {
-                        $and: [{ "matchInfo.matchDate": new RegExp(year, "i") },
-                        { "matchInfo.teams.team.id": parseInt(id) }]
+            if(!filters)
+            {
+                
+                let skip = (page - 1) * pageLimit;
+                const pipeline = [
+                    {
+                        $match: {
+                            $and: [{ "matchInfo.matchDate": new RegExp(year, "i") },
+                            { "matchInfo.teams.team.id": parseInt(id) }]
+                        }
                     }
+                ]
+                const countMatches = [
+                    {
+                        $match: {
+                            $and: [{ "matchInfo.matchDate": new RegExp(year, "i") },
+                            { "matchInfo.teams.team.id": parseInt(id) }]
+                        }
+                    }, { $count: "total" }
+                ]
+                // console.dir(pipeline, { depth: null, color: true })
+    
+                let total = await matches.aggregate(countMatches).toArray();
+    
+                let data = await matches.aggregate(pipeline).limit(pageLimit).skip(skip).toArray();
+                return { data: data, total: total[0].total };
+            }
+            else{
+                let queryParams = {}
+                queryParams.query = {}
+                if ("matchState" in filters) {
+                    queryParams.query["matchInfo.matchState"] = { $in:filters["matchState"]}
                 }
-            ]
-            const countMatches = [
-                {
-                    $match: {
-                        $and: [{ "matchInfo.matchDate": new RegExp(year, "i") },
-                        { "matchInfo.teams.team.id": parseInt(id) }]
-                    }
-                }, { $count: "total" }
-            ]
-            // console.dir(pipeline, { depth: null, color: true })
-
-            let total = await matches.aggregate(countMatches).toArray();
-
-            let data = await matches.aggregate(pipeline).limit(pageLimit).skip(skip).toArray();
-            return { data: data, total: total[0].total };
+                if (id.matchId) {
+                    queryParams.query["matchId.id"] = parseInt(id.matchId)
+                }
+                
+                 if (id.teamId) {
+                    console.log("in team id mme...");
+                    queryParams.query["matchInfo.teams.team.id"] = parseInt(id.teamId)
+                }
+                if (year) {
+                 queryParams.query["matchInfo.matchDate"] = { $in: [new RegExp(year, "i"), new RegExp(year - 1, "i")] }
+                }
+             
+                try {
+              
+                let data = await matches.find(queryParams.query).toArray();
+                  console.log(data);
+                  return { data: data, total: 1 };
+                     
+                } catch (e) {
+                    console.error(`Unable to issue find command, ${e}`)
+                    return { matchesList: [], totalNumMatches: 0 }
+                }
+            }
+          
+           
+          
         }
         catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
                 return null
             }
-            console.error(`Something went wrong in getVideoByID: ${e}`)
+            console.error(`Something went wrong in getting corrent year: ${e}`)
             throw e
         }
     }
