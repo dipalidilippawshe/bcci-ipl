@@ -475,6 +475,7 @@ module.exports = class MatchDAO {
     }
     static async playerInfo(ID) {
         try {
+            console.log("IN players info.............!!!++++++++++++++");
             let id = parseInt(ID);
             console.log("id: ",id );
             const countingPipeline = [
