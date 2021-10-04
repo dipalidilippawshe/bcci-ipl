@@ -476,7 +476,12 @@ module.exports = class MatchController {
         try {
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
             console.log(year)
-            let data = await MatchDAO.getSeasonList({ year: year })
+            if(req.query.teamId){
+                var teamId = req.query.teamId;
+            }else{
+                teamId=null;
+            }
+            let data = await MatchDAO.getSeasonList({ year: year, teamId:teamId })
             if (!data) {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
@@ -797,6 +802,122 @@ module.exports = class MatchController {
         res.json(response)
     }
 
+    static async getWebStatsData(req, res, next) {
+        /**
+         * filters needs to be added are
+         * Filter1 - Most Runs / Most Wickets / Most Fours / Most Sixes / Most Fifties / Most Centuries / Best Bowling Innings /Best Bowling Average / Best Bowling Economy / Highest Scores innings 
+            =>  Filter2 - Season
+            => Filter3 - Teams
+            => Filter4 - Players
+         */
+        console.log("in get appstats");
+        const FIXTURES_PER_PAGE = 20
+        let page
+        try {
+            page = req.body.page ? parseInt(req.body.page, 10) : "0"
+        } catch (e) {
+            console.error(`Got bad value for page:, ${e}`)
+            page = 0
+        }
+
+        let filters = {};
+        if (req.body.stats)
+            filters.stats = req.body.stats
+        else
+            filters.stats = "runs"
+
+        if (req.body.season)
+            filters.year = req.body.season;
+        else
+            filters.year = "2021"
+
+        if (req.body.team)
+            filters.team = req.body.team;
+        else
+            filters.team = "all"
+
+        if (req.body.player)
+            filters.player = req.body.player;
+        else
+            filters.player = "all"
+
+
+        let teams = await MatchDAO.statsData(filters);
+        if (teams.length <= 0) {
+            res.status(404).json({ status: false, error: config.error_codes["1001"] })
+            return
+        }
+        var players = [];
+        //process this data into single list of players
+        for (let i = 0; i <= teams.length - 1; i++) {
+
+            teams[i].player_detail.forEach(element => {
+                element.teamId = teams[i]._id;
+                element.teamName = teams[i].team_details.fullName;
+                players.push(element)
+            });
+        }
+
+        //get Totals per player
+        // let processedPlayers = MatchDAO.getProcessPlayersData(players);
+        console.log("players: ", players);
+        res.json({ status: true, data: players });
+
+    }
+
+    static async getWebPlayersDetails(req, res, next) {
+        var player = req.body.player;
+        if (!player) {
+            res.status(404).json({ status: false, error: config.error_codes["1003"] })
+            return
+        }
+        try{
+            let details = await MatchDAO.playerInfo(player);
+            let players = await MatchDAO.getTeamListByYear(player);
+          
+            let batting = await MatchDAO.getBattingStatsData(parseInt(player));
+            let bawlings = await MatchDAO.getBawlingStatsData(parseInt(player));
+            details.battingStats = batting;
+            details.bowlingStats = bawlings;
+            details.debut = "2008";
+            details.teamData = players;
+            if(details.teamData.teamName){
+                let logoDetails = await franchiseDAO.getfrenchiseByName(details.teamData.teamName)
+                details.teamData.logo = logoDetails;
+            }
+
+            details.description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet ut risus quam quis in. Hendrerit proin ac erat nullam id curabitur. Vestibulum massa, enim quam senectus in lectus enim. Tempor amet, non iaculis tincidunt condimentum magna vel dictum. Proin risus laoreet dignissim augue tortor. Aliquam convallis convallis scelerisque adipiscing vestibulum, lorem id tempus. Porttitor quisque congue sit id lectus quis enim, aliquet egestas. Blandit faucibus nec lectus convallis. Aliquam dignissim massa risus nullam. Vitae, ipsum sed amet ornare sit. Et, ultrices pellentesque pulvinar nibh gravida enim ridiculus. Malesuada viverra ultricies molestie amet, maecenas orci vitae mi. Pulvinar ut sagittis sit eu et nullam."+
+            "Odio ultrices ut facilisis ornare faucibus sed. Dictum consectetur egestas lectus pretium viverra varius aliquet. "
+            res.json({status:true,data:details});
+        }catch(e){
+            res.status(404).json({ status: false, error: config.error_codes["1003"] ,data:e})
+            
+        }
+       
+    }
+
+    static async apiWebGetVenueDetail(req,res,next){
+        let id = req.params.ID;
+        id=parseInt(id);
+
+        if(!id){
+            res.status(404).json({ status: false, error: config.error_codes["1003"] })
+            return
+        }
+
+        try{
+            let details = await MatchDAO.getVenueById(id);
+            console.log("details is: ",details);
+            if(!details){
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
+                return
+            }
+            details.imageUrl = "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/addplayer/stadium.png";
+            res.status(200).json({status:true, data:details});
+        }catch(e){
+            res.status(404).json({ status: false, error: config.error_codes["1003"] ,data:e})
+        }
+    }
 
 }
 

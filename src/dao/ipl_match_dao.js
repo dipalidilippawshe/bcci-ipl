@@ -202,7 +202,7 @@ module.exports = class MatchDAO {
     }
     static async getSeasonList(params) {
         try {
-            const pipeline = [
+            let pipeline = [
                 // {
                 //     $match: {
                 //         "matchInfo.matchDate": new RegExp(params.year, "i")
@@ -227,6 +227,34 @@ module.exports = class MatchDAO {
                 }
 
             ]
+
+            if(params.teamId && params.teamId!==null){
+                pipeline = [
+                    {
+                        $match: {
+                            "matchInfo.teams.team.id": parseInt(params.teamId)
+                        }
+                    },
+    
+                    {
+                        $group: {
+                            _id: {
+                                "$substr": [
+                                    "$matchInfo.matchDate",
+                                    0,
+                                    4
+                                ]
+                            },
+                            "tournament_id": { $first: "$matchId.tournamentId.id" }
+                        }
+                    },
+                    { $sort: { "_id": 1 } },
+                    {
+                        $project: { "year": "$_id", "tournament_id": 1, _id: 0 }
+                    }
+    
+                ]
+            }
             console.dir(pipeline, { depth: null, color: true })
             //  console.log(franchise_years)
             return await matches.aggregate(pipeline).toArray()
@@ -825,5 +853,10 @@ module.exports = class MatchDAO {
 
       //  console.log("getTeamListByYear....",articlesList);
 
+    }
+    static async getVenueById(id){
+        let cursor = await matches.findOne({"matchInfo.venue.id":id});
+        
+        return cursor.matchInfo.venue;
     }
 }

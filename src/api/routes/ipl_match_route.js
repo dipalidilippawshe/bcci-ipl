@@ -29,6 +29,7 @@ router.get("/web/squadlist/:ID", iplMatchCtrl.apiWebGetFranchiseById)
 //router.get("/web/teams/list", iplMatchCtrl.apiWebGetTeams)
 router.get("/web/franchise/teams-list", iplMatchCtrl.apiWebGetTeams)
 router.get("/web/franchise/venue-list", iplMatchCtrl.apiWebGetVenue)
+router.get("/web/franchise/venue-detail/:ID",iplMatchCtrl.apiWebGetVenueDetail)
 router.get("/web/franchise/season-list", iplMatchCtrl.apiWebGetSeasonList)
 router.get("/web/archive/:franchise_id", iplMatchCtrl.apiWebArchiveByTeam)
 
@@ -36,4 +37,8 @@ router.get("/web/archive/:franchise_id", iplMatchCtrl.apiWebArchiveByTeam)
 //stats apis
 router.post("/app/stats", iplMatchCtrl.getAppStatsData);
 router.post("/app/playersdetails", iplMatchCtrl.getAppPlayersDetails);
+
+//stats web
+router.post("/web/stats", iplMatchCtrl.getWebStatsData);
+router.post("/web/playersdetails", iplMatchCtrl.getWebPlayersDetails);
 module.exports = router
