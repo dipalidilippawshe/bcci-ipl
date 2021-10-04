@@ -45,7 +45,7 @@ module.exports = class MatchController {
             }
         }
         else {
-     
+
             let page
             try {
                 page = req.query.page ? parseInt(req.query.page, 10) : "0"
@@ -173,8 +173,7 @@ module.exports = class MatchController {
             // filters.startDate = req.query.startDate && new Date(req.query.startDate) !== "Invalid Date" ? new Date(req.query.startDate).getFullYear() : undefined
             //filters.endDate = req.query.endDate && new Date(req.query.endDate) !== "Invalid Date" ? new Date(req.query.endDate).getFullYear() : undefined
             filters.team = req.query.team ? [req.query.team] : ["m", "w"]
-            if(req.query.teamId)
-            {
+            if (req.query.teamId) {
                 filters.team_id = req.query.teamId;
             }
             //console.log(req.query.startDate, new Date(req.query.startDate))
@@ -667,10 +666,10 @@ module.exports = class MatchController {
         }
 
         let details = await MatchDAO.playerInfo(player);
-        console.log("details: ",details);
-        details.description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet ut risus quam quis in. Hendrerit proin ac erat nullam id curabitur. Vestibulum massa, enim quam senectus in lectus enim. Tempor amet, non iaculis tincidunt condimentum magna vel dictum. Proin risus laoreet dignissim augue tortor. Aliquam convallis convallis scelerisque adipiscing vestibulum, lorem id tempus. Porttitor quisque congue sit id lectus quis enim, aliquet egestas. Blandit faucibus nec lectus convallis. Aliquam dignissim massa risus nullam. Vitae, ipsum sed amet ornare sit. Et, ultrices pellentesque pulvinar nibh gravida enim ridiculus. Malesuada viverra ultricies molestie amet, maecenas orci vitae mi. Pulvinar ut sagittis sit eu et nullam."+
-        "Odio ultrices ut facilisis ornare faucibus sed. Dictum consectetur egestas lectus pretium viverra varius aliquet. "
-        res.json({status:true,data:details});
+        console.log("details: ", details);
+        details.description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet ut risus quam quis in. Hendrerit proin ac erat nullam id curabitur. Vestibulum massa, enim quam senectus in lectus enim. Tempor amet, non iaculis tincidunt condimentum magna vel dictum. Proin risus laoreet dignissim augue tortor. Aliquam convallis convallis scelerisque adipiscing vestibulum, lorem id tempus. Porttitor quisque congue sit id lectus quis enim, aliquet egestas. Blandit faucibus nec lectus convallis. Aliquam dignissim massa risus nullam. Vitae, ipsum sed amet ornare sit. Et, ultrices pellentesque pulvinar nibh gravida enim ridiculus. Malesuada viverra ultricies molestie amet, maecenas orci vitae mi. Pulvinar ut sagittis sit eu et nullam." +
+            "Odio ultrices ut facilisis ornare faucibus sed. Dictum consectetur egestas lectus pretium viverra varius aliquet. "
+        res.json({ status: true, data: details });
     }
 
     static async apiAppGetResultsByMatchId(req, res, next) {
@@ -711,6 +710,50 @@ module.exports = class MatchController {
         }
         res.json(response)
     }
+    static async apiAppGetFranchesByMatchId(req, res, next) {
+        //franches
+     
+        nsole.log("IN fixtures...");
+        const FIXTURES_PER_PAGE = 20;
+        let page
+        try {
+            page = req.query.page ? parseInt(req.query.page, 10) : "0"
+        } catch (e) {
+            console.error(`Got bad value for page:, ${e}`)
+            page = 0
+        }
+        var filters = { matchId: req.params.match_Id };
+        console.log(filters
+            
+            )
+        filters.year = req.query.year && parseInt(req.query.year) || new Date().getFullYear();
+        filters.matchState = ["U"]
+        const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
+            filters,
+            page,
+            FIXTURES_PER_PAGE
+        })
+        var MatchVideos = []
+        let matchVideoFilter = { match_id: req.params.match_id }
+        let matchVideoPage = 1
+        let matchLimitPage = 1
+        MatchVideos = await videosDAO.getIplVideosByFilter(matchVideoFilter, matchVideoPage, matchLimitPage)
+        let response = {
+            status: true,
+            data: matchesList,
+            match_video: MatchVideos && MatchVideos.list ? MatchVideos.list : [],
+            page: page,
+            filters: {},
+            entries_per_page: FIXTURES_PER_PAGE,
+            total_results: totalNumMatches,
+        }
+        if (matchesList.length <= 0) {
+            res.status(404).json({ status: false, error: config.error_codes["1001"] })
+            return
+        }
+        res.json(response)
+    }
+
 
 }
 
