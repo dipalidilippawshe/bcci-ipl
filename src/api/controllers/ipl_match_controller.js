@@ -304,7 +304,33 @@ module.exports = class MatchController {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ status: true, data: article })
+            let frenchise = await franchiseDAO.getfrenchiseDetails(id);
+            if (!frenchise || frenchise == null) {
+                return res.json({ status: true, data: article })
+            } else {
+                console.log("elsing me...",frenchise.logo);
+                var returnData = article;
+                returnData[0].logo = frenchise.logo;
+                returnData[0].owner = frenchise.owner;
+                returnData[0].venue = frenchise.venue;
+
+                //winning years of team
+                let won = await MatchDAO.findWinsByTeam(parseInt(id), frenchise.name);
+
+                console.log("returnData: ", won);
+                returnData[0].wonYears = won;
+                returnData[0].previousWin = won[won.length - 1];
+
+                //latest news
+                var page = 6;
+                let Iplarticle = await IplArticlesDAO.getIplArticleByTeamsId(page, parseInt(id), year)
+                returnData[0].latestNews = Iplarticle.data;
+                let videos = await videosDAO.videoByTeamID(parseInt(id), page, year);
+                returnData[0].latestVideos = videos.data;
+                return res.json({ status: true, data: returnData })
+                //console.log("frenchise is; ", frenchise);
+            }
+            
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
