@@ -852,47 +852,81 @@ module.exports = class MatchController {
         }
 
         let filters = {};
-        if (req.body.stats)
-            filters.stats = req.body.stats
-        else
-            filters.stats = "runs"
+        if (req.body.stats_type)
+            filters.stats_type = req.body.stats_type
 
         if (req.body.season)
             filters.year = req.body.season;
         else
-            filters.year = "2021"
+            filters.year = "2020"
 
-        if (req.body.team)
-            filters.team = req.body.team;
+        if (req.body.team_id)
+            filters.team_id = req.body.team_id;
+
+        if (req.body.player_type)
+            filters.player_type = req.body.player_type;
         else
-            filters.team = "all"
+            filters.player_type = "All"
 
-        if (req.body.player)
-            filters.player = req.body.player;
-        else
-            filters.player = "all"
+        if (req.body.sort)
+            filters.sort = req.body.sort
 
 
-        let teams = await MatchDAO.statsData(filters);
-        if (teams.length <= 0) {
+
+        let bat, bowl;
+        if (filters.stats_type == "batting") {
+            bat = await MatchDAO.statsBattingData(filters);
+            // bat.forEach(async (i, element) => {
+            //     if (element.player_id) {
+            //         element.player_detail = await MatchDAO.playerInfoById(element.player_id);
+            //         bat[i] = element
+            //     }
+            // });
+
+
+        } else if (filters.stats_type == "bowling") {
+            bowl = await MatchDAO.statsBowlingData(filters);
+        } else {
+            bat = await MatchDAO.statsBattingData(filters);
+            bowl = await MatchDAO.statsBowlingData(filters);
+
+        }
+
+        if (bat && bat.length > 0 || bowl && bowl.length > 0) {
+            if (bat && bat.length > 0) {
+                for (var i = 0; i < bat.length; i++) {
+                    bat[i].player_detail = await MatchDAO.playerInfoById(bat[i].player_id);
+
+                    if (filters.player_type && filters.player_type == "Indian" && bat[i].player_detail.nationality !== "Indian") {
+                        bat.splice(i, 1);
+                        i--;
+                    }
+                    if (filters.player_type && filters.player_type !== "Indian" && filters.player_type !== "All" && bat[i].player_detail.nationality === "Indian") {
+                        bat.splice(i, 1);
+                        i--;
+                    }
+                }
+
+            }
+            if (bowl && bowl.length > 0) {
+                for (var i = 0; i < bowl.length; i++) {
+                    bowl[i].player_detail = await MatchDAO.playerInfoById(bowl[i].player_id);
+
+                    if (filters.player_type && filters.player_type == "Indian" && bowl[i].player_detail.nationality !== "Indian") {
+                        bowl.splice(i, 1);
+                        i--;
+                    }
+                    if (filters.player_type && filters.player_type !== "Indian" && filters.player_type !== "All" && bowl[i].player_detail.nationality === "Indian") {
+                        bowl.splice(i, 1);
+                        i--;
+                    }
+                }
+            }
+            res.json({ status: true, data: { batting: bat, bowling: bowl } });
+        } else {
             res.status(404).json({ status: false, error: config.error_codes["1001"] })
             return
         }
-        var players = [];
-        //process this data into single list of players
-        for (let i = 0; i <= teams.length - 1; i++) {
-
-            teams[i].player_detail.forEach(element => {
-                element.teamId = teams[i]._id;
-                element.teamName = teams[i].team_details.fullName;
-                players.push(element)
-            });
-        }
-
-        //get Totals per player
-        // let processedPlayers = MatchDAO.getProcessPlayersData(players);
-        console.log("players: ", players);
-        res.json({ status: true, data: players });
 
     }
 
