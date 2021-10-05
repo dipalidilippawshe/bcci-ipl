@@ -157,7 +157,7 @@ module.exports = class IplVideosController {
             console.error(`Got bad value for page:, ${e}`)
             page = 0
         }
-        const filter = null
+        const filter = "";
         const { videosList, totalNumIplVideos } = await IplVideosDAO.getIplVideos(filter, page, LIMIT_PER_PAGE)
         let response = {
             videos: videosList,
