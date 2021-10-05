@@ -58,7 +58,7 @@ module.exports = class IplVideosController {
             res.status(500).json({ error: e });
         }
     }
-    static async apiWebGetPlaylistById(req,res,next) {
+    static async apiWebGetPlaylistById(req, res, next) {
         try {
             const id = req.params.id ? req.params.id : "";
             const playList = await playlistDAO.getPlayListByid(parseInt(id));
