@@ -217,7 +217,14 @@ module.exports = class MatchController {
                     filters, page,
                     FIXTURES_PER_PAGE
                 })
+               
                 //  console.log(matchesList)
+                 if(!matchesList || matchesList.length<=0)
+                 {
+                        res.status(404).json({ status: false, error: config.error_codes["1001"] })
+                        return
+                
+                 }
                 let response = {
                     status: true,
                     data: matchesList,
@@ -560,7 +567,7 @@ module.exports = class MatchController {
             } else {
                 console.log("In else me");
                 let data = await videosDAO.videoByMatchID(id)
-                if (!data) {
+                if (!data || data.length<=0) {
                     res.status(404).json({ status: false, error: config.error_codes["1001"] })
                     return
                 }
@@ -579,7 +586,8 @@ module.exports = class MatchController {
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
             console.log(year)
             let data = await MatchDAO.getScheduleList(year, id)
-            if (!data) {
+      
+            if (!data || data.length <= 0) {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             } else {
