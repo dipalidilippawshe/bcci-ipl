@@ -96,7 +96,10 @@ module.exports = class MatchController {
                     filters, page,
                     FIXTURES_PER_PAGE
                 })
-                //  console.log(matchesList)
+                if (!matchesList || matchesList && !matchesList.length) {
+                    res.status(404).json({ status: false, error: config.error_codes["1001"] })
+                    return
+                }
                 let response = {
                     status: true,
                     data: matchesList,
@@ -137,7 +140,7 @@ module.exports = class MatchController {
 
                 let matches = await MatchDAO.getIplMatchesFilterByType(req.params.type, page, parseInt(id))
 
-                if (!matches) {
+                if (!matches || !matches.list.length) {
                     res.status(404).json({ status: false, error: config.error_codes["1001"] })
                     return
                 }
@@ -201,6 +204,10 @@ module.exports = class MatchController {
                     page,
                     FIXTURES_PER_PAGE
                 })
+                if (!matchesList || !matchesList.length) {
+                    res.status(404).json({ status: false, error: config.error_codes["1001"] })
+                    return
+                }
                 let response = {
                     status: true,
                     data: matchesList,
@@ -217,7 +224,10 @@ module.exports = class MatchController {
                     filters, page,
                     FIXTURES_PER_PAGE
                 })
-                //  console.log(matchesList)
+                if (!matchesList || matchesList && !matchesList.length) {
+                    res.status(404).json({ status: false, error: config.error_codes["1001"] })
+                    return
+                }
                 let response = {
                     status: true,
                     data: matchesList,
@@ -261,7 +271,7 @@ module.exports = class MatchController {
             if (!frenchise || frenchise == null) {
                 return res.json({ status: true, data: article })
             } else {
-                console.log("elsing me...",frenchise.logo);
+                console.log("elsing me...", frenchise.logo);
                 var returnData = article;
                 returnData[0].logo = frenchise.logo;
                 returnData[0].owner = frenchise.owner;
@@ -308,7 +318,7 @@ module.exports = class MatchController {
             if (!frenchise || frenchise == null) {
                 return res.json({ status: true, data: article })
             } else {
-                console.log("elsing me...",frenchise.logo);
+                console.log("elsing me...", frenchise.logo);
                 var returnData = article;
                 returnData[0].logo = frenchise.logo;
                 returnData[0].owner = frenchise.owner;
@@ -330,7 +340,7 @@ module.exports = class MatchController {
                 return res.json({ status: true, data: returnData })
                 //console.log("frenchise is; ", frenchise);
             }
-            
+
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
@@ -475,12 +485,12 @@ module.exports = class MatchController {
         try {
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
             console.log(year)
-            if(req.query.teamId){
+            if (req.query.teamId) {
                 var teamId = req.query.teamId;
-            }else{
-                teamId=null;
+            } else {
+                teamId = null;
             }
-            let data = await MatchDAO.getSeasonList({ year: year, teamId:teamId })
+            let data = await MatchDAO.getSeasonList({ year: year, teamId: teamId })
             if (!data) {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
@@ -726,29 +736,29 @@ module.exports = class MatchController {
             res.status(404).json({ status: false, error: config.error_codes["1003"] })
             return
         }
-        try{
+        try {
             let details = await MatchDAO.playerInfo(player);
             let players = await MatchDAO.getTeamListByYear(player);
-          
+
             let batting = await MatchDAO.getBattingStatsData(parseInt(player));
             let bawlings = await MatchDAO.getBawlingStatsData(parseInt(player));
             details.battingStats = batting;
             details.bowlingStats = bawlings;
             details.debut = "2008";
             details.teamData = players;
-            if(details.teamData.teamName){
+            if (details.teamData.teamName) {
                 let logoDetails = await franchiseDAO.getfrenchiseByName(details.teamData.teamName)
                 details.teamData.logo = logoDetails;
             }
 
-            details.description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet ut risus quam quis in. Hendrerit proin ac erat nullam id curabitur. Vestibulum massa, enim quam senectus in lectus enim. Tempor amet, non iaculis tincidunt condimentum magna vel dictum. Proin risus laoreet dignissim augue tortor. Aliquam convallis convallis scelerisque adipiscing vestibulum, lorem id tempus. Porttitor quisque congue sit id lectus quis enim, aliquet egestas. Blandit faucibus nec lectus convallis. Aliquam dignissim massa risus nullam. Vitae, ipsum sed amet ornare sit. Et, ultrices pellentesque pulvinar nibh gravida enim ridiculus. Malesuada viverra ultricies molestie amet, maecenas orci vitae mi. Pulvinar ut sagittis sit eu et nullam."+
-            "Odio ultrices ut facilisis ornare faucibus sed. Dictum consectetur egestas lectus pretium viverra varius aliquet. "
-            res.json({status:true,data:details});
-        }catch(e){
-            res.status(404).json({ status: false, error: config.error_codes["1003"] ,data:e})
-            
+            details.description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet ut risus quam quis in. Hendrerit proin ac erat nullam id curabitur. Vestibulum massa, enim quam senectus in lectus enim. Tempor amet, non iaculis tincidunt condimentum magna vel dictum. Proin risus laoreet dignissim augue tortor. Aliquam convallis convallis scelerisque adipiscing vestibulum, lorem id tempus. Porttitor quisque congue sit id lectus quis enim, aliquet egestas. Blandit faucibus nec lectus convallis. Aliquam dignissim massa risus nullam. Vitae, ipsum sed amet ornare sit. Et, ultrices pellentesque pulvinar nibh gravida enim ridiculus. Malesuada viverra ultricies molestie amet, maecenas orci vitae mi. Pulvinar ut sagittis sit eu et nullam." +
+                "Odio ultrices ut facilisis ornare faucibus sed. Dictum consectetur egestas lectus pretium viverra varius aliquet. "
+            res.json({ status: true, data: details });
+        } catch (e) {
+            res.status(404).json({ status: false, error: config.error_codes["1003"], data: e })
+
         }
-       
+
     }
 
     static async apiAppGetResultsByMatchId(req, res, next) {
@@ -791,7 +801,7 @@ module.exports = class MatchController {
     }
     static async apiAppGetFranchesByMatchId(req, res, next) {
         //franches
-     
+
         console.log("IN fixtures...");
         const FIXTURES_PER_PAGE = 20;
         let page
@@ -803,8 +813,8 @@ module.exports = class MatchController {
         }
         var filters = { matchId: req.params.match_Id };
         console.log(filters
-            
-            )
+
+        )
         filters.year = req.query.year && parseInt(req.query.year) || new Date().getFullYear();
         filters.matchState = ["U"]
         const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
@@ -936,51 +946,51 @@ module.exports = class MatchController {
             res.status(404).json({ status: false, error: config.error_codes["1003"] })
             return
         }
-        try{
+        try {
             let details = await MatchDAO.playerInfo(player);
             let players = await MatchDAO.getTeamListByYear(player);
-          
+
             let batting = await MatchDAO.getBattingStatsData(parseInt(player));
             let bawlings = await MatchDAO.getBawlingStatsData(parseInt(player));
             details.battingStats = batting;
             details.bowlingStats = bawlings;
             details.debut = "2008";
             details.teamData = players;
-            if(details.teamData.teamName){
+            if (details.teamData.teamName) {
                 let logoDetails = await franchiseDAO.getfrenchiseByName(details.teamData.teamName)
                 details.teamData.logo = logoDetails;
             }
 
-            details.description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet ut risus quam quis in. Hendrerit proin ac erat nullam id curabitur. Vestibulum massa, enim quam senectus in lectus enim. Tempor amet, non iaculis tincidunt condimentum magna vel dictum. Proin risus laoreet dignissim augue tortor. Aliquam convallis convallis scelerisque adipiscing vestibulum, lorem id tempus. Porttitor quisque congue sit id lectus quis enim, aliquet egestas. Blandit faucibus nec lectus convallis. Aliquam dignissim massa risus nullam. Vitae, ipsum sed amet ornare sit. Et, ultrices pellentesque pulvinar nibh gravida enim ridiculus. Malesuada viverra ultricies molestie amet, maecenas orci vitae mi. Pulvinar ut sagittis sit eu et nullam."+
-            "Odio ultrices ut facilisis ornare faucibus sed. Dictum consectetur egestas lectus pretium viverra varius aliquet. "
-            res.json({status:true,data:details});
-        }catch(e){
-            res.status(404).json({ status: false, error: config.error_codes["1003"] ,data:e})
-            
+            details.description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Amet ut risus quam quis in. Hendrerit proin ac erat nullam id curabitur. Vestibulum massa, enim quam senectus in lectus enim. Tempor amet, non iaculis tincidunt condimentum magna vel dictum. Proin risus laoreet dignissim augue tortor. Aliquam convallis convallis scelerisque adipiscing vestibulum, lorem id tempus. Porttitor quisque congue sit id lectus quis enim, aliquet egestas. Blandit faucibus nec lectus convallis. Aliquam dignissim massa risus nullam. Vitae, ipsum sed amet ornare sit. Et, ultrices pellentesque pulvinar nibh gravida enim ridiculus. Malesuada viverra ultricies molestie amet, maecenas orci vitae mi. Pulvinar ut sagittis sit eu et nullam." +
+                "Odio ultrices ut facilisis ornare faucibus sed. Dictum consectetur egestas lectus pretium viverra varius aliquet. "
+            res.json({ status: true, data: details });
+        } catch (e) {
+            res.status(404).json({ status: false, error: config.error_codes["1003"], data: e })
+
         }
-       
+
     }
 
-    static async apiWebGetVenueDetail(req,res,next){
+    static async apiWebGetVenueDetail(req, res, next) {
         let id = req.params.ID;
-        id=parseInt(id);
+        id = parseInt(id);
 
-        if(!id){
+        if (!id) {
             res.status(404).json({ status: false, error: config.error_codes["1003"] })
             return
         }
 
-        try{
+        try {
             let details = await MatchDAO.getVenueById(id);
-            console.log("details is: ",details);
-            if(!details){
+            console.log("details is: ", details);
+            if (!details) {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
             details.imageUrl = "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/addplayer/stadium.png";
-            res.status(200).json({status:true, data:details});
-        }catch(e){
-            res.status(404).json({ status: false, error: config.error_codes["1003"] ,data:e})
+            res.status(200).json({ status: true, data: details });
+        } catch (e) {
+            res.status(404).json({ status: false, error: config.error_codes["1003"], data: e })
         }
     }
 
