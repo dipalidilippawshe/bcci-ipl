@@ -1018,4 +1018,48 @@ module.exports = class MatchDAO {
         
         return cursor.matchInfo.venue;
     }
+
+    static async getHighestBattingStats(){
+        const countingPipeline = [
+            { $unwind: "$innings" },
+            { $unwind: "$innings.scorecard.battingStats" },
+            {
+                $project: {
+                    "matchInfo.matchDate": 1,
+                    "innings.scorecard.battingStats": 1,
+                    "matchId": 1,                   
+                    "matchInfo.teams":1,
+                }
+            },
+            {
+                $group:
+                {
+
+                    _id: "$innings.scorecard.battingStats.playerId",
+                    mostRuns: { $sum: "$innings.scorecard.battingStats.r" },
+                    most4s: { $sum: "$innings.scorecard.battingStats.4s" },
+                    most6s: { $sum: "$innings.scorecard.battingStats.6s" },
+                    bestBat: { $push: { "runs": "$innings.scorecard.battingStats.r" } },
+                    score : {$sum: "$innings.scorecard.battingStats.sr"}
+                    
+                }
+            },
+            {
+                $project: {
+                    player_id: "$_id",
+                    mostRuns: 1,
+                    most4s: 1,
+                    most6s: 1,
+                    //bestBat:1,
+                    score:1,
+                    _id: 0,
+                }
+            }
+
+        ]
+        const pipeline = [...countingPipeline]
+        console.dir(pipeline, { depth: null, color: true })
+        const matchesList = await (await matches.aggregate(pipeline)).toArray()
+        return matchesList
+    }
 }

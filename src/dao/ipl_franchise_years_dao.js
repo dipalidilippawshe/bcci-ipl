@@ -2,6 +2,7 @@ const { ObjectId } = require("bson")
 
 let franchise_years
 let matches
+let frenchisesData
 let promos
 let mflix
 const DEFAULT_SORT = [["tomatoes.viewer.numReviews", -1]]
@@ -12,8 +13,10 @@ module.exports = class IplRecordsDAO {
         try {
             franchise_years = await conn.db(process.env.BCCINS).collection("franchise_years")
             matches = await conn.db(process.env.BCCINS).collection("ipl_matches");
+            frenchisesData = await conn.db(process.env.BCCINS).collection("franchises");
             this.franchise_years = franchise_years // this is only for testing
             this.matches = matches
+           
             //this.promos = promos
         } catch (e) {
             console.error(
@@ -134,6 +137,10 @@ module.exports = class IplRecordsDAO {
                 }
                 //console.log("+++++++++++++++++++++++++++++++++++++");
                 obj.wonYears = won;
+
+                //find frenchise logo
+                let logo = await frenchisesData.findOne({name:frenchises[i].fullName},{logo:1});
+                obj.logo=logo.logo;
                 //console.log(" frenchises.wonYears us: ", frenchises.wonYears);
                 returnData.push(obj);
                 if (returnData.length == frenchises.length) {
