@@ -24,7 +24,7 @@ module.exports = class PagesController {
 
         for(let i=0;i<=menuFromDB.length-1;i++){
             menuFromDB[i].group = menuFromDB[i].category;
-            console.log("group is: ",menuFromDB[i].group);
+            
         }
 
         if (!menuFromDB) {
