@@ -51,6 +51,22 @@ module.exports = class PagesController {
 
 
   }
+  static async webVideoLIstpage(req, res, next) {
+
+    var slug = "video-list-web";
+    const pageFromDB = await PagesDAO.getPage(slug)
+    if (!pageFromDB) {
+      res.send({ status: false, message: "Error!" });
+      // errors.general = "Internal error, please try again later"
+    }
+    else {
+      //processPageData(pageFromDB, req, res, next);
+      console.log("In page data here me;;;... ");
+      res.send({ status: true, message: "Received pagedata", pageData: pageFromDB });
+    }
+
+
+  }
 }
 
 
