@@ -46,7 +46,7 @@ module.exports = class MenuDAO {
     let cursor
     try {
       cursor = await logos
-        .find({});
+        .find({category:{$ne:null}});
 
       const displayCursor = cursor.limit(matchesPerPage)
 

@@ -411,8 +411,8 @@ module.exports = class MatchController {
         filters.team = req.body.team ? [req.body.team] : ["m", "w"]
         if (req.body.team_id)
             filters.team_id = req.body.team_id;
-        filters.startDate = new Date("2008-01-01").toISOString();
-        filters.endDate = new Date("2021-01-01").toISOString();
+        // filters.startDate = new Date("2008-01-01").toISOString();
+        // filters.endDate = new Date("2021-01-01").toISOString();
         filters.year = req.query.year && parseInt(req.query.year) || new Date().getFullYear()
         console.log("In apis list: ", filters);
         const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
@@ -992,6 +992,22 @@ module.exports = class MatchController {
             res.status(200).json({ status: true, data: details });
         } catch (e) {
             res.status(404).json({ status: false, error: config.error_codes["1003"], data: e })
+        }
+    }
+    static async getapiWebLeaders(req,res,next){
+        try{
+
+            let details = await MatchDAO.getHighestBattingStats();
+            let run = details.reduce((max, obj) => (max.mostRuns > obj.mostRuns) ? max : obj);
+            let fours = details.reduce((max, obj) => (max.mostRuns > obj.mostRuns) ? max : obj);
+            let six = details.reduce((max, obj) => (max.mostRuns > obj.mostRuns) ? max : obj);
+            let strikeRate = details.reduce((max, obj) => (parseInt(max.sr) > parseInt(obj.sr)) ? max : obj);
+
+           //let reduced =  details.reduce((acc, shot) => acc = acc > shot.mostRuns ? acc : shot.mostRuns, 0);
+           console.log("details: ",strikeRate);
+            res.json({ status: true, data: details });
+        }catch(e){
+            res.status(404).json({ status: false, error: config.error_codes["1003"] ,data:e})
         }
     }
 

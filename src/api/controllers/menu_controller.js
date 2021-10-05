@@ -21,6 +21,12 @@ module.exports = class PagesController {
         console.log("At route me...");
         var slug = "home"
         const menuFromDB = await MenusDAO.getsposorsList()
+
+        for(let i=0;i<=menuFromDB.length-1;i++){
+            menuFromDB[i].group = menuFromDB[i].category;
+            
+        }
+
         if (!menuFromDB) {
             errors.general = "Internal error, please try again later"
         }
