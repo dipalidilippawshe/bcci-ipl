@@ -15,6 +15,10 @@ module.exports = class IplVideosController {
         let filters = { type: type, match_id: req.query.match_id, player_id: req.query.player_id, season_id: req.query.season_id, team_id: req.query.team_id }
 
         const respo = await IplVideosDAO.getIplVideosByFilter(filters, page, limit);
+        if (respo && !respo.list.length) {
+            res.status(404).json({ status: false, error: config.error_codes["1001"] })
+            return
+        }
         let response = {
             status: true,
             message: "Retrived data!",
@@ -37,6 +41,10 @@ module.exports = class IplVideosController {
             let limit = 20
             let filters = { type: type, match_id: req.query.match_id, player_id: req.query.player_id, season_id: req.query.season_id, team_id: req.query.team_id }
             const respo = await IplVideosDAO.getIplVideosByFilter(filters, page, limit);
+            if (respo && !respo.list.length) {
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
+                return
+            }
 
             let response = {
                 status: true,
@@ -49,15 +57,15 @@ module.exports = class IplVideosController {
         }
         else {
             try {
-                let page =req.query.page?req.query.page:1;
+                let page = req.query.page ? req.query.page : 1;
 
                 let id = req.query.id && parseInt(req.query.id) || "0"
-                let videos = await IplVideosDAO.videoByTeamID(parseInt(id),page)
+                let videos = await IplVideosDAO.videoByTeamID(parseInt(id), page)
                 if (!videos) {
                     res.status(404).json({ status: false, error: config.error_codes["1001"] })
                     return
                 }
-               
+
                 let response = {
                     status: true,
                     message: "Retrived data!",
@@ -159,6 +167,10 @@ module.exports = class IplVideosController {
         }
         const filter = "";
         const { videosList, totalNumIplVideos } = await IplVideosDAO.getIplVideos(filter, page, LIMIT_PER_PAGE)
+        if (!videosList) {
+            res.status(404).json({ status: false, error: config.error_codes["1001"] })
+            return
+        }
         let response = {
             videos: videosList,
             page: page,
@@ -179,9 +191,13 @@ module.exports = class IplVideosController {
             page = 1;
         let limit = 20
         let filters = { type: type, match_id: req.query.match_id, player_id: req.query.player_id, season_id: req.query.season_id, team_id: req.query.team_id }
-        console.log(filters)
+        console.log("......................", filters)
         const respo = await IplVideosDAO.getIplVideosByFilter(filters, page, limit);
-        console.log(".....", respo)
+        console.log(respo)
+        if (respo && !respo.list.length) {
+            res.status(404).json({ status: false, error: config.error_codes["1001"] })
+            return
+        }
         let response = {
             status: true,
             message: "Retrived data!",

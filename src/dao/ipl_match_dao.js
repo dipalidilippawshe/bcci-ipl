@@ -146,9 +146,10 @@ module.exports = class MatchDAO {
             const matchesList = await (await matches.aggregate(pipeline)).toArray()
             //console.log(results)
             const totalNumMatches = await (await matches.aggregate([...countingPipeline, { $count: "count" }])).next()
+            console.log(totalNumMatches)
             return {
                 matchesList,
-                totalNumMatches: totalNumMatches.count,
+                totalNumMatches: totalNumMatches ? totalNumMatches.count : 0,
             }
         } catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
@@ -228,14 +229,14 @@ module.exports = class MatchDAO {
 
             ]
 
-            if(params.teamId && params.teamId!==null){
+            if (params.teamId && params.teamId !== null) {
                 pipeline = [
                     {
                         $match: {
                             "matchInfo.teams.team.id": parseInt(params.teamId)
                         }
                     },
-    
+
                     {
                         $group: {
                             _id: {
@@ -252,7 +253,7 @@ module.exports = class MatchDAO {
                     {
                         $project: { "year": "$_id", "tournament_id": 1, _id: 0 }
                     }
-    
+
                 ]
             }
             console.dir(pipeline, { depth: null, color: true })
@@ -1013,9 +1014,9 @@ module.exports = class MatchDAO {
         //  console.log("getTeamListByYear....",articlesList);
 
     }
-    static async getVenueById(id){
-        let cursor = await matches.findOne({"matchInfo.venue.id":id});
-        
+    static async getVenueById(id) {
+        let cursor = await matches.findOne({ "matchInfo.venue.id": id });
+
         return cursor.matchInfo.venue;
     }
 }
