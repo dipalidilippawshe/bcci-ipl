@@ -682,12 +682,6 @@ module.exports = class MatchController {
         let bat, bowl;
         if (filters.stats_type == "batting") {
             bat = await MatchDAO.statsBattingData(filters);
-            // bat.forEach(async (i, element) => {
-            //     if (element.player_id) {
-            //         element.player_detail = await MatchDAO.playerInfoById(element.player_id);
-            //         bat[i] = element
-            //     }
-            // });
 
 
         } else if (filters.stats_type == "bowling") {
@@ -701,13 +695,13 @@ module.exports = class MatchController {
         if (bat && bat.length > 0 || bowl && bowl.length > 0) {
             if (bat && bat.length > 0) {
                 for (var i = 0; i < bat.length; i++) {
-                    bat[i].player_detail = await MatchDAO.playerInfoById(bat[i].player_id);
+                    bat[i].teams = await MatchDAO.playerInfoById(bat[i].player_id, bat[i].highestInnScore.matchId.id);
 
-                    if (filters.player_type && filters.player_type == "Indian" && bat[i].player_detail.nationality !== "Indian") {
+                    if (filters.player_type && filters.player_type == "Indian" && bat[i].teams.player_detail.nationality !== "Indian") {
                         bat.splice(i, 1);
                         i--;
                     }
-                    if (filters.player_type && filters.player_type !== "Indian" && filters.player_type !== "All" && bat[i].player_detail.nationality === "Indian") {
+                    if (filters.player_type && filters.player_type !== "Indian" && filters.player_type !== "All" && bat[i].teams.player_detail.nationality === "Indian") {
                         bat.splice(i, 1);
                         i--;
                     }
@@ -716,13 +710,14 @@ module.exports = class MatchController {
             }
             if (bowl && bowl.length > 0) {
                 for (var i = 0; i < bowl.length; i++) {
-                    bowl[i].player_detail = await MatchDAO.playerInfoById(bowl[i].player_id);
 
-                    if (filters.player_type && filters.player_type == "Indian" && bowl[i].player_detail.nationality !== "Indian") {
+                    bowl[i].teams = await MatchDAO.playerInfoById(bowl[i].player_id, bowl[i].bestBowlInn.matchId.id);
+
+                    if (filters.player_type && filters.player_type == "Indian" && bowl[i].teams.player_detail.nationality !== "Indian") {
                         bowl.splice(i, 1);
                         i--;
                     }
-                    if (filters.player_type && filters.player_type !== "Indian" && filters.player_type !== "All" && bowl[i].player_detail.nationality === "Indian") {
+                    if (filters.player_type && filters.player_type !== "Indian" && filters.player_type !== "All" && bowl[i].teams.player_detail.nationality === "Indian") {
                         bowl.splice(i, 1);
                         i--;
                     }
@@ -892,12 +887,6 @@ module.exports = class MatchController {
         let bat, bowl;
         if (filters.stats_type == "batting") {
             bat = await MatchDAO.statsBattingData(filters);
-            // bat.forEach(async (i, element) => {
-            //     if (element.player_id) {
-            //         element.player_detail = await MatchDAO.playerInfoById(element.player_id);
-            //         bat[i] = element
-            //     }
-            // });
 
 
         } else if (filters.stats_type == "bowling") {
@@ -911,13 +900,14 @@ module.exports = class MatchController {
         if (bat && bat.length > 0 || bowl && bowl.length > 0) {
             if (bat && bat.length > 0) {
                 for (var i = 0; i < bat.length; i++) {
-                    bat[i].player_detail = await MatchDAO.playerInfoById(bat[i].player_id);
 
-                    if (filters.player_type && filters.player_type == "Indian" && bat[i].player_detail.nationality !== "Indian") {
+                    bat[i].teams = await MatchDAO.playerInfoById(bat[i].player_id, bat[i].highestInnScore.matchId.id);
+
+                    if (filters.player_type && filters.player_type == "Indian" && bat[i].teams.player_detail.nationality !== "Indian") {
                         bat.splice(i, 1);
                         i--;
                     }
-                    if (filters.player_type && filters.player_type !== "Indian" && filters.player_type !== "All" && bat[i].player_detail.nationality === "Indian") {
+                    if (filters.player_type && filters.player_type !== "Indian" && filters.player_type !== "All" && bat[i].teams.player_detail.nationality === "Indian") {
                         bat.splice(i, 1);
                         i--;
                     }
@@ -926,13 +916,14 @@ module.exports = class MatchController {
             }
             if (bowl && bowl.length > 0) {
                 for (var i = 0; i < bowl.length; i++) {
-                    bowl[i].player_detail = await MatchDAO.playerInfoById(bowl[i].player_id);
 
-                    if (filters.player_type && filters.player_type == "Indian" && bowl[i].player_detail.nationality !== "Indian") {
+                    bowl[i].teams = await MatchDAO.playerInfoById(bowl[i].player_id, bowl[i].bestBowlInn.matchId.id);
+
+                    if (filters.player_type && filters.player_type == "Indian" && bowl[i].teams.player_detail.nationality !== "Indian") {
                         bowl.splice(i, 1);
                         i--;
                     }
-                    if (filters.player_type && filters.player_type !== "Indian" && filters.player_type !== "All" && bowl[i].player_detail.nationality === "Indian") {
+                    if (filters.player_type && filters.player_type !== "Indian" && filters.player_type !== "All" && bowl[i].teams.player_detail.nationality === "Indian") {
                         bowl.splice(i, 1);
                         i--;
                     }
