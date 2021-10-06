@@ -33,6 +33,8 @@ router.get("/web/franchise/venue-detail/:ID",iplMatchCtrl.apiWebGetVenueDetail)
 router.get("/web/franchise/season-list", iplMatchCtrl.apiWebGetSeasonList)
 router.get("/web/archive/:franchise_id", iplMatchCtrl.apiWebArchiveByTeam)
 
+//team-match centre
+router.get("/web/franchise/team-results/:type",iplMatchCtrl.apiWebTeamsResults)
 
 //stats apis
 router.post("/app/stats", iplMatchCtrl.getAppStatsData);

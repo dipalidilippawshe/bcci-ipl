@@ -80,9 +80,9 @@ module.exports = class MenuDAO {
     //     });
 
   }
-  static async getStadings() {
+  static async getStadings(type,from) {
     try {
-      return standings.find({}).toArray();
+      return standings.find({team:type, source:from}).toArray();
     }
     catch (e) {
 

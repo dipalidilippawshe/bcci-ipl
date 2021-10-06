@@ -1079,4 +1079,29 @@ module.exports = class MatchDAO {
         const matchesList = await (await matches.aggregate(pipeline)).toArray()
         return matchesList
     }
+
+    static async getMatchByIDTeamsResult(id) {
+        try {
+            const pipeline = [
+                {
+                    $match: {
+                        "matchId.id": id
+                    }
+                },
+                {$project:{"matchInfo.teams":1, "matchInfo.venue":1,"matchInfo.matchStatus":1,"matchInfo.matchDate":1,matchId:1,
+                        "matchInfo.description":1,"matchInfo.currentState.currentInningsIndex":1,
+                        innings:1
+                    }
+                }
+            ]
+            console.log(pipeline)
+            return await matches.aggregate(pipeline).next()
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
+        }
+    }
 }
