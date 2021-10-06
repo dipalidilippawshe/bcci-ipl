@@ -25,7 +25,7 @@ module.exports = class MatchController {
                 let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : new Date().getFullYear();
                 console.log(year)
                 let data = await MatchDAO.getTeamResultsByid(2008, page, idtype, filters)
-                if (!data || data.data) {
+                if (!data || !data.data.length) {
                     res.status(404).json({ status: false, error: config.error_codes["1001"] })
                     return
                 } else {
@@ -995,8 +995,8 @@ module.exports = class MatchController {
             res.status(404).json({ status: false, error: config.error_codes["1003"], data: e })
         }
     }
-    static async getapiWebLeaders(req,res,next){
-        try{
+    static async getapiWebLeaders(req, res, next) {
+        try {
 
             let details = await MatchDAO.getHighestBattingStats();
             let run = details.reduce((max, obj) => (max.mostRuns > obj.mostRuns) ? max : obj);
@@ -1004,11 +1004,11 @@ module.exports = class MatchController {
             let six = details.reduce((max, obj) => (max.mostRuns > obj.mostRuns) ? max : obj);
             let strikeRate = details.reduce((max, obj) => (parseInt(max.sr) > parseInt(obj.sr)) ? max : obj);
 
-           //let reduced =  details.reduce((acc, shot) => acc = acc > shot.mostRuns ? acc : shot.mostRuns, 0);
-           console.log("details: ",strikeRate);
+            //let reduced =  details.reduce((acc, shot) => acc = acc > shot.mostRuns ? acc : shot.mostRuns, 0);
+            console.log("details: ", strikeRate);
             res.json({ status: true, data: details });
-        }catch(e){
-            res.status(404).json({ status: false, error: config.error_codes["1003"] ,data:e})
+        } catch (e) {
+            res.status(404).json({ status: false, error: config.error_codes["1003"], data: e })
         }
     }
 
