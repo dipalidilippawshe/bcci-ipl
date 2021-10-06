@@ -697,7 +697,7 @@ module.exports = class MatchController {
         if (bat && bat.length > 0 || bowl && bowl.length > 0) {
             if (bat && bat.length > 0) {
                 for (var i = 0; i < bat.length; i++) {
-                    bat[i].teams = await MatchDAO.playerInfoById(bat[i].player_id, bat[i].highestInnScore.matchId.id);
+                    bat[i].teams = await MatchDAO.playerInfoById(bat[i].player_id, bat[i].highestInnScore[0].matchId.id);
 
                     if (filters.player_type && filters.player_type == "Indian" && bat[i].teams.player_detail.nationality !== "Indian") {
                         bat.splice(i, 1);
@@ -903,7 +903,7 @@ module.exports = class MatchController {
             if (bat && bat.length > 0) {
                 for (var i = 0; i < bat.length; i++) {
 
-                    bat[i].teams = await MatchDAO.playerInfoById(bat[i].player_id, bat[i].highestInnScore.matchId.id);
+                    bat[i].teams = await MatchDAO.playerInfoById(bat[i].player_id, bat[i].highestInnScore[0].matchId.id);
 
                     if (filters.player_type && filters.player_type == "Indian" && bat[i].teams.player_detail.nationality !== "Indian") {
                         bat.splice(i, 1);
@@ -1009,28 +1009,28 @@ module.exports = class MatchController {
         }
     }
 
-    static async apiWebTeamsResults(req,res,next){
+    static async apiWebTeamsResults(req, res, next) {
         let matchId;
-        let pageType=req.params.type;
-        console.log("pagetype is: ",req.body);
-        if(!req.body.matchId || !pageType){
+        let pageType = req.params.type;
+        console.log("pagetype is: ", req.body);
+        if (!req.body.matchId || !pageType) {
             res.status(404).json({ status: false, error: config.error_codes["1003"] })
             return
         }
-        else{
+        else {
             matchId = req.body.matchId;
-            let matchDetail= await MatchDAO.getMatchByIDTeamsResult(parseInt(matchId));
-            
+            let matchDetail = await MatchDAO.getMatchByIDTeamsResult(parseInt(matchId));
+
             //find teams logo
-            for(let team=0;team<=matchDetail.matchInfo.teams.length-1;team++){
-               
+            for (let team = 0; team <= matchDetail.matchInfo.teams.length - 1; team++) {
+
                 var logo = await franchiseDAO.getfrenchiseByName(matchDetail.matchInfo.teams[team].team.fullName);
                 matchDetail.matchInfo.teams[team].team.logo = logo;
             }
 
-            let pointTable = await menuDAO.getStadings("m","app");
+            let pointTable = await menuDAO.getStadings("m", "app");
             matchDetail.pointsTable = pointTable;
-            var filters = {match_id:matchId}
+            var filters = { match_id: matchId }
             const respo = await videosDAO.getIplVideosByFilter(filters, 1, 10);
             matchDetail.videos = respo.list;
             res.json({ status: true, data: matchDetail });
