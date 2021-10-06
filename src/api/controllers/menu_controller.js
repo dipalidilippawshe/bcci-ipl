@@ -47,9 +47,44 @@ module.exports = class PagesController {
         }
 
     }
-    static async getStanding(req, res, next) {
+    static async getAppStanding(req, res, next) {
+        if(req.query.type){
+            var type =req.query.type
+        }else{
+            type = "m"
+        }
+        const standings = await MenusDAO.getStadings(type,"app"); 
+        if(!standings)
+        {
+            res.status(404).json({ status: false, error: config.error_codes["1001"] })
+            return
+        }
+       
+        res.status(200).json({status:true,data:standings});
+    }
+    static async getAppStanding(req, res, next) {
+        if(req.query.type){
+            var type =req.query.type
+        }else{
+            type = "m"
+        }
+        const standings = await MenusDAO.getStadings(type,"app"); 
+        if(!standings)
+        {
+            res.status(404).json({ status: false, error: config.error_codes["1001"] })
+            return
+        }
+       
+        res.status(200).json({status:true,data:standings});
+    }
 
-        const standings = await MenusDAO.getStadings(); 
+    static async getWebStanding(req, res, next) {
+        if(req.query.type){
+            var type =req.query.type
+        }else{
+            type = "m"
+        }
+        const standings = await MenusDAO.getStadings(type,"web"); 
         if(!standings)
         {
             res.status(404).json({ status: false, error: config.error_codes["1001"] })
