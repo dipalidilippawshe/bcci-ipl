@@ -516,9 +516,9 @@ module.exports = class MatchDAO {
                 }
 
                 try {
-
+                    console.log(JSON.stringify(queryParams))
                     let data = await matches.find(queryParams.query).toArray();
-                    console.log(data);
+                    //  console.log(data);
                     return { data: data, total: 1 };
 
                 } catch (e) {

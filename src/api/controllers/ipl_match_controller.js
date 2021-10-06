@@ -24,7 +24,7 @@ module.exports = class MatchController {
 
                 let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : new Date().getFullYear();
                 console.log(year)
-                let data = await MatchDAO.getTeamResultsByid(2008, page, idtype, filters)
+                let data = await MatchDAO.getTeamResultsByid(year, page, idtype, filters)
                 if (!data || !data.data.length) {
                     res.status(404).json({ status: false, error: config.error_codes["1001"] })
                     return
@@ -327,7 +327,7 @@ module.exports = class MatchController {
                 returnData[0].venue = frenchise.venue;
                 returnData[0].couch = frenchise.Coach;
                 returnData[0].captain = frenchise.Captain
-                returnData[0].social= frenchise.social
+                returnData[0].social = frenchise.social
 
                 //winning years of team
                 let won = await MatchDAO.findWinsByTeam(parseInt(id), frenchise.name);
@@ -575,7 +575,7 @@ module.exports = class MatchController {
             } else {
                 console.log("In else me");
                 let data = await videosDAO.videoByMatchID(id)
-                if (!data || data.length<=0) {
+                if (!data || data.length <= 0) {
                     res.status(404).json({ status: false, error: config.error_codes["1001"] })
                     return
                 }
@@ -594,7 +594,7 @@ module.exports = class MatchController {
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
             console.log(year)
             let data = await MatchDAO.getScheduleList(year, id)
-      
+
             if (!data || data.length <= 0) {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
