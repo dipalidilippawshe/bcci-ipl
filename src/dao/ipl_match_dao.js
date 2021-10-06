@@ -721,10 +721,10 @@ module.exports = class MatchDAO {
                     "innings.scorecard.battingStats": 1,
                     "matchId": 1,
                     "most50s": {
-                        "$cond": [{ $and: [{ "$gt": ["$innings.scorecard.battingStats.r", 50] }, { "$lt": ["$innings.scorecard.battingStats.r", 100] }] }, 1, 0]
+                        "$cond": [{ $and: [{ "$gte": ["$innings.scorecard.battingStats.r", 50] }, { "$lt": ["$innings.scorecard.battingStats.r", 100] }] }, 1, 0]
                     },
                     "most100s": {
-                        "$cond": [{ "$gt": ["$innings.scorecard.battingStats.r", 100] }, 1, 0]
+                        "$cond": [{ "$gte": ["$innings.scorecard.battingStats.r", 100] }, 1, 0]
                     },
                 }
             },
@@ -1020,7 +1020,7 @@ module.exports = class MatchDAO {
         return cursor.matchInfo.venue;
     }
 
-    static async getHighestBattingStats(){
+    static async getHighestBattingStats() {
         const countingPipeline = [
             { $unwind: "$innings" },
             { $unwind: "$innings.scorecard.battingStats" },
@@ -1028,8 +1028,8 @@ module.exports = class MatchDAO {
                 $project: {
                     "matchInfo.matchDate": 1,
                     "innings.scorecard.battingStats": 1,
-                    "matchId": 1,                   
-                    "matchInfo.teams":1,
+                    "matchId": 1,
+                    "matchInfo.teams": 1,
                 }
             },
             {
@@ -1041,8 +1041,8 @@ module.exports = class MatchDAO {
                     most4s: { $sum: "$innings.scorecard.battingStats.4s" },
                     most6s: { $sum: "$innings.scorecard.battingStats.6s" },
                     bestBat: { $push: { "runs": "$innings.scorecard.battingStats.r" } },
-                    score : {$sum: "$innings.scorecard.battingStats.sr"}
-                    
+                    score: { $sum: "$innings.scorecard.battingStats.sr" }
+
                 }
             },
             {
@@ -1052,7 +1052,7 @@ module.exports = class MatchDAO {
                     most4s: 1,
                     most6s: 1,
                     //bestBat:1,
-                    score:1,
+                    score: 1,
                     _id: 0,
                 }
             }
