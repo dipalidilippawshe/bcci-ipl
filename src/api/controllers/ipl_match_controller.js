@@ -1020,21 +1020,85 @@ module.exports = class MatchController {
         else {
             matchId = req.body.matchId;
             let matchDetail = await MatchDAO.getMatchByIDTeamsResult(parseInt(matchId));
+            if (pageType == "scorecard") {
 
-            //find teams logo
-            for (let team = 0; team <= matchDetail.matchInfo.teams.length - 1; team++) {
+                let validData = { teams: matchDetail.matchInfo.teams, innings: matchDetail.innings };
 
-                var logo = await franchiseDAO.getfrenchiseByName(matchDetail.matchInfo.teams[team].team.fullName);
-                matchDetail.matchInfo.teams[team].team.logo = logo;
+                let data = [];
+                for (let i = 0; i <= validData.teams.length - 1; i++) {
+                    let teamData = { team: validData.teams[i].team.fullName }
+                    let teamWise = validData.innings[i];
+
+                    for (let j = 0; j <= teamWise.scorecard.battingStats.length - 1; j++) {
+
+                        teamWise.scorecard.battingStats[j].player = validData.teams[i].players.find(element => element.id == teamWise.scorecard.battingStats[j].playerId);
+
+
+
+                    }
+
+                    for (let k = 0; k <= teamWise.scorecard.bowlingStats.length - 1; k++) {
+                        teamWise.scorecard.bowlingStats[k].player = validData.teams[i].players.find(element => element.id == teamWise.scorecard.bowlingStats[k].playerId);
+                    }
+                    let diff = difference(validData.teams[i].players, teamWise.scorecard.battingStats);
+                    teamData.innings = teamWise;
+                    teamData.difference = diff;
+                    data.push(teamData);
+
+
+                }
+                function difference(array1, array2) {
+                    var difference = [];
+                    for (let ar = 0; ar <= array1.length - 1; ar++) {
+                        var player = array2.find(element => element.playerId == array1[ar].id);
+
+                        if (!player) {
+                            difference.push({ id: array1[ar].id, name: array1[ar].name = array1[ar].fullName })
+                        }
+                    }
+                    return difference;
+                }
+                res.json({ status: true, data: data });
+                return
             }
+            else if (pageType == "hawkeye") {
+                var imgUrl = null;
+                //find teams logo
+                for (let team = 0; team <= matchDetail.matchInfo.teams.length - 1; team++) {
 
-            let pointTable = await menuDAO.getStadings("m", "app");
-            matchDetail.pointsTable = pointTable;
-            var filters = { match_id: matchId }
-            const respo = await videosDAO.getIplVideosByFilter(filters, 1, 10);
-            matchDetail.videos = respo.list;
-            res.json({ status: true, data: matchDetail });
+                    var logo = await franchiseDAO.getfrenchiseByName(matchDetail.matchInfo.teams[team].team.fullName);
+                    matchDetail.matchInfo.teams[team].team.logo = logo;
+                }
 
+                let pointTable = await menuDAO.getStadings("m", "app");
+                matchDetail.pointsTable = pointTable;
+                res.json({ status: true, data: { match: matchDetail, image: imgUrl } });
+            } else if (pageType == "teams") {
+                for (let team = 0; team <= matchDetail.matchInfo.teams.length - 1; team++) {
+
+                    var logo = await franchiseDAO.getfrenchiseByName(matchDetail.matchInfo.teams[team].team.fullName);
+                    matchDetail.matchInfo.teams[team].team.logo = logo;
+                }
+
+                let pointTable = await menuDAO.getStadings("m", "app");
+                matchDetail.pointsTable = pointTable;
+
+            }
+            else {
+                //find teams logo
+                for (let team = 0; team <= matchDetail.matchInfo.teams.length - 1; team++) {
+
+                    var logo = await franchiseDAO.getfrenchiseByName(matchDetail.matchInfo.teams[team].team.fullName);
+                    matchDetail.matchInfo.teams[team].team.logo = logo;
+                }
+
+                let pointTable = await menuDAO.getStadings("m", "app");
+                matchDetail.pointsTable = pointTable;
+                var filters = { match_id: matchId }
+                const respo = await videosDAO.getIplVideosByFilter(filters, 1, 10);
+                matchDetail.videos = respo.list;
+                res.json({ status: true, data: matchDetail });
+            }
 
         }
     }
