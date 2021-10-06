@@ -774,7 +774,7 @@ module.exports = class MatchDAO {
     static async statsBowlingData(filters) {
         var sort = { '$sort': { 'mostWkts': -1 } }
         if (filters.sort) {
-            sort = { '$sort': { [filters.sort]: ["bestBowlAvg"].includes(filters.sort) ? 1 : -1 } }
+            sort = { '$sort': { [filters.sort]: ["bestBowlAvg", "bestBowlEco"].includes(filters.sort) ? 1 : -1 } }
         }
         if (filters.sort === "bestBowlInn") {
             sort = { '$sort': { "bestBowlInn.wkts": -1, "bestBowlInn.runs": 1 } }
@@ -838,6 +838,7 @@ module.exports = class MatchDAO {
                     _id: 0
                 }
             },
+            { $unwind: "$bestBowlInn" },
             sort
 
         ]
@@ -849,18 +850,18 @@ module.exports = class MatchDAO {
     }
 
 
-    static async playerInfoById(id) {
+    static async playerInfoById(id, matchId) {
         try {
             const countingPipeline = [
 
                 {
                     $match: {
-                        "matchInfo.teams.players.id": id
-
+                        "matchInfo.teams.players.id": id,
+                        "matchId.id": matchId
                     }
                 },
                 { $unwind: "$matchInfo.teams" },
-                { $unwind: "$matchInfo.teams.players" },
+                //  { $unwind: "$matchInfo.teams.players" },
                 // { $unwind: "$innings" },
                 // { $unwind: "$innings.scorecard.bowlingStats" },
                 {
@@ -868,24 +869,39 @@ module.exports = class MatchDAO {
                         'matchInfo.teams.players.id': id
                     }
                 },
-                { $project: { "matchInfo.matchDate": 1, "matchInfo.teams.players": 1, "matchId": 1 } },
+                { $project: { "matchInfo.matchDate": 1, "matchInfo.teams": 1, "matchId": 1 } },
+                // {
+                //     $group:
+                //     {
+                //         _id: null,
+                //         //player_detail: { $push: "$matchInfo.teams.players" },
+                //         team_details: { $push: "$matchInfo.teams.team" },
+                //         //totalRuns: { $sum: "$innings.scorecard.battingStats.r" },
+                //     }
+                // },
+                //{ $project: { teams: "$matchInfo.teams" } }
                 {
-                    $group:
-                    {
-                        _id: "$matchInfo.teams.players.id",
-                        player_detail: { $first: "$matchInfo.teams.players" },
-                        //totalRuns: { $sum: "$innings.scorecard.battingStats.r" },
+                    $project: {
+                        //"player_id": "$_id", 
+                        team_detail: "$matchInfo.teams.team",
+                        "player_detail": {
+                            $first: {
+                                $filter: {
+                                    input: "$matchInfo.teams.players",
+                                    as: "item",
+                                    cond: { $eq: [id, "$$item.id"] }
+                                }
+                            }
+                        },
+                        // players: "$matchInfo.teams.players",
+                        _id: 0
                     }
-                },
-                {
-                    $project: { "player_id": "$_id", player_detail: 1, _id: 0 }
                 }
             ]
 
             const pipeline = [...countingPipeline]
-            const matchesList = await matches.aggregate(pipeline).toArray()
-            // console.log(matchesList);
-            return matchesList.length ? matchesList[0].player_detail : {}
+            const matchesList = await (await matches.aggregate(pipeline)).toArray()
+            return matchesList.length ? matchesList[0] : {}
 
         } catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
