@@ -568,12 +568,12 @@ module.exports = class IplVideosDAO {
             const videoList = await displayCursor.toArray()
 
            
-            return { videoList}
+            return  videoList
         } catch (e) {
             console.error(
                 `Unable to convert cursor to array or problem counting documents, ${e}`,
             )
-            return { videoList: [], totalNumImages: 0 }
+            return e
         }
     }
 }
