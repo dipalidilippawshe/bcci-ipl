@@ -923,10 +923,10 @@ module.exports = class MatchController {
                         bat.splice(i, 1);
                         i--;
                     }
-                    // if (filters.team_id && bat[i] && bat[i].teams.team_detail.id && filters.team_id != bat[i].teams.team_detail.id) {
-                    //     bat.splice(i, 1);
-                    //     i--;
-                    // }
+                    if (filters.team_id && bat[i] && bat[i].teams.team_detail.id && filters.team_id != bat[i].teams.team_detail.id) {
+                        bat.splice(i, 1);
+                        i--;
+                    }
                 }
 
             }
