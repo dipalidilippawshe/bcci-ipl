@@ -16,6 +16,7 @@ module.exports = class IplVideosDAO {
             videos = await conn.db(process.env.BCCINS).collection("ipl_videos")
             playtracks = await conn.db(process.env.BCCINS).collection("playtrackings")
             this.videos = videos // this is only for testing
+            this.playtracks = playtracks 
             //this.promos = promos
         } catch (e) {
             console.error(
@@ -535,10 +536,12 @@ module.exports = class IplVideosDAO {
 
     static async setPlayTracks(data){
         var playtrackObject = data;
+        console.log("playtrackObject: ",playtrackObject);
         try{
             const doc = await playtracks.create(playtrackObject);
-            return doc;
             console.log("doc is: ",doc);
+            return doc;
+            
         }catch (e) {
             console.error(
                 `Unable to convert cursor to array or problem counting documents, ${e}`,

@@ -106,6 +106,14 @@ module.exports = class IplVideosController {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
+            let tags = video.tags;var titles =[];
+          
+            for(let i=0;i<=tags.length-1;i++){
+                titles.push(tags[i].label);
+            }
+         
+            let related = await IplVideosDAO.getRelatedVideos(titles);
+            video.relatedVideos=related;
             res.json({ status: true, data: video })
         } catch (e) {
             console.log(`api, ${e}`)
