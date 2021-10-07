@@ -714,10 +714,11 @@ module.exports = class MatchDAO {
                 $match: match
             },
             { $unwind: "$innings.scorecard.battingStats" },
-
+            { $match: { "innings.scorecard.battingStats.b": { $gt: 0 } } },
             {
                 $project: {
                     "matchInfo.matchDate": 1,
+                    "matchInfo.teams": 1,
                     "innings.scorecard.battingStats": 1,
                     "matchId": 1,
                     "most50s": {
@@ -733,19 +734,25 @@ module.exports = class MatchDAO {
                 {
 
                     _id: "$innings.scorecard.battingStats.playerId",
+                    inns: { $sum: 1 },
                     mostRuns: { $sum: "$innings.scorecard.battingStats.r" },
                     most4s: { $sum: "$innings.scorecard.battingStats.4s" },
                     most6s: { $sum: "$innings.scorecard.battingStats.6s" },
                     bestBat: { $push: { "runs": "$innings.scorecard.battingStats.r", matchId: "$matchId" } },
                     highestInnScore: { $max: "$innings.scorecard.battingStats.r" },
                     most50s: { $sum: "$most50s" },
-                    most100s: { $sum: "$most100s" }
+                    isOut: { $push: "$innings.scorecard.battingStats.mod.isOut" },
+                    most100s: { $sum: "$most100s" },
+                    ballsFaced: { $sum: "$innings.scorecard.battingStats.b" },
                 }
-            },
-            {
+            }, {
                 $project: {
                     player_id: "$_id",
-                    player_detail: 1,
+                    ballsFaced: 1,
+                    // matches: 1, //{ $size: "$matches" },
+                    highScore: "$highestInnScore",
+                    notOut: { $subtract: ["$inn", { $size: "$isOut" }] },
+                    stickeRate: { $round: [{ $multiply: [100, { $divide: ['$mostRuns', '$ballsFaced'] }] }, 2] },
                     highestInnScore: {
                         $filter: {
                             input: "$bestBat",
@@ -753,11 +760,13 @@ module.exports = class MatchDAO {
                             cond: { $eq: ["$highestInnScore", "$$item.runs"] }
                         }
                     },
+                    avg: { $cond: [{ $eq: [{ $size: "$isOut" }, 0] }, "NA", { $round: [{ $divide: ['$mostRuns', { $size: "$isOut" }] }, 2] }] },
                     most50s: 1,
                     most100s: 1,
                     mostRuns: 1,
                     most4s: 1,
                     most6s: 1,
+                    inns: 1,
                     _id: 0,
                 }
             },
@@ -778,6 +787,13 @@ module.exports = class MatchDAO {
         }
         if (filters.sort === "bestBowlInn") {
             sort = { '$sort': { "bestBowlInn.wkts": -1, "bestBowlInn.runs": 1 } }
+        }
+        var bowlAvgMatch = {}
+        if (filters.sort === "bestBowlAvg") {
+            bowlAvgMatch = {
+
+                bestBowlAvg: { $ne: "NA" }
+            }
         }
         var match = {}
         if (filters.team_id) {
@@ -837,6 +853,9 @@ module.exports = class MatchDAO {
                     bestBowlAvg: { $cond: [{ $eq: ["$mostWkts", 0] }, "NA", { $round: [{ $divide: ['$mostRuns', '$mostWkts'] }, 2] }] },
                     _id: 0
                 }
+            },
+            {
+                $match: bowlAvgMatch
             },
             { $unwind: "$bestBowlInn" },
             sort
@@ -1088,9 +1107,11 @@ module.exports = class MatchDAO {
                         "matchId.id": id
                     }
                 },
-                {$project:{"matchInfo.additionalInfo":1,"matchInfo.teams":1, "matchInfo.venue":1,"matchInfo.matchStatus":1,"matchInfo.matchDate":1,matchId:1,
-                        "matchInfo.description":1,"matchInfo.currentState.currentInningsIndex":1,
-                        innings:1
+                {
+                    $project: {
+                        "matchInfo.additionalInfo": 1, "matchInfo.teams": 1, "matchInfo.venue": 1, "matchInfo.matchStatus": 1, "matchInfo.matchDate": 1, matchId: 1,
+                        "matchInfo.description": 1, "matchInfo.currentState.currentInningsIndex": 1,
+                        innings: 1
                     }
                 }
             ]
@@ -1104,4 +1125,29 @@ module.exports = class MatchDAO {
             throw e
         }
     }
+
+    static async countMatchesPlayerByPlayer(id, year) {
+        try {
+            var query = {
+
+                "matchInfo.matchDate": new RegExp(year, "i"),
+
+                "matchInfo.teams.players.id": id,
+
+            }
+            //console.log(query)
+            const count = await matches.countDocuments(query)// await (await matches.aggregate(pipeline)).toArray()
+            return count ? count : 0
+
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
+        }
+
+    }
+
+
 }
