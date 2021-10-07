@@ -536,10 +536,8 @@ module.exports = class IplVideosDAO {
 
     static async setPlayTracks(data){
         var playtrackObject = data;
-        console.log("playtrackObject: ",playtrackObject);
         try{
-            const doc = await playtracks.create(playtrackObject);
-            console.log("doc is: ",doc);
+            const doc = await playtracks.insertOne(playtrackObject);
             return doc;
             
         }catch (e) {
