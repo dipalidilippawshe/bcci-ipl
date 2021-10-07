@@ -5,8 +5,9 @@ const router = new Router()
 
 router.get("/app/", IplVideosCtrl.apiAppGetIplVideos)
 router.get("/app/:type", IplVideosCtrl.getAppIplVideos)
-router.post("/app/playurl", IplVideosCtrl.apiAppGetPlayUrlById)
+router.post("/app/playurl", IplVideosCtrl.apiAppGetPlayUrlById) // not in use
 router.get("/app/detail/:ID", IplVideosCtrl.apiAppGetVideoById)
+router.post("/app/ipl_playtracking",IplVideosCtrl.apiAppPlayTracking)
 //router.get("/app/promos/list", IplVideosCtrl.apiAppGetPromos)
 //router.get("/app/promos/detail/:ID", IplVideosCtrl.apiAppGetPromoById)
 
