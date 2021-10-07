@@ -42,7 +42,7 @@ module.exports = class MenuDAO {
   }
 
   static async getsposorsList() {
-    let matchesPerPage = 20;
+    let matchesPerPage = 100;
     let cursor
     try {
       cursor = await logos
