@@ -2,6 +2,7 @@ const { ObjectId } = require("bson")
 
 let videos
 let promos
+let playtracks
 let mflix
 const DEFAULT_SORT = [["tomatoes.viewer.numReviews", -1]]
 
@@ -13,7 +14,9 @@ module.exports = class IplVideosDAO {
         try {
             mflix = await conn.db(process.env.BCCINS)
             videos = await conn.db(process.env.BCCINS).collection("ipl_videos")
+            playtracks = await conn.db(process.env.BCCINS).collection("playtrackings")
             this.videos = videos // this is only for testing
+            this.playtracks = playtracks 
             //this.promos = promos
         } catch (e) {
             console.error(
@@ -527,7 +530,48 @@ module.exports = class IplVideosDAO {
             console.error(
                 `Unable to convert cursor to array or problem counting documents, ${e}`,
             )
-            return { imageList: [], totalNumImages: 0 }
+            return { videoList: [], totalNumImages: 0 }
+        }
+    }
+
+    static async setPlayTracks(data){
+        var playtrackObject = data;
+        try{
+            const doc = await playtracks.insertOne(playtrackObject);
+            return doc;
+            
+        }catch (e) {
+            console.error(
+                `Unable to convert cursor to array or problem counting documents, ${e}`,
+            )
+            return { error:e}
+        }
+    }
+
+    static async getRelatedVideos(titles){
+        let limit = 20;
+        let queryParams = { query: {"tags.label":{$in: titles}} };
+        let cursor
+        try {
+            cursor = await videos.find({"tags.label":{$in: titles}})
+                
+
+        } catch (e) {
+            console.error(`Unable to issue find command, ${e}`)
+            return { videoList: []}
+        }
+        const displayCursor = cursor.limit(limit)
+
+        try {
+            const videoList = await displayCursor.toArray()
+
+           
+            return  videoList
+        } catch (e) {
+            console.error(
+                `Unable to convert cursor to array or problem counting documents, ${e}`,
+            )
+            return e
         }
     }
 }

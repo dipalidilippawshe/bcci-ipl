@@ -106,6 +106,14 @@ module.exports = class IplVideosController {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
+            let tags = video.tags;var titles =[];
+          
+            for(let i=0;i<=tags.length-1;i++){
+                titles.push(tags[i].label);
+            }
+         
+            let related = await IplVideosDAO.getRelatedVideos(titles);
+            video.relatedVideos=related;
             res.json({ status: true, data: video })
         } catch (e) {
             console.log(`api, ${e}`)
@@ -232,7 +240,16 @@ module.exports = class IplVideosController {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ status: true, data: video })
+            let tags = video.tags;var titles =[];
+          
+            for(let i=0;i<=tags.length-1;i++){
+                titles.push(tags[i].label);
+            }
+         
+            let related = await IplVideosDAO.getRelatedVideos(titles);
+            video.relatedVideos=related;
+           // console.log("titles: ",related);
+            res.json({ status: true, data: video });
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
@@ -270,6 +287,35 @@ module.exports = class IplVideosController {
                 return
             }
             res.json({ status: true, data: video })
+        } catch (e) {
+            console.log(`api, ${e}`)
+            res.status(500).json({ error: e })
+        }
+    }
+    static async apiAppPlayTracking(req, res, next) {
+        try {
+            var data = req.body;
+            //contentId, duration, title,device,utc,
+            if(!data || Object.keys(data).length === 0 ){
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
+                return
+            }
+            var PlaybackObject = {
+                date_added: new Date(),
+                title: data.title,
+                device: data.device,
+                country: data.country,
+                content_id : data.content_id,
+                duration:parseInt(data.duration)
+            }
+
+            let saved = await IplVideosDAO.setPlayTracks(PlaybackObject)
+            if (!saved) {
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
+                return
+            }
+            let returndata = saved.ops[0];
+            res.json({ status: true, data: returndata })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })

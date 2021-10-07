@@ -42,11 +42,11 @@ module.exports = class MenuDAO {
   }
 
   static async getsposorsList() {
-    let matchesPerPage = 20;
+    let matchesPerPage = 100;
     let cursor
     try {
       cursor = await logos
-        .find({category:{$ne:null}});
+        .find({category:{$ne:null},status:true});
 
       const displayCursor = cursor.limit(matchesPerPage)
 
