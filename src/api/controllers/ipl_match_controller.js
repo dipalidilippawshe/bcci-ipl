@@ -327,7 +327,7 @@ module.exports = class MatchController {
                 returnData[0].owner = frenchise.owner;
                 returnData[0].venue = frenchise.venue;
                 returnData[0].couch = frenchise.Coach;
-                returnData[0].captain = frenchise.Captain;
+                returnData[0].captain = returnData[0].captain.fullName//frenchise.Captain;
                 returnData[0].social = frenchise.social;
                 returnData[0].banner = frenchise.banner;
 
@@ -707,7 +707,7 @@ module.exports = class MatchController {
                         bat.splice(i, 1);
                         i--;
                     }
-                    if (filters.team_id && bat[i].teams.team_detail.id && filters.team_id !== bat[i].teams.team_detail.id) {
+                    if (filters.team_id && bat[i] && bat[i].teams.team_detail.id && filters.team_id !== bat[i].teams.team_detail.id) {
                         bat.splice(i, 1);
                         i--;
                     }
@@ -923,7 +923,7 @@ module.exports = class MatchController {
                         bat.splice(i, 1);
                         i--;
                     }
-                    if (filters.team_id && bat[i].teams.team_detail.id && filters.team_id !== bat[i].teams.team_detail.id) {
+                    if (filters.team_id && bat[i] && bat[i].teams.team_detail.id && filters.team_id !== bat[i].teams.team_detail.id) {
                         bat.splice(i, 1);
                         i--;
                     }
