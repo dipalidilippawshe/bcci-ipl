@@ -113,7 +113,9 @@ module.exports = class IplVideosController {
             }
          
             let related = await IplVideosDAO.getRelatedVideos(titles);
-            video.relatedVideos=related;
+            video["relatedVideos"]=related.videoList;
+            video["wickets"]=related.wicketList;
+            video["sixes"]=related.sixes;
             res.json({ status: true, data: video })
         } catch (e) {
             console.log(`api, ${e}`)
@@ -320,5 +322,27 @@ module.exports = class IplVideosController {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
         }
+    }
+
+    static async apiAppGetMidpage(req,res,next){
+        let slug = req.params.slug;
+        if(!slug){
+            res.status(404).json({ status: false, error: config.error_codes["1001"] })
+            return
+        }
+        var filters={};
+        filters.type = slug;
+        try{
+            let videos = await IplVideosDAO.getIplVideosByFilter(filters,1,30);
+            if(!videos){
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
+                return
+            }
+                res.json({ status: true, data: videos })
+        }catch (e) {
+            console.log(`api, ${e}`)
+            res.status(500).json({ error: e })
+        }
+        
     }
 }

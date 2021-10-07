@@ -8,14 +8,12 @@ router.get("/app/:type", IplVideosCtrl.getAppIplVideos)
 router.post("/app/playurl", IplVideosCtrl.apiAppGetPlayUrlById) // not in use
 router.get("/app/detail/:ID", IplVideosCtrl.apiAppGetVideoById)
 router.post("/app/ipl_playtracking",IplVideosCtrl.apiAppPlayTracking)
-//router.get("/app/promos/list", IplVideosCtrl.apiAppGetPromos)
-//router.get("/app/promos/detail/:ID", IplVideosCtrl.apiAppGetPromoById)
+router.get("/app/midpage/:slug",IplVideosCtrl.apiAppGetMidpage)
 
 router.get("/web/", IplVideosCtrl.apiWebGetIplVideos)
 router.get("/web/:type", IplVideosCtrl.getWebIplVideos)
 router.post("/web/playurl", IplVideosCtrl.apiWebGetPlayUrlById)
 router.get("/web/detail/:ID", IplVideosCtrl.apiWebGetVideoById)
-//router.get("/web/promos/list", IplVideosCtrl.apiWebGetPromos)
-//router.get("/web/promos/detail/:ID", IplVideosCtrl.apiWebGetPromoById)
+router.get("/web/midpage/:slug",IplVideosCtrl.apiAppGetMidpage)
 
 module.exports = router

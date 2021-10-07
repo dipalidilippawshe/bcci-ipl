@@ -22,7 +22,6 @@ module.exports = class IplVideosController {
         }
         res.json(response)
     }
-
     static async getWebPlaylistbyType(req, res, next) {
         var type = req.params.type;
         if (!type) {

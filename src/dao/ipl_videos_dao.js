@@ -551,22 +551,25 @@ module.exports = class IplVideosDAO {
     static async getRelatedVideos(titles){
         let limit = 20;
         let queryParams = { query: {"tags.label":{$in: titles}} };
-        let cursor
+        let cursor;  let cursor1;  let cursor2;
         try {
             cursor = await videos.find({"tags.label":{$in: titles}})
-                
+            cursor1 = await videos.find({"tags.label":"wicket"})
+            cursor2 = await videos.find({"tags.label":"super-sixes"})    
 
         } catch (e) {
             console.error(`Unable to issue find command, ${e}`)
             return { videoList: []}
         }
         const displayCursor = cursor.limit(limit)
+        const displayCursor1 = cursor1.limit(limit)
+        const displayCursor2 = cursor2.limit(limit)
 
         try {
             const videoList = await displayCursor.toArray()
-
-           
-            return  videoList
+            const wicketList = await displayCursor.toArray()
+            const sixesList = await displayCursor.toArray()
+            return {videoList:videoList, wicketList:wicketList,sixes:sixesList}
         } catch (e) {
             console.error(
                 `Unable to convert cursor to array or problem counting documents, ${e}`,
@@ -574,5 +577,6 @@ module.exports = class IplVideosDAO {
             return e
         }
     }
+
 }
 
