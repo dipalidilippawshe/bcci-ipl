@@ -498,28 +498,32 @@ module.exports = class MatchDAO {
                 return { data: data, total: total[0].total };
             }
             else {
-                let queryParams = {}
-                queryParams.query = {}
+                let queryParams = {};
+                queryParams.query = {};
+
+                let skip = (page - 1) * pageLimit;
                 if ("matchState" in filters) {
                     queryParams.query["matchInfo.matchState"] = { $in: filters["matchState"] }
                 }
                 if (id.matchId) {
-                    queryParams.query["matchId.id"] = parseInt(id.matchId)
+                    queryParams.query["matchId.id"] = parseInt(id.matchId);
                 }
-
+ 
                 if (id.teamId) {
                     console.log("in team id mme...");
-                    queryParams.query["matchInfo.teams.team.id"] = parseInt(id.teamId)
+                    queryParams.query["matchInfo.teams.team.id"] = parseInt(id.teamId);
                 }
+
                 if (year) {
                     queryParams.query["matchInfo.matchDate"] = { $in: [new RegExp(year, "i"), new RegExp(year - 1, "i")] }
                 }
 
                 try {
-                    console.log(JSON.stringify(queryParams))
-                    let data = await matches.find(queryParams.query).toArray();
-                    //  console.log(data);
-                    return { data: data, total: 1 };
+                 
+                    let total = await matches.find(queryParams.query).count();
+                    let data = await matches.find(queryParams.query).limit(pageLimit).skip(skip).toArray();
+                    
+                    return { data: data, total: total };
 
                 } catch (e) {
                     console.error(`Unable to issue find command, ${e}`)
