@@ -286,11 +286,24 @@ module.exports = class MatchDAO {
                                 0,
                                 4
                             ]
-                        }
+                        },
+                        team: { $first: "$matchInfo.teams.team" }
                     }
                 },
                 {
-                    $project: { "year": "$_id", description: 1 }
+                    $project: {
+                        "year": "$_id", description: 1,
+                        // team: 1
+                        team: {
+                            $first: {
+                                $filter: {
+                                    input: "$team",
+                                    as: "item",
+                                    cond: { $eq: [parseInt(filters["team_id"]), "$$item.id"] }
+                                }
+                            }
+                        },
+                    }
                 },
                 { '$sort': { '_id': -1 } },
 
