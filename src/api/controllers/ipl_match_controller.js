@@ -4,6 +4,8 @@ const franchiseDAO = require("../../dao/ipl_franchise_dao")
 const videosDAO = require("../../dao/ipl_videos_dao");
 const IplArticlesDAO = require("../../dao/ipl_articles_dao")
 const menuDAO = require("../../dao/menus_dao")
+const PagesDAO = require("../../dao/pages_dao")
+const PhotosDAO = require("../../dao/ipl_photos_dao")
 const config = require("config")
 
 module.exports = class MatchController {
@@ -1090,7 +1092,36 @@ module.exports = class MatchController {
 
                 let pointTable = await menuDAO.getStadings("m", "app");
                 matchDetail.pointsTable = pointTable;
+                res.json({ status: true, data: { match: matchDetail} });
 
+            }else if(pageType == "videos"){
+                for (let team = 0; team <= matchDetail.matchInfo.teams.length - 1; team++) {
+
+                    var logo = await franchiseDAO.getfrenchiseByName(matchDetail.matchInfo.teams[team].team.fullName);
+                    matchDetail.matchInfo.teams[team].team.logo = logo;
+                }
+
+                let pointTable = await menuDAO.getStadings("m", "app");
+            
+                matchDetail.pointsTable = pointTable;
+                let page = await PagesDAO.getPage("video-list-web");
+                matchDetail.pagedata = page;
+                res.json({ status: true, data: { match: matchDetail } });
+
+
+            }else if(pageType == "photos"){
+                for (let team = 0; team <= matchDetail.matchInfo.teams.length - 1; team++) {
+
+                    var logo = await franchiseDAO.getfrenchiseByName(matchDetail.matchInfo.teams[team].team.fullName);
+                    matchDetail.matchInfo.teams[team].team.logo = logo;
+                }
+
+                let pointTable = await menuDAO.getStadings("m", "app");
+            
+                matchDetail.pointsTable = pointTable;
+                let matchImages = await PhotosDAO.getMatchImagesByID(parseInt(matchId))
+                matchDetail.matchImages = matchImages;
+                res.json({ status: true, data: { match: matchDetail } });
             }
             else {
                 //find teams logo
