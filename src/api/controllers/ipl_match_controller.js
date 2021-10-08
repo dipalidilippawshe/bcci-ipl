@@ -449,9 +449,11 @@ module.exports = class MatchController {
         var filters = req.body;
         filters.matchState = ["C"];
         filters.team = req.body.team ? [req.body.team] : ["m", "w"]
-        filters.startDate = new Date("2020-01-01").toISOString();
-        filters.endDate = new Date("2021-01-01").toISOString();
+        // filters.startDate = new Date("2020-01-01").toISOString();
+        // filters.endDate = new Date("2021-01-01").toISOString();
         filters.year = req.query.year && parseInt(req.query.year) || new Date().getFullYear()
+        if (req.body.team_id)
+            filters.team_id = req.body.team_id;
         const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
             filters,
             page,
