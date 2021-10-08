@@ -12,4 +12,7 @@ router.get("/web/:type", IplArticleCtrl.apiWebGetIplArticleList)
 router.get("/web/detail/:ID", IplArticleCtrl.apiWebGetIplArticleById);
 router.get("/web/teamnews/:ID", IplArticleCtrl.apiWebGetIplArticleTeamById);
 
+//midpages
+router.get("/app/midpage/:slug",IplArticleCtrl.apiAppGetMidpage)
+router.get("/web/midpage/:slug",IplArticleCtrl.apiAppGetMidpage)
 module.exports = router;
