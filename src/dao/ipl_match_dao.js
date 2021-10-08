@@ -72,10 +72,10 @@ module.exports = class MatchDAO {
                 queryParams.query["matchInfo.teams.team.id"] = parseInt(filters["team_id"])
             }
             if ("year" in filters) {
-                queryParams.query["matchInfo.matchDate"] = { $in: [new RegExp(filters["year"], "i"), new RegExp(filters["year"] - 1, "i")] }
+                queryParams.query["matchInfo.matchDate"] = { $in: [new RegExp(filters["year"], "i")/* , new RegExp(filters["year"] - 1, "i") */] }
             }
         }
-        console.log(queryParams)
+        //   console.dir(queryParams, { depth: null, color: true })
         let { query = {}, project = {}, sort = DEFAULT_SORT } = queryParams
         let cursor
         try {

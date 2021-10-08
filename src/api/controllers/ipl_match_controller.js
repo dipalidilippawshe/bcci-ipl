@@ -165,14 +165,7 @@ module.exports = class MatchController {
         else {
             console.log("CALLINGIN..");
             const FIXTURES_PER_PAGE = 20
-            let page
-            try {
-                page = req.query.page ? parseInt(req.query.page, 10) : "0"
-            } catch (e) {
-                console.error(`Got bad value for page:, ${e}`)
-                page = 0
-            }
-
+            let page = req.query.page ? parseInt(req.query.page, 10) : 1
             let filters = {};
             // filters.startDate = req.query.startDate && new Date(req.query.startDate) !== "Invalid Date" ? new Date(req.query.startDate).getFullYear() : undefined
             //filters.endDate = req.query.endDate && new Date(req.query.endDate) !== "Invalid Date" ? new Date(req.query.endDate).getFullYear() : undefined
@@ -199,7 +192,7 @@ module.exports = class MatchController {
                 if (req.query.franchise_id) {
                     filters.team_id = req.query.franchise_id
                 }
-                filters.year = req.query.year && parseInt(req.query.year) || new Date().getFullYear()
+                filters.year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : new Date().getFullYear()
                 const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
                     filters,
                     page,
@@ -923,10 +916,10 @@ module.exports = class MatchController {
                         bat.splice(i, 1);
                         i--;
                     }
-                    // if (filters.team_id && bat[i] && bat[i].teams.team_detail.id && filters.team_id != bat[i].teams.team_detail.id) {
-                    //     bat.splice(i, 1);
-                    //     i--;
-                    // }
+                    if (filters.team_id && bat[i] && bat[i].teams.team_detail.id && filters.team_id != bat[i].teams.team_detail.id) {
+                        bat.splice(i, 1);
+                        i--;
+                    }
                 }
 
             }
