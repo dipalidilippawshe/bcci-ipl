@@ -1148,6 +1148,66 @@ module.exports = class MatchDAO {
         }
 
     }
+    static async getPlayersRunsDataByYear(players, year){
+     
+        try {
+            const pipeline = [
+            {
+                $match: { "matchInfo.matchDate": new RegExp(year, "i"), "matchInfo.teams.players.id": {$in:players} }
+            },
+            {$project: {"innings":1}},
+            {$unwind :"$innings" },
+            {$unwind :"$innings.scorecard" },
+            { $unwind: "$innings.scorecard.battingStats" },
+            {
+                $group: {
+                    _id:"$innings.scorecard.battingStats.playerId",
+                    runs: { $sum: "$innings.scorecard.battingStats.r" }
+                }
+            },
+            {$project: {"_id":1,runs:1}}
 
+       ]
 
+       return await matches.aggregate(pipeline).toArray()
+      }catch (e) {
+        if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+            return null
+        }
+        console.error(`Something went wrong in getVideoByID: ${e}`)
+        throw e
+     }
+    }
+    static async getPlayersWicketsDataByYear(players, year){
+       
+        try {
+            const pipeline = [
+            {
+                $match: { "matchInfo.matchDate": new RegExp(year, "i"), "matchInfo.teams.players.id": {$in:players} }
+            },
+            {$project: {"innings":1}},
+            {$unwind :"$innings" },
+            {$unwind :"$innings.scorecard" },
+            { $unwind: "$innings.scorecard.bowlingStats" },
+            {
+                $group: {
+                    _id:"$innings.scorecard.bowlingStats.playerId",
+                    wickets: { $sum: "$innings.scorecard.bowlingStats.w" }
+                }
+            },
+            {$project: {"_id":1,wickets:1}}
+       ]
+
+       let count =await matches.find({"matchInfo.matchDate": new RegExp(year, "i"), "matchInfo.teams.players.id": {$in:players}}).count()
+       
+       let bawlings = await matches.aggregate(pipeline).toArray()
+       return {bawlings:bawlings,count:count};
+      }catch (e) {
+        if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+            return null
+        }
+        console.error(`Something went wrong in getVideoByID: ${e}`)
+        throw e
+     }
+    }
 }
