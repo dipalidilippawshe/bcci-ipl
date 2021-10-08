@@ -88,10 +88,10 @@ module.exports = class PhotosController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let matchImages = await PhotosDAO.getMatchImagesByID(parseInt(id))
             if (!matchImages) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status :false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ success: true, data: matchImages })
+            res.json({ status :true, data: matchImages })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
@@ -103,10 +103,10 @@ module.exports = class PhotosController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let matchImages = await PhotosDAO.getMatchImagesByID(parseInt(id))
             if (!matchImages) {
-                res.status(404).json({ success: false, error: config.error_codes["1001"] })
+                res.status(404).json({ status :false, error: config.error_codes["1001"] })
                 return
             }
-            res.json({ success: true, data: matchImages })
+            res.json({ status :true, data: matchImages })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
