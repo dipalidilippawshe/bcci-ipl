@@ -271,6 +271,55 @@ module.exports = class ArticlesDAO {
             throw e
         }
     }
+    static async getIplNewsByFilter(filters, page, limit = 20) {
+        try {
+            if (!filters.type) {
+                filters.type = "Latest";
+            }
+            page = parseInt(page);
+            var newsPerPage = limit;
+
+            var skip = (page - 1) * newsPerPage;
+            const mongoquery = { "tags.label": { $regex: new RegExp(filters.type, "i") } };
+            if (filters.match_id) {
+                mongoquery["references.id"] = { $eq: parseInt(filters.match_id) }
+                mongoquery["references.type"] = { $eq: "CRICKET_MATCH" }
+
+            }
+            if (filters.player_id) {
+                mongoquery["references.id"] = { $eq: parseInt(filters.player_id) }
+                mongoquery["references.type"] = { $eq: "CRICKET_PLAYER" }
+            }
+            if (filters.team_id) {
+                mongoquery["references.id"] = { $eq: parseInt(filters.team_id) }
+                mongoquery["references.type"] = { $eq: "CRICKET_TEAM" }
+            }
+            if (filters.season_id) {
+                mongoquery["references.id"] = { $eq: parseInt(filters.season_id) }
+                mongoquery["references.type"] = { $eq: "CRICKET_TOURNAMENT" }
+            }
+
+            //page logic here..
+            console.log("final qu", mongoquery)
+            var cursor = await iplArticles.find(mongoquery).limit(newsPerPage).skip(skip);
+
+            const displayCursor = cursor.limit(newsPerPage)
+            const videoList = await displayCursor.toArray()
+
+            //if (videoList && videoList.length > 0) {
+            const totalNumIplVideos = await iplArticles.find(mongoquery).count();
+            let res = { list: videoList, total: totalNumIplVideos };
+            return res;
+
+            // } else {
+            //     return ({ status: false, data: null });
+            // }
+
+        } catch (e) {
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
+        }
+    }
 }
 
 
