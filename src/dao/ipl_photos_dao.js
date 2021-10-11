@@ -41,8 +41,9 @@ module.exports = class PhotosDAO {
                 $lte: filters.endDate.getTime()
             }
         }
-        var sorting = { _id: -1 }
+        var sorting = { publishFrom: -1 }
         let { query = {}, project = {}, sort = sorting } = queryParams
+        //photocount: { $arrayElemAt: [{ $split: ["$title", " "] }, 0] }
         console.log(query)
         let cursor
         try {
