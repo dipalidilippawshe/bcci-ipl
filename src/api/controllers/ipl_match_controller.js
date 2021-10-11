@@ -167,13 +167,16 @@ module.exports = class MatchController {
         else {
             console.log("CALLINGIN..");
             const FIXTURES_PER_PAGE = 20
-            let page = req.query.page ? parseInt(req.query.page, 10) : 1
+            let page = req.query.page ? parseInt(req.query.page, 10) : 0
             let filters = {};
             // filters.startDate = req.query.startDate && new Date(req.query.startDate) !== "Invalid Date" ? new Date(req.query.startDate).getFullYear() : undefined
             //filters.endDate = req.query.endDate && new Date(req.query.endDate) !== "Invalid Date" ? new Date(req.query.endDate).getFullYear() : undefined
             filters.team = req.query.team ? [req.query.team] : ["m", "w"]
             if (req.query.teamId) {
                 filters.team_id = req.query.teamId;
+            }
+            if(req.query.venue_id){
+                filters.venue_id = req.query.venue_id;
             }
             //console.log(req.query.startDate, new Date(req.query.startDate))
             if (req.params.type !== "" && req.params.type === "results") {
@@ -1062,13 +1065,23 @@ module.exports = class MatchController {
                     for (let j = 0; j <= teamWise.scorecard.battingStats.length - 1; j++) {
                         teamWise.scorecard.battingStats[j].player = validData.teams[i].players.find(element => element.id == teamWise.scorecard.battingStats[j].playerId);
                     }
-
-                    for (let k = 0; k <= teamWise.scorecard.bowlingStats.length - 1; k++) {
-                        teamWise.scorecard.bowlingStats[k].player = validData.teams[i].players.find(element => element.id == teamWise.scorecard.bowlingStats[k].playerId);
+                    for (let l = 0; l <= teamWise.scorecard.fow.length - 1; l++) {
+                        teamWise.scorecard.fow[l].player = validData.teams[i].players.find(element => element.id == teamWise.scorecard.fow[l].playerId);
+                       
                     }
                     let diff = difference(validData.teams[i].players, teamWise.scorecard.battingStats);
+                    for (let k = 0; k <= teamWise.scorecard.bowlingStats.length - 1; k++) {
+                        if(i==0)
+                        validData.teams[i] =validData.teams[i+1]
+                        if(i==1) 
+                        validData.teams[i] =validData.teams[i-1]
+                        teamWise.scorecard.bowlingStats[k].player = validData.teams[i].players.find(element => element.id == teamWise.scorecard.bowlingStats[k].playerId);
+                       
+                    }
+  
                     teamData.innings = teamWise;
                     teamData.difference = diff;
+                    teamData.teamAbbrivation = validData.teams[i].team.abbreviation;
                     data.push(teamData);
                 }
                 function difference(array1, array2) {
