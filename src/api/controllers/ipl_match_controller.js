@@ -4,6 +4,8 @@ const franchiseDAO = require("../../dao/ipl_franchise_dao")
 const videosDAO = require("../../dao/ipl_videos_dao");
 const IplArticlesDAO = require("../../dao/ipl_articles_dao")
 const menuDAO = require("../../dao/menus_dao")
+const PagesDAO = require("../../dao/pages_dao")
+const PhotosDAO = require("../../dao/ipl_photos_dao")
 const config = require("config")
 
 module.exports = class MatchController {
@@ -165,14 +167,7 @@ module.exports = class MatchController {
         else {
             console.log("CALLINGIN..");
             const FIXTURES_PER_PAGE = 20
-            let page
-            try {
-                page = req.query.page ? parseInt(req.query.page, 10) : "0"
-            } catch (e) {
-                console.error(`Got bad value for page:, ${e}`)
-                page = 0
-            }
-
+            let page = req.query.page ? parseInt(req.query.page, 10) : 1
             let filters = {};
             // filters.startDate = req.query.startDate && new Date(req.query.startDate) !== "Invalid Date" ? new Date(req.query.startDate).getFullYear() : undefined
             //filters.endDate = req.query.endDate && new Date(req.query.endDate) !== "Invalid Date" ? new Date(req.query.endDate).getFullYear() : undefined
@@ -199,7 +194,7 @@ module.exports = class MatchController {
                 if (req.query.franchise_id) {
                     filters.team_id = req.query.franchise_id
                 }
-                filters.year = req.query.year && parseInt(req.query.year) || new Date().getFullYear()
+                filters.year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : new Date().getFullYear()
                 const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
                     filters,
                     page,
@@ -456,9 +451,11 @@ module.exports = class MatchController {
         var filters = req.body;
         filters.matchState = ["C"];
         filters.team = req.body.team ? [req.body.team] : ["m", "w"]
-        filters.startDate = new Date("2020-01-01").toISOString();
-        filters.endDate = new Date("2021-01-01").toISOString();
+        // filters.startDate = new Date("2020-01-01").toISOString();
+        // filters.endDate = new Date("2021-01-01").toISOString();
         filters.year = req.query.year && parseInt(req.query.year) || new Date().getFullYear()
+        if (req.body.team_id)
+            filters.team_id = req.body.team_id;
         const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
             filters,
             page,
@@ -923,10 +920,10 @@ module.exports = class MatchController {
                         bat.splice(i, 1);
                         i--;
                     }
-                    // if (filters.team_id && bat[i] && bat[i].teams.team_detail.id && filters.team_id != bat[i].teams.team_detail.id) {
-                    //     bat.splice(i, 1);
-                    //     i--;
-                    // }
+                    if (filters.team_id && bat[i] && bat[i].teams.team_detail.id && filters.team_id != bat[i].teams.team_detail.id) {
+                        bat.splice(i, 1);
+                        i--;
+                    }
                 }
 
             }
@@ -1049,11 +1046,7 @@ module.exports = class MatchController {
                     let teamWise = validData.innings[i];
 
                     for (let j = 0; j <= teamWise.scorecard.battingStats.length - 1; j++) {
-
                         teamWise.scorecard.battingStats[j].player = validData.teams[i].players.find(element => element.id == teamWise.scorecard.battingStats[j].playerId);
-
-
-
                     }
 
                     for (let k = 0; k <= teamWise.scorecard.bowlingStats.length - 1; k++) {
@@ -1063,8 +1056,6 @@ module.exports = class MatchController {
                     teamData.innings = teamWise;
                     teamData.difference = diff;
                     data.push(teamData);
-
-
                 }
                 function difference(array1, array2) {
                     var difference = [];
@@ -1081,7 +1072,7 @@ module.exports = class MatchController {
                 return
             }
             else if (pageType == "hawkeye") {
-                var imgUrl = null;
+                var imgUrl = "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/logos/hawkeye.png";
                 //find teams logo
                 for (let team = 0; team <= matchDetail.matchInfo.teams.length - 1; team++) {
 
@@ -1101,7 +1092,36 @@ module.exports = class MatchController {
 
                 let pointTable = await menuDAO.getStadings("m", "app");
                 matchDetail.pointsTable = pointTable;
+                res.json({ status: true, data: { match: matchDetail} });
 
+            }else if(pageType == "videos"){
+                for (let team = 0; team <= matchDetail.matchInfo.teams.length - 1; team++) {
+
+                    var logo = await franchiseDAO.getfrenchiseByName(matchDetail.matchInfo.teams[team].team.fullName);
+                    matchDetail.matchInfo.teams[team].team.logo = logo;
+                }
+
+                let pointTable = await menuDAO.getStadings("m", "app");
+            
+                matchDetail.pointsTable = pointTable;
+                let page = await PagesDAO.getPage("video-list-web");
+                matchDetail.pagedata = page;
+                res.json({ status: true, data: { match: matchDetail } });
+
+
+            }else if(pageType == "photos"){
+                for (let team = 0; team <= matchDetail.matchInfo.teams.length - 1; team++) {
+
+                    var logo = await franchiseDAO.getfrenchiseByName(matchDetail.matchInfo.teams[team].team.fullName);
+                    matchDetail.matchInfo.teams[team].team.logo = logo;
+                }
+
+                let pointTable = await menuDAO.getStadings("m", "app");
+            
+                matchDetail.pointsTable = pointTable;
+                let matchImages = await PhotosDAO.getMatchImagesByID(parseInt(matchId))
+                matchDetail.matchImages = matchImages;
+                res.json({ status: true, data: { match: matchDetail } });
             }
             else {
                 //find teams logo
@@ -1120,6 +1140,46 @@ module.exports = class MatchController {
             }
 
         }
+    }
+
+    static async apiWebGetSquadById(req,res,next){
+        let id = req.params.ID && parseInt(req.params.ID) || "0"
+        let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
+
+        let article = await MatchDAO.getSquadListByID({ id: parseInt(id), year: year })
+     
+        if (!article || article.length <= 0) {
+            console.log("in uidididi", article);
+            res.status(404).json({ status: false, error: config.error_codes["1001"] })
+            return
+        }
+
+        var playerArr = [];
+        for(let i=0;i<=article[0].players.length-1;i++){
+            playerArr.push(article[0].players[i].id);
+        }
+
+        let runs = await MatchDAO.getPlayersRunsDataByYear(playerArr,year);
+        let wickets = await MatchDAO.getPlayersWicketsDataByYear(playerArr,year);
+        for(let i=0;i<=article[0].players.length-1;i++){
+            var player = runs.find(element => element._id == article[0].players[i].id);
+           
+            if(!player)
+              article[0].players[i].runs = 0
+            else
+              article[0].players[i].runs = player.runs
+             
+            article[0].players[i].matches = wickets.count;
+            article[0].players[i].debut = "2008";
+            var playerwik = wickets.bawlings.find(element => element._id == article[0].players[i].id);
+            if(!playerwik)
+              article[0].players[i].wickets = 0
+            else
+              article[0].players[i].wickets = playerwik.wickets
+        }
+     
+        return res.json({ status: true, data: article })
+
     }
 
 }

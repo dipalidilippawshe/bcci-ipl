@@ -275,4 +275,25 @@ module.exports = class IPLArticlesController {
 
 
     }
+    static async apiAppGetMidpage(req,res,next){
+        let slug = req.params.slug;
+        if(!slug){
+            res.status(404).json({ status: false, error: config.error_codes["1001"] })
+            return
+        }
+        var filters={};
+        filters.type = slug;
+        try{
+            let news = await IplArticlesDAO.getIplNewsByFilter(filters,1,30);
+            if(!news){
+                res.status(404).json({ status: false, error: config.error_codes["1001"] })
+                return
+            }
+                res.json({ status: true, data: news })
+        }catch (e) {
+            console.log(`api, ${e}`)
+            res.status(500).json({ error: e })
+        }
+        
+    }
 }

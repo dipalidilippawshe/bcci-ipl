@@ -14,6 +14,7 @@ router.get("/web/", IplVideosCtrl.apiWebGetIplVideos)
 router.get("/web/:type", IplVideosCtrl.getWebIplVideos)
 router.post("/web/playurl", IplVideosCtrl.apiWebGetPlayUrlById)
 router.get("/web/detail/:ID", IplVideosCtrl.apiWebGetVideoById)
+router.post("/web/ipl_playtracking",IplVideosCtrl.apiAppPlayTracking)
 router.get("/web/midpage/:slug",IplVideosCtrl.apiAppGetMidpage)
 
 module.exports = router
