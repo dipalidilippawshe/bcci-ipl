@@ -42,8 +42,65 @@ module.exports = class PhotosDAO {
             }
         }
         var sorting = { publishFrom: -1 }
-        let { query = {}, project = {}, sort = sorting } = queryParams
-        //photocount: { $arrayElemAt: [{ $split: ["$title", " "] }, 0] }
+        var projects = {
+            photoCount: { $arrayElemAt: [{ $split: ["$title", " "] }, 0] },
+            seasonTitle: { $concat: [{ $arrayElemAt: [{ $split: ["$title", " "] }, 1] }, " ", { $arrayElemAt: [{ $split: ["$title", " "] }, 2] }] },
+            matchTitle: {
+                $concat: [
+                    {
+                        $arrayElemAt: [{ $split: ["$title", " "] }, 3]
+                    },
+                    " ",
+                    {
+                        $arrayElemAt: [{ $split: ["$title", " "] }, 4]
+                    },
+                    " ",
+                    {
+                        $arrayElemAt: [{ $split: ["$title", " "] }, 5]
+                    },
+                    " ",
+                    {
+                        $arrayElemAt: [{ $split: ["$title", " "] }, 6]
+                    },
+                    " ",
+                    {
+                        $arrayElemAt: [{ $split: ["$title", " "] }, 7]
+                    }
+                ]
+            },
+            "_id": 1,
+            "type": 1,
+            "titleTranslations": 1,
+            "copyright": 1,
+            "metadata": 1,
+            "additionalInfo": 1,
+            "id": 1,
+            "coordinates": 1,
+            "publishTo": 1,
+            "description": 1,
+            "language": 1,
+            "commentsOn": 1,
+            "lastModified": 1,
+            "accountId": 15,
+            "subtitle": 1,
+            "platform": 1,
+            "canonicalUrl": 1,
+            "references": 1,
+            "originalDetails": 1,
+            "related": 1,
+            "location": 1,
+            "imageUrl": 1,
+            "tags": 1,
+            "titleUrlSegment": 1,
+            "onDemandUrl": 1,
+            "date": 1,
+            "title": 1,
+            "publishFrom": 1
+        }
+        if (filters.tag != "matches") {
+            // projects = {}
+        }
+        let { query = {}, project = projects, sort = sorting } = queryParams
         console.log(query)
         let cursor
         try {
