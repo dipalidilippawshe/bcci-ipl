@@ -1050,9 +1050,7 @@ module.exports = class MatchController {
         else {
             matchId = req.body.matchId;
             let matchDetail = await MatchDAO.getMatchByIDTeamsResult(parseInt(matchId));
-            console.log("==============Good====================")
-            console.log(matchDetail);
-            console.log("==============Good====================")
+           
             if (pageType == "scorecard") {
 
                 let validData = { teams: matchDetail.matchInfo.teams, innings: matchDetail.innings };
