@@ -4,6 +4,8 @@ const franchiseDAO = require("../../dao/ipl_franchise_dao")
 const videosDAO = require("../../dao/ipl_videos_dao");
 const IplArticlesDAO = require("../../dao/ipl_articles_dao")
 const menuDAO = require("../../dao/menus_dao")
+const PagesDAO = require("../../dao/pages_dao")
+const PhotosDAO = require("../../dao/ipl_photos_dao")
 const config = require("config")
 
 module.exports = class MatchController {
@@ -165,13 +167,16 @@ module.exports = class MatchController {
         else {
             console.log("CALLINGIN..");
             const FIXTURES_PER_PAGE = 20
-            let page = req.query.page ? parseInt(req.query.page, 10) : 1
+            let page = req.query.page ? parseInt(req.query.page, 10) : 0
             let filters = {};
             // filters.startDate = req.query.startDate && new Date(req.query.startDate) !== "Invalid Date" ? new Date(req.query.startDate).getFullYear() : undefined
             //filters.endDate = req.query.endDate && new Date(req.query.endDate) !== "Invalid Date" ? new Date(req.query.endDate).getFullYear() : undefined
             filters.team = req.query.team ? [req.query.team] : ["m", "w"]
             if (req.query.teamId) {
                 filters.team_id = req.query.teamId;
+            }
+            if(req.query.venue_id){
+                filters.venue_id = req.query.venue_id;
             }
             //console.log(req.query.startDate, new Date(req.query.startDate))
             if (req.params.type !== "" && req.params.type === "results") {
@@ -1090,7 +1095,36 @@ module.exports = class MatchController {
 
                 let pointTable = await menuDAO.getStadings("m", "app");
                 matchDetail.pointsTable = pointTable;
+                res.json({ status: true, data: { match: matchDetail} });
 
+            }else if(pageType == "videos"){
+                for (let team = 0; team <= matchDetail.matchInfo.teams.length - 1; team++) {
+
+                    var logo = await franchiseDAO.getfrenchiseByName(matchDetail.matchInfo.teams[team].team.fullName);
+                    matchDetail.matchInfo.teams[team].team.logo = logo;
+                }
+
+                let pointTable = await menuDAO.getStadings("m", "app");
+            
+                matchDetail.pointsTable = pointTable;
+                let page = await PagesDAO.getPage("video-list-web");
+                matchDetail.pagedata = page;
+                res.json({ status: true, data: { match: matchDetail } });
+
+
+            }else if(pageType == "photos"){
+                for (let team = 0; team <= matchDetail.matchInfo.teams.length - 1; team++) {
+
+                    var logo = await franchiseDAO.getfrenchiseByName(matchDetail.matchInfo.teams[team].team.fullName);
+                    matchDetail.matchInfo.teams[team].team.logo = logo;
+                }
+
+                let pointTable = await menuDAO.getStadings("m", "app");
+            
+                matchDetail.pointsTable = pointTable;
+                let matchImages = await PhotosDAO.getMatchImagesByID(parseInt(matchId))
+                matchDetail.matchImages = matchImages;
+                res.json({ status: true, data: { match: matchDetail } });
             }
             else {
                 //find teams logo
