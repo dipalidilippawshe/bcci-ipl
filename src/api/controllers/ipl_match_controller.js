@@ -167,13 +167,16 @@ module.exports = class MatchController {
         else {
             console.log("CALLINGIN..");
             const FIXTURES_PER_PAGE = 20
-            let page = req.query.page ? parseInt(req.query.page, 10) : 1
+            let page = req.query.page ? parseInt(req.query.page, 10) : 0
             let filters = {};
             // filters.startDate = req.query.startDate && new Date(req.query.startDate) !== "Invalid Date" ? new Date(req.query.startDate).getFullYear() : undefined
             //filters.endDate = req.query.endDate && new Date(req.query.endDate) !== "Invalid Date" ? new Date(req.query.endDate).getFullYear() : undefined
             filters.team = req.query.team ? [req.query.team] : ["m", "w"]
             if (req.query.teamId) {
                 filters.team_id = req.query.teamId;
+            }
+            if(req.query.venue_id){
+                filters.venue_id = req.query.venue_id;
             }
             //console.log(req.query.startDate, new Date(req.query.startDate))
             if (req.params.type !== "" && req.params.type === "results") {

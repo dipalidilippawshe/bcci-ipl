@@ -42,6 +42,7 @@ module.exports = class MatchDAO {
         queryParams.query = {}
         if (filters) {
             console.log("filters: ", filters);
+           
             if ("matchState" in filters) {
                 queryParams.query["matchInfo.matchState"] = { $in: filters["matchState"] }
             }
@@ -53,7 +54,9 @@ module.exports = class MatchDAO {
                 //     "$gte": [{ "$dateFromString": { "dateString": "$matchInfo.matchDate" } }, filters["startDate"]],
                 //     "$lte": [{ "$dateFromString": { "dateString": "$matchInfo.matchDate" } }, filters["endDate"]]
                 // }
-            } if ("team" in filters) { //Men or Women
+                
+            }            
+            if ("team" in filters) { //Men or Women
                 queryParams.query["matchInfo.teams.team.type"] = { $in: filters["team"] }
             }
             if ("matchId" in filters) {
@@ -74,8 +77,11 @@ module.exports = class MatchDAO {
             if ("year" in filters) {
                 queryParams.query["matchInfo.matchDate"] = { $in: [new RegExp(filters["year"], "i")/* , new RegExp(filters["year"] - 1, "i") */] }
             }
+            if("venue_id" in filters){
+                queryParams.query["matchInfo.venue.id"] = parseInt(filters["venue_id"])
+            }
         }
-        //   console.dir(queryParams, { depth: null, color: true })
+           console.log(page)
         let { query = {}, project = {}, sort = DEFAULT_SORT } = queryParams
         let cursor
         try {
