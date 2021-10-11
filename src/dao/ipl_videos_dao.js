@@ -435,19 +435,25 @@ module.exports = class IplVideosDAO {
         }
     }
 
-    static async videoByMatchID(id) {
+    static async videoByMatchID(id,page) {
+        
+        let pageLimit = 20;
+        let skip = (page-1)*20;
         try {
             console.log("In video by match ID me");
-            const pipeline = [
-                {
-                    $match: {
-                        "references.sid": id
-                    }
-                }
-            ]
-            console.dir(pipeline, { depth: null, color: true })
+            // const pipeline = [
+            //     {
+            //         $match: {
+            //             "references.sid": id
+            //         }
+            //     }
+            // ]
+            // console.dir(pipeline, { depth: null, color: true })
             //  console.log(franchise_years)
-            return await videos.aggregate(pipeline).toArray()
+            let total = await videos.find({'references.sid':id.toString()}).count();
+            let data = await videos.find({'references.sid':id.toString()}).limit(pageLimit).skip(skip).toArray();
+            
+            return {data:data,total:total};
         } catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
                 return null
