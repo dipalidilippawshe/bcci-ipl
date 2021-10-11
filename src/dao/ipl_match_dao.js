@@ -42,7 +42,7 @@ module.exports = class MatchDAO {
         queryParams.query = {}
         if (filters) {
             console.log("filters: ", filters);
-           
+
             if ("matchState" in filters) {
                 queryParams.query["matchInfo.matchState"] = { $in: filters["matchState"] }
             }
@@ -54,8 +54,8 @@ module.exports = class MatchDAO {
                 //     "$gte": [{ "$dateFromString": { "dateString": "$matchInfo.matchDate" } }, filters["startDate"]],
                 //     "$lte": [{ "$dateFromString": { "dateString": "$matchInfo.matchDate" } }, filters["endDate"]]
                 // }
-                
-            }            
+
+            }
             if ("team" in filters) { //Men or Women
                 queryParams.query["matchInfo.teams.team.type"] = { $in: filters["team"] }
             }
@@ -77,11 +77,11 @@ module.exports = class MatchDAO {
             if ("year" in filters) {
                 queryParams.query["matchInfo.matchDate"] = { $in: [new RegExp(filters["year"], "i")/* , new RegExp(filters["year"] - 1, "i") */] }
             }
-            if("venue_id" in filters){
+            if ("venue_id" in filters) {
                 queryParams.query["matchInfo.venue.id"] = parseInt(filters["venue_id"])
             }
         }
-           console.log(page)
+        console.log(page)
         let { query = {}, project = {}, sort = DEFAULT_SORT } = queryParams
         let cursor
         try {
@@ -771,7 +771,7 @@ module.exports = class MatchDAO {
                     // matches: 1, //{ $size: "$matches" },
                     highScore: "$highestInnScore",
                     notOut: { $subtract: ["$inn", { $size: "$isOut" }] },
-                    stickeRate: { $round: [{ $multiply: [100, { $divide: ['$mostRuns', '$ballsFaced'] }] }, 2] },
+                    stickeRate: { $toString: { $round: [{ $multiply: [100, { $divide: ['$mostRuns', '$ballsFaced'] }] }, 2] } },
                     highestInnScore: {
                         $filter: {
                             input: "$bestBat",
@@ -779,7 +779,7 @@ module.exports = class MatchDAO {
                             cond: { $eq: ["$highestInnScore", "$$item.runs"] }
                         }
                     },
-                    avg: { $cond: [{ $eq: [{ $size: "$isOut" }, 0] }, "NA", { $round: [{ $divide: ['$mostRuns', { $size: "$isOut" }] }, 2] }] },
+                    avg: { $toString: { $cond: [{ $eq: [{ $size: "$isOut" }, 0] }, "NA", { $round: [{ $divide: ['$mostRuns', { $size: "$isOut" }] }, 2] }] } },
                     most50s: 1,
                     most100s: 1,
                     mostRuns: 1,
@@ -868,8 +868,8 @@ module.exports = class MatchDAO {
                             cond: { $eq: ["$maxWktsInn", "$$item.wkts"] }
                         }
                     },
-                    bestBowlEco: { $round: [{ $divide: ['$mostRuns', '$mostOvers'] }, 2] },
-                    bestBowlAvg: { $cond: [{ $eq: ["$mostWkts", 0] }, "NA", { $round: [{ $divide: ['$mostRuns', '$mostWkts'] }, 2] }] },
+                    bestBowlEco: { $toString: { $round: [{ $divide: ['$mostRuns', '$mostOvers'] }, 2] } },
+                    bestBowlAvg: { $toString: { $cond: [{ $eq: ["$mostWkts", 0] }, "NA", { $round: [{ $divide: ['$mostRuns', '$mostWkts'] }, 2] }] } },
                     _id: 0
                 }
             },
@@ -1167,67 +1167,67 @@ module.exports = class MatchDAO {
         }
 
     }
-    static async getPlayersRunsDataByYear(players, year){
-     
+    static async getPlayersRunsDataByYear(players, year) {
+
         try {
             const pipeline = [
-            {
-                $match: { "matchInfo.matchDate": new RegExp(year, "i"), "matchInfo.teams.players.id": {$in:players} }
-            },
-            {$project: {"innings":1}},
-            {$unwind :"$innings" },
-            {$unwind :"$innings.scorecard" },
-            { $unwind: "$innings.scorecard.battingStats" },
-            {
-                $group: {
-                    _id:"$innings.scorecard.battingStats.playerId",
-                    runs: { $sum: "$innings.scorecard.battingStats.r" }
-                }
-            },
-            {$project: {"_id":1,runs:1}}
+                {
+                    $match: { "matchInfo.matchDate": new RegExp(year, "i"), "matchInfo.teams.players.id": { $in: players } }
+                },
+                { $project: { "innings": 1 } },
+                { $unwind: "$innings" },
+                { $unwind: "$innings.scorecard" },
+                { $unwind: "$innings.scorecard.battingStats" },
+                {
+                    $group: {
+                        _id: "$innings.scorecard.battingStats.playerId",
+                        runs: { $sum: "$innings.scorecard.battingStats.r" }
+                    }
+                },
+                { $project: { "_id": 1, runs: 1 } }
 
-       ]
+            ]
 
-       return await matches.aggregate(pipeline).toArray()
-      }catch (e) {
-        if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
-            return null
+            return await matches.aggregate(pipeline).toArray()
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
         }
-        console.error(`Something went wrong in getVideoByID: ${e}`)
-        throw e
-     }
     }
-    static async getPlayersWicketsDataByYear(players, year){
-       
+    static async getPlayersWicketsDataByYear(players, year) {
+
         try {
             const pipeline = [
-            {
-                $match: { "matchInfo.matchDate": new RegExp(year, "i"), "matchInfo.teams.players.id": {$in:players} }
-            },
-            {$project: {"innings":1}},
-            {$unwind :"$innings" },
-            {$unwind :"$innings.scorecard" },
-            { $unwind: "$innings.scorecard.bowlingStats" },
-            {
-                $group: {
-                    _id:"$innings.scorecard.bowlingStats.playerId",
-                    wickets: { $sum: "$innings.scorecard.bowlingStats.w" }
-                }
-            },
-            {$project: {"_id":1,wickets:1}}
-       ]
+                {
+                    $match: { "matchInfo.matchDate": new RegExp(year, "i"), "matchInfo.teams.players.id": { $in: players } }
+                },
+                { $project: { "innings": 1 } },
+                { $unwind: "$innings" },
+                { $unwind: "$innings.scorecard" },
+                { $unwind: "$innings.scorecard.bowlingStats" },
+                {
+                    $group: {
+                        _id: "$innings.scorecard.bowlingStats.playerId",
+                        wickets: { $sum: "$innings.scorecard.bowlingStats.w" }
+                    }
+                },
+                { $project: { "_id": 1, wickets: 1 } }
+            ]
 
-       let count =await matches.find({"matchInfo.matchDate": new RegExp(year, "i"), "matchInfo.teams.players.id": {$in:players}}).count()
-       
-       let bawlings = await matches.aggregate(pipeline).toArray()
-       return {bawlings:bawlings,count:count};
-      }catch (e) {
-        if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
-            return null
+            let count = await matches.find({ "matchInfo.matchDate": new RegExp(year, "i"), "matchInfo.teams.players.id": { $in: players } }).count()
+
+            let bawlings = await matches.aggregate(pipeline).toArray()
+            return { bawlings: bawlings, count: count };
+        } catch (e) {
+            if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
+                return null
+            }
+            console.error(`Something went wrong in getVideoByID: ${e}`)
+            throw e
         }
-        console.error(`Something went wrong in getVideoByID: ${e}`)
-        throw e
-     }
     }
 
     static async playerInfoByYear(id,year){
