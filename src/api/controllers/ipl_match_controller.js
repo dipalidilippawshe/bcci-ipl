@@ -565,7 +565,7 @@ module.exports = class MatchController {
             const FIXTURES_PER_PAGE = 20
             let page
             try {
-                page = req.query.page ? parseInt(req.query.page, 10) : "0"
+                page = req.query.page ? parseInt(req.query.page, 10) : 1
             } catch (e) {
                 console.error(`Got bad value for page:, ${e}`)
                 page = 0
@@ -576,12 +576,23 @@ module.exports = class MatchController {
                 res.status({ status: false, data: [], message: "Please send match ID" })
             } else {
                 console.log("In else me");
-                let data = await videosDAO.videoByMatchID(id)
+                let data = await videosDAO.videoByMatchID(id,page)
+                
                 if (!data || data.length <= 0) {
                     res.status(404).json({ status: false, error: config.error_codes["1001"] })
                     return
                 }
-                res.json({ status: true, data: data })
+               
+                let response = {
+                    status: true,
+                    data: data.data,
+                    page: page,
+                    filters: {},
+                    entries_per_page: FIXTURES_PER_PAGE,
+                    total_results: data.total,
+                }
+        
+                res.json(response)
 
             }
         } catch (e) {
@@ -1039,6 +1050,7 @@ module.exports = class MatchController {
         else {
             matchId = req.body.matchId;
             let matchDetail = await MatchDAO.getMatchByIDTeamsResult(parseInt(matchId));
+           
             if (pageType == "scorecard") {
 
                 let validData = { teams: matchDetail.matchInfo.teams, innings: matchDetail.innings };
