@@ -1195,6 +1195,46 @@ module.exports = class MatchController {
 
     }
 
+    static async getStatsPerPlayer(req,res,next){
+        let body = req.body;
+        if(!body.playerId || !body.year){
+            res.status(404).json({ status: false, error: config.error_codes["1003"] })
+            return
+        }
+        try{
+            let details = await MatchDAO.playerInfoByYear(body.playerId,body.year);
+            console.log("")
+            var player =null;
+          
+               
+                for (let i = 0; i <= details.matchInfo.teams.length-1; i++) {
+                    player = details.matchInfo.teams[i].players.find(element => element.id == parseInt(body.playerId));
+                    
+                    if(player){
+                        player.debut = "2008"; break;
+                    }
+                     
+                }
+                let players = await MatchDAO.getTeamListByYear(parseInt(body.playerId),body.year);
+
+                let batting = await MatchDAO.getBattingStatsData(parseInt(body.playerId));
+                let bawlings = await MatchDAO.getBawlingStatsData(parseInt(body.playerId));
+                player.battingStats = batting;
+                player.bowlingStats = bawlings;
+                player.teamData = players;
+
+
+            let battings = await MatchDAO.playerBattingStatsPerYear(parseInt(body.playerId));
+            let bowlings = await MatchDAO.playerBowlingStatsPerYear(parseInt(body.playerId));
+
+            let response = {playerInfo:player,battingStats : battings, bowlingStats: bowlings};
+               res.json({ status: true, data: response });
+        } catch (e) {
+            res.status(404).json({ status: false, error: config.error_codes["1001"], data: e })
+
+        }
+
+    }
 }
 
 
