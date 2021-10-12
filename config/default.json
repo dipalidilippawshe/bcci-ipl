@@ -4,5 +4,133 @@
         "1001": "Data not found.",
         "1002": "Query parameter tag is required.",
         "1003": "Request params missing."
+    },
+    "tv_app_config": {
+        "baseUrl": "https://dev-njsapi.epicon.in",
+        "ga_id": "UA-133366555-4",
+        "faqUrl": "",
+        "pageSize": 12,
+        "credentials": {
+            "gaTrackingId": "",
+            "gcmSenderId": ""
+        },
+        "policy": {
+            "termsOfUseUrl": "https://www.epicon.in/terms-of-use",
+            "termsOfUseQRIimageUrl": "https://qr.epicon.in/QR_TC.png",
+            "privacyPolicyUrl": "https://www.epicon.in/privacy-policy",
+            "privacyPolicyQRImageUrl": "https://qr.epicon.in/QR_PrivacyPolicy.png"
+        },
+        "about": {
+         
+            "aboutUs": "EPIC On by IN10 Media is the go-to platform for entertaining and informative Indian TV shows, short videos, documentaries, eBooks, Podcasts, Games, LIVE TV, and Audio Books, across the genres of sports, food, history, mythology, travel, and more.The streaming service offers free and premium Videos-On-Demand, exciting audio content, and popular books and games - easily accessible on smartphones and other smart devices. Explore, discover, and be inspired by all things Indian on EPIC On.",
+            "contactMail": "epicon@in10media.com",
+            "contactQRCodeImageUrl": "https://qr.epicon.in/QR_support.png"
+        },
+        "subscription": {
+            "title": "Subscription Benefit",
+            "benefits": [
+                "Watch Premium shows & documentaries across genres",
+                "Stream in multiple languages",
+                "Make your own Watchlist",
+                "Mark your Favourite shows"
+            ],
+            "subscriptionQRImageUrl": "https://st2.epicon.in/media-upload/1624465817-qr-subscription.png"
+      
+        },
+        "pin": {
+            "loginMessage": "Login with PIN",
+            "pinLinkMessage": "IF you want to link your account from another device, choose Login With PIN option",
+            "devicePinQRImageUrl": "https://st2.epicon.in/media-upload/1624521543-qr-pin-1.png" 
+        },
+        "faq": {
+            "faqdata": [
+                {
+                    "faqno": "1",
+                    "faqquestion": "How can you verify your EPIC On account?",
+                    "faqanswer": "Verification is only applicable for users who have registered/signed up via email ID or mobile number. Users signing up using social login do not need to verify their EPIC On account. \n Users signing up using email ID, please follow the steps given below: \n\t Once you have registered on the EPIC On platform, check your email inbox (check your email Spam folder if you do not see an email in your inbox). \n\t Open the email received from EPIC On. \n\t Click on the verification link mentioned in the email. \n\t You have successfully verified your EPIC On account! \n\t Now you can visit the EPIC On app or website, and login using the registered email ID and password. \n Users signing up via mobile number, please follow the steps given below: \n\t Once you have registered on the EPIC On platform, you will receive an SMS with an OTP on your registered mobile number. \n\t Enter the OTP on the EPIC On app or website. \n\t You have successfully verified your EPIC On account! \n\t Now you can visit the EPIC On app or website, and login using the registered mobile number and password."
+                },
+                {
+                    "faqno": "2",
+                    "faqquestion": "How can you reset your EPIC On account password?",
+                    "faqanswer": "Click on Forgot Password link on the sign-in page. \n If you have registered on the EPIC On platform using email ID, please provide the registered email ID. \n\t You will receive an email with a link to reset the password in your email inbox. \n\t Click on the link, and enter the new password and re-enter it to confirm. \n\t Click on Update. \n\t You can now login to your EPIC On account using your registered email ID and the new password. \n If you have registered on the EPIC On using mobile number, please provide the registered mobile number. \n\t You will receive an SMS with a 6-digit OTP. \n\t Visit the EPIC On app or website and enter the OTP, the new password and re-enter it to confirm. \n\t You can now login to your EPIC On account using your registered mobile number and the new password."
+                },
+                {
+                    "faqno": "3",
+                    "faqquestion": "How can you cancel your subscription on iOS?",
+                    "faqanswer": "If you have an iPhone/iPad, please follow the steps given below: \n\t Launch the Settings app. \n\t Tap on iTunes and the App Store. \n\t Tap on your Apple ID. \n\t Tap View Apple ID when the pop up window appears. \n\t Enter your Apple ID password, face ID, or fingerprint ID when prompted. \n\t Tap on Subscriptions. \n\t Tap on View Apple ID, then tap on Subscriptions. \n\t Tap on the Subscription you want to cancel. \n\t Tap on Cancel Subscription. \n\t Tap on Confirm when prompted to confirm that you want to cancel your subscription. \n After your current subscription period ends, iTunes will no longer bill you for your EPIC On subscription. \n If you have a Mac, please follow the steps given below: \n\t Open iTunes on your Mac. \n\t Go to the Store section of your Music Library. \n Click on the Accounts link in the right column. \n\t Sign in, if necessary. \n\t Scroll down to the Settings header. \n\t Click on Manage next to Subscriptions. \n\t Find the subscription you wish to cancel and press Edit. \n\t Press Cancel Subscription."
+                },
+                {
+                    "faqno": "4",
+                    "faqquestion": "How can you access videos you have downloaded/offline videos?",
+                    "faqanswer": "Open the EPIC On app \n\t Tap on the menu \n\t Tap on Downloads \n\t Downloaded content will be visible. \n\t Click on the content you wish to view and start watching. \n\t Note: You need to be logged in (online or offline) to view your downloads. Downloaded videos will be available on your device for 10 days from the date of download."
+                },
+                {
+                    "faqno": "5",
+                    "faqquestion": "What are the modes of payment available to pay the subscription amount?",
+                    "faqanswer": "If you are subscribing to EPIC On from India: \n\t If you are an iOS user, you can only pay via iOS in App Purchases. \n\t If you are an Android user, you can pay via Google in App Purchase or use credit card, debit card, net banking, wallets via CC Avenue, and PayTM. \n\t If you are using our website, you can pay via credit card, debit card, net banking, wallets via CC Avenue, and PayTM. \n If you are subscribing to EPIC On from any country apart from India:If you are an iOS user, you can only pay via iOS in App Purchases. \n\t If you are an Android user, you can pay via Google in App Purchase or credit card, debit card, net banking, and wallets via CC avenue. \n\t If you are using our website, you pay via credit card, debit card, net banking, and wallets via CC avenue."
+                },
+                {
+                    "faqno": "6",
+                    "faqquestion": "Are subtitles available for shows on the EPIC On app?",
+                    "faqanswer": "Subtitles are available for selected shows as of now, but we are working towards enabling subtitles for all our content.\n\n Following shows have subtitles. \n\t 1.Adrishya \n\t 2.Dariba Diaries \n\t 3.Devlok with Devdutt Pattanaik S1,S2,S3 \n\t 4.Indian Martial Arts \n\t 5.Indipedia \n\t 6.Kahi Suni \n\t 7.Made In India\n\t 8.Mid Wicket Tales with Naseeruddin Shah \n\t 9.Raja Rasoi Aur Andaaz Anokha (Season 1) \n\t 10.Raja Rasoi Aur Anya Kahaniyaan (Season 1) \n\t 11.Raja Rasoi Aur Anya Kahaniyaan (Season 2) \n\t 12.Rakkt (Season 1),(Season 2) \n\t 13.Sanrachna \n\t 14.Stories by Rabindranath Tagore \n\t 15.Time Machine \n\t 16.Tyohaar Ki Thaali (Season 1),(Season 2) \n\t 17.Yam Kisi Se Kam Nahi \n\t 18.Ekaant Sarhad Paar \n\t 19.The Great Escape(6 episodes) \n\t 20.Lost Recipes \n\t 21.Daanav Hunters \n\t 22.Dharmakshetra \n\t 23.Ekaant (Season 1) \n\t 24.Ekaant (Season 2) \n\t 25.Lost Recipes (Season 2) \n\t 26.Raja Rasoi Aur Andaaz Anokha (Season 2) \n\t 27.Regiment Diaries \n\t 28.Roz Sunday \n\t 29.Sharanam: Safar Vishwaas Ka... (Season 2) \n\t 30.Sharanam: Safar Vishwaas Ka... with Juhi Chawla \n\t 31.Siyaasat \n\t 32.Umeed India \n\t 33.A Tent, A Truck & Talkies \n\t 34.Air Battle of Srinagar \n\t 35.GD Bakshi - Air Battle of Srinagar \n\t 36.GD Bakshi - Killer Squadron \n\t 37.GD Bakshi - The 1965 Indo-Pakistan War \n\t 38.GD Bakshi - The Fall of Dhaka \n\t 39.Hai Junoon \n\t 40.Janani \n\t 41.Killer Squadron \n\t 42.Life Zara Hatke \n\t 43.Nagaland - The Hornbill Festival \n\t 44.Nagaland - The Sons of Jepfu \n\t 45.Royal Enfield - Brands of India \n\t 46.Rupa's Boutique \n\t 47.The 1965 Indo - Pakistan War \n\t 48.The Fall Of Dhaka \n\t 49.URI: THE FORGOTTEN BATTLE \n\t 50.Himalayan Misfits \n\t 51.Elephant Whisperer and Maya Memsaheb"
+                },
+                {
+                    "faqno": "7",
+                    "faqquestion": "Do I have to pay to watch content?",
+                    "faqanswer": "EPIC On has both free and premium content. Except for premium content, all other content can be enjoyed without paying any charges."
+                },
+                {
+                    "faqno": "8",
+                    "faqquestion": "How do I know what Content I have to pay for?",
+                    "faqanswer": "Except for premium content, all other content on EPIC On is free All premium content comes with a 'PREMIUM' tag on it, so you can easily identify them from the rest of the content."
+                },
+                {
+                    "faqno": "9",
+                    "faqquestion": "How do you cast content from the EPIC On app on Chromecast?",
+                    "faqanswer": "Set up your Chromecast and connecting it to the same Wi-Fi network as your mobile device. \n Open the EPIC On App from your Android/iOS phone or tablet and select the video you want to cast. \n Select the Cast icon on the top-right corner of your screen to cast the content. \n Select the Chromecast device on which you want to cast the video. \n Your phone/tablet works just like a television remote controller. You can adjust volume, fast forward the video, and stop and play the video at your convenience. \n Click on the ‘Cast’ icon and select ‘Disconnect’ to stop casting."
+                },
+                {
+                    "faqno": "10",
+                    "faqquestion": "How can you cast content on Apple TV using an iOS device?",
+                    "faqanswer": "Your iOS device should be connected to the Apple TV that you want to stream videos on. \n With the Airplay feature on your iOS device, select the option to watch videos on your Apple TV. \n Make sure your iOS device is on the same Wi-Fi network as your Apple TV. \n Select the video you want to watch from your device and press the Airplay button (this option will not show if you are not on the same Wi-Fi network as the device you wish to connect with). \n Select the Apple TV from the Airplay devices that show up, and your content will begin streaming on your Apple TV screen."
+                },
+                {
+                    "faqno": "11",
+                    "faqquestion": "How can you watch content from the EPIC On app on multiple devices simultaneously using the same account?",
+                    "faqanswer": "Viewing content on multiple devices simultaneously using the same account is currently not supported on EPIC On. \n You will have to pause the content on the current device and click on play on the other device, after 10 seconds. The content will start playing on the second device."
+                },
+                {
+                    "faqno": "12",
+                    "faqquestion": "What can you do if you have already paid for your subscription but are still unable to access paid content on the EPIC On (and are asked to pay for subscription)?",
+                    "faqanswer": "Please make sure you are logged in on the same account you bought the subscription from. \n If you are asked to subscribe even after using the correct account, please get in touch with us via the Contact Us link on the app/website. \n Please make sure to attach the transaction receipt of your subscription in your email."
+                },
+                {
+                    "faqno": "13",
+                    "faqquestion": "How can you sign up on EPIC On?",
+                    "faqanswer": "We have five modes of signing up on EPIC On. \n\t Email ID \n\t Mobile Number \n\t Facebook account \n\t Twitter account \n\t Google Plus account \n Use any of these methods to sign up on EPIC On. \n To sign up, click on the Sign In link on the website/app. \n Click on the Sign Up button, select any of the mentioned options to create an account on EPIC On."
+                },
+                {
+                    "faqno": "14",
+                    "faqquestion": "How do you get a refund?",
+                    "faqanswer": "EPIC On does not offer a refund policy. A one-time subscription, once availed of, cannot be refunded.However, in case your EPIC On subscription is set on auto-renewal, you can disable it for the next cycle. This will ensure that your subscription isn’t renewed once the current subscription period ends."
+                },
+                {
+                    "faqno": "15",
+                    "faqquestion": "On which platforms is EPIC On available?",
+                    "faqanswer": "App \n EPIC On app is currently available on Google Play Store and Apple Store. Click on the links below to download our app. \n Google Play \n Apple Store \n  \n Website \n Please visit the link below to access the content on EPIC On through our website.  \n https://epicon.epicchannel.com  \n   \n TV App  \n Something awesome is in the works! EPIC On will be available on the following TV platforms in a couple of months.  \n  \n MI TV \n Amazon Fire TV \n Apple TV \n Roku \n Android TV"
+                },
+                {
+                    "faqno": "16",
+                    "faqquestion": "What can you do if your EPIC On app crashes repeatedly?",
+                    "faqanswer": "Our team of engineers have tested the app prior to release, but there may be unpredictable scenarios, given that there are various devices and OS versions. We do take crash reports very seriously. In the case of repeated app crashes, we request you to write to us on epicon@in10media.com. Do provide us with the details** mentioned at the end of this answer. \n\n A couple of quick checks that you will need to perform at your end before you report the issue to us: \n a. Have you enabled all necessary permissions for the EPIC On app on your device? \n It needs Phone/SMS/Messaging and Storage permissions. \n Offline downloads will need Storage permission. To verify permissions, follow these steps: \n Go to Settings > Apps. Scroll down till you see EPIC On and click on it. Now, click on Permissions and enable both 'Phone' and 'Storage' permissions (Note: Options may be named differently on different phones). \n\n b. Have you installed any customized themes? \n Some phones allow you to change the default theme. In some cases, themes may interfere with the functionality of some applications causing frequent app crashes. You might want to reset themes and check if that was causing it. Do write to us if the issue persists after you have reset the theme to default. \n\n **Send us the details of your device: User ID, Device Manufacturer, Device Model Number, Device OS and Version, EPIC On App Version. \n If possible, also send us a screenshot of your 'My Account' page."
+                },
+                {
+                    "faqno": "17",
+                    "faqquestion": "Why can't you find your downloaded videos on the EPIC On app after the latest update?",
+                    "faqanswer": "The updated app from version 2.1.1 onward is a complete overhaul of the EPIC On platform. As a result, downloaded videos from the previous version will be unavailable. We apologize for the inconvenience."
+                }
+            ]
+        }
     }
+   
 }

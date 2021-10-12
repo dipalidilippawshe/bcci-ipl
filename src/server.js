@@ -16,6 +16,7 @@ const playlists = require("../src/api/routes/playlist_route");
 const menus = require("../src/api/routes/menu_route");
 const auctions = require("../src/api/routes/auction_route");
 const document = require("../src/api/routes/document_route");
+const static_url_route = require("./api/routes/static_url_route")
 const app = express()
 
 app.use(cors())
@@ -35,6 +36,7 @@ app.use("/api/v1/playlists", playlists);
 app.use("/api/v1/menu", menus)
 app.use("/api/v1/auction", auctions)
 app.use("/api/v1/document", document)
+app.use("/staticUrl/data",static_url_route)
 app.use("*", (req, res) => res.status(404).json({ error: "api not found" }))
 
 module.exports = app
