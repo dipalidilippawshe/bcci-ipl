@@ -626,7 +626,7 @@ module.exports = class MatchController {
         try {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : "2021"
-            let article = await MatchDAO.getTeams({ year: year })
+            let article = await MatchDAO.getTeams({ year: year });
             let data = { men: [], women: [] }
             for (var i in article) {
                 var franchiseWithWiningYears = await RecordDAO.processFrenchise(article[i].franchises)
@@ -647,6 +647,9 @@ module.exports = class MatchController {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
+            data.men.sort(function (a, b) {
+                return a.id - b.id;
+            });
             res.json({ status: true, year: year, data: data })
         } catch (e) {
             console.log(`api, ${e}`)

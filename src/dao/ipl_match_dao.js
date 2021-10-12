@@ -658,7 +658,9 @@ module.exports = class MatchDAO {
                         team: "$matchInfo.teams.team",
                     }
                 },
-
+                {
+                    $sort:{"team": 1}
+                },
                 {
                     $group: {
                         "_id": "$team.type",
@@ -672,7 +674,7 @@ module.exports = class MatchDAO {
                 {
                     $project: { "team_type": "$_id", "franchises": 1, _id: 0 }
                 },
-                { $sort: { "franchises.id": 1 } }
+               // { $sort: { "franchises.id": 1 } }
 
 
             ]
