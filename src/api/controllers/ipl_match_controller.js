@@ -1027,15 +1027,39 @@ module.exports = class MatchController {
     static async getapiWebLeaders(req, res, next) {
         try {
 
-            let details = await MatchDAO.getHighestBattingStats();
-            let run = details.reduce((max, obj) => (max.mostRuns > obj.mostRuns) ? max : obj);
-            let fours = details.reduce((max, obj) => (max.mostRuns > obj.mostRuns) ? max : obj);
-            let six = details.reduce((max, obj) => (max.mostRuns > obj.mostRuns) ? max : obj);
-            let strikeRate = details.reduce((max, obj) => (parseInt(max.sr) > parseInt(obj.sr)) ? max : obj);
+            let battings = await MatchDAO.getHighestBattingStats();
+            let bowlings = await MatchDAO.getHighestBowlingStats();
+            let run = battings.reduce((max, obj) => (max.mostRuns > obj.mostRuns) ? max : obj);
+           
+            let fours = battings.reduce((max, obj) => (max.most4s > obj.most4s) ? max : obj);
+            let six = battings.reduce((max, obj) => (max.most6s > obj.most6s) ? max : obj);
+            let strikeRate = battings.reduce((max, obj) => (parseInt(max.sr) > parseInt(obj.sr)) ? max : obj);
 
-            //let reduced =  details.reduce((acc, shot) => acc = acc > shot.mostRuns ? acc : shot.mostRuns, 0);
-            console.log("details: ", strikeRate);
-            res.json({ status: true, data: details });
+            //bowlings:
+             let w = bowlings.reduce((max, obj) => (max.w > obj.w) ? max : obj);
+             let d = bowlings.reduce((max, obj) => (max.d > obj.d) ? max : obj);
+             let maid = bowlings.reduce((max, obj) => (max.maid > obj.maid) ? max : obj);
+             let e = bowlings.reduce((max, obj) => (max.e > obj.e) ? max : obj);
+             let wd = bowlings.reduce((max, obj) => (max.wd > obj.wd) ? max : obj);
+             let nb = bowlings.reduce((max, obj) => (max.nb > obj.nb) ? max : obj);
+
+            let battingStats ={runs:run,fours:fours,six:six, strikeRate:strikeRate};
+            let bowlingStats = {w:w,d:d,maid:maid,e:e,wd:wd,nb:nb};
+
+            for(let bats in battingStats){
+               let details = await MatchDAO.playerInfo(battingStats[bats].player_id);
+               let bawling = await MatchDAO.getBawlingStatsData(parseInt(battingStats[bats].player_id));
+                battingStats[bats].details = details;
+                battingStats[bats].wickets = bawling.w;
+            }
+            for(let bats in bowlingStats){
+                let details = await MatchDAO.playerInfo(bowlingStats[bats].player_id);
+                let bawling = await MatchDAO.getBawlingStatsData(parseInt(bowlingStats[bats].player_id));
+                bowlingStats[bats].details = details;
+                bowlingStats[bats].wickets = bawling.w;
+             }
+
+            res.json({ status: true, data: {battingStats:battingStats, bowlingStats:bowlingStats} });
         } catch (e) {
             res.status(404).json({ status: false, error: config.error_codes["1003"], data: e })
         }

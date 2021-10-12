@@ -3,6 +3,7 @@
     "error_codes": {
         "1001": "Data not found.",
         "1002": "Query parameter tag is required.",
-        "1003": "Request params missing."
+        "1003": "Request params missing.",
+        "1004": "Something went wrong!"
     }
 }
