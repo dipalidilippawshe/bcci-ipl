@@ -598,7 +598,7 @@ module.exports = class MatchDAO {
 
             let data = matchesList.length ? matchesList[0] : {}
             data.matches = total;
-            console.log(data);
+           // console.log(data);
             return data;
 
         } catch (e) {
@@ -658,7 +658,9 @@ module.exports = class MatchDAO {
                         team: "$matchInfo.teams.team",
                     }
                 },
-
+                {
+                    $sort:{"team": 1}
+                },
                 {
                     $group: {
                         "_id": "$team.type",
@@ -672,7 +674,7 @@ module.exports = class MatchDAO {
                 {
                     $project: { "team_type": "$_id", "franchises": 1, _id: 0 }
                 },
-                { $sort: { "franchises.id": 1 } }
+               // { $sort: { "franchises.id": 1 } }
 
 
             ]
@@ -1080,6 +1082,7 @@ module.exports = class MatchDAO {
 
     static async getHighestBattingStats() {
         const countingPipeline = [
+            { $match : { 'matchInfo.teams.team.type': { '$in': [ 'm' ] }}},
             { $unwind: "$innings" },
             { $unwind: "$innings.scorecard.battingStats" },
             {
@@ -1093,16 +1096,15 @@ module.exports = class MatchDAO {
             {
                 $group:
                 {
-
                     _id: "$innings.scorecard.battingStats.playerId",
                     mostRuns: { $sum: "$innings.scorecard.battingStats.r" },
                     most4s: { $sum: "$innings.scorecard.battingStats.4s" },
                     most6s: { $sum: "$innings.scorecard.battingStats.6s" },
-                    bestBat: { $push: { "runs": "$innings.scorecard.battingStats.r" } },
                     score: { $sum: "$innings.scorecard.battingStats.sr" }
-
                 }
             },
+
+
             {
                 $project: {
                     player_id: "$_id",
@@ -1121,6 +1123,47 @@ module.exports = class MatchDAO {
         const matchesList = await (await matches.aggregate(pipeline)).toArray()
         return matchesList
     }
+    static async getHighestBowlingStats() {
+        const countingPipeline = [
+            { $unwind: "$innings" },
+            { $unwind: "$innings.scorecard.bowlingStats" },
+            {
+                $project: {
+                    "matchInfo.matchDate": 1,
+                    "innings.scorecard.bowlingStats": 1,
+                    "matchId": 1,
+                    "matchInfo.teams": 1,
+                }
+            },
+            {
+                $group:
+                {
+                    _id: "$innings.scorecard.bowlingStats.playerId",
+                    ov: { $sum: "$innings.scorecard.bowlingStats.ov" },
+                    r: { $sum: "$innings.scorecard.bowlingStats.r" },
+                    w: { $sum: "$innings.scorecard.bowlingStats.w" },
+                    d: { $sum: "$innings.scorecard.bowlingStats.d" },
+                    maid: { $sum: "$innings.scorecard.bowlingStats.maid" },
+                    e: { $sum: "$innings.scorecard.bowlingStats.e" },
+                    wd: { $sum: "$innings.scorecard.bowlingStats.wd" },
+                    nb: { $sum: "$innings.scorecard.bowlingStats.nb" }
+                }
+            },
+            {
+                $project: {
+                    player_id: "$_id",
+                    ov:1,r:1,w:1,d:1,maid:1,e:1,wd:1,nb:1,
+                    _id: 0,
+                }
+            }
+
+        ]
+        const pipeline = [...countingPipeline]
+        console.dir(pipeline, { depth: null, color: true })
+        const matchesList = await (await matches.aggregate(pipeline)).toArray()
+        return matchesList
+    }
+
 
     static async getMatchByIDTeamsResult(id) {
         try {

@@ -64,6 +64,7 @@ module.exports = class IplRecordsDAO {
                         "franchises_logo": { $first: "$franchises.logo" },
                         "franchises_social": { $first: "$franchises.social" },
                         "franchises_is_playing": { $first: "$franchises.is_playing" },
+                        "franchises_logo_medium":{$first: "$franchises.logo_medium"}
                         // "speciality": { $first: "$records.speciality" },
                         // "reserve_price": { $first: "$records.reserve_price" },
                         // "status": { $first: "$records.status" },
@@ -139,8 +140,9 @@ module.exports = class IplRecordsDAO {
                 obj.wonYears = won;
 
                 //find frenchise logo
-                let logo = await frenchisesData.findOne({name:frenchises[i].fullName},{logo:1});
+                let logo = await frenchisesData.findOne({name:frenchises[i].fullName},{logo:1,logo_medium:1});
                 obj.logo=logo.logo;
+                obj.logo_medium=logo.logo_medium;
 
                
 

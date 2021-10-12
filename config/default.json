@@ -131,6 +131,8 @@
                 }
             ]
         }
+        "1003": "Request params missing.",
+        "1004": "Something went wrong!"
     }
    
 }
