@@ -139,8 +139,9 @@ module.exports = class IplRecordsDAO {
                 obj.wonYears = won;
 
                 //find frenchise logo
-                let logo = await frenchisesData.findOne({name:frenchises[i].fullName},{logo:1});
+                let logo = await frenchisesData.findOne({name:frenchises[i].fullName},{logo:1,logo_medium:1});
                 obj.logo=logo.logo;
+                obj.logo_medium=logo.logo_medium;
 
                
 
