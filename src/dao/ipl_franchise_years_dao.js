@@ -140,10 +140,11 @@ module.exports = class IplRecordsDAO {
                 obj.wonYears = won;
 
                 //find frenchise logo
-                let logo = await frenchisesData.findOne({name:frenchises[i].fullName},{logo:1,logo_medium:1});
+                let logo = await frenchisesData.findOne({name:frenchises[i].fullName},{logo:1,logo_medium:1,banner:1,primaryColor:1,secondaryColor:1});
                 obj.logo=logo.logo;
                 obj.logo_medium=logo.logo_medium;
-
+                obj.primaryColor = logo.primaryColor;
+                obj.secondaryColor = logo.secondaryColor;
                
 
                 //console.log(" frenchises.wonYears us: ", frenchises.wonYears);

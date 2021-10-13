@@ -331,12 +331,16 @@ module.exports = class IplVideosController {
 
     static async apiAppGetMidpage(req,res,next){
         let slug = req.params.slug;
+        let match_id = req.query.match_id;
+
         if(!slug){
             res.status(404).json({ status: false, error: config.error_codes["1001"] })
             return
         }
         var filters={};
         filters.type = slug;
+        if(match_id)
+            filters.match_id = match_id
         try{
             let videos = await IplVideosDAO.getIplVideosByFilter(filters,1,30);
             if(!videos){
