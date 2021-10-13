@@ -191,11 +191,41 @@ module.exports = class IplVideosController {
         res.json(response)
     }
     static async getWebIplVideos(req, res, next) {
+    
+ 
         var type = req.params.type;
         if (!type) {
             res.json({ status: false, message: "please specify video type" });
         }
-        if (req.query.page)
+        if(type == "matchId")
+        {
+          let slug =req.query.slug?req.query.slug:"";
+          let matchId = req.query.id?req.query.id:""
+          let page =req.query.page?req.query.page:1;
+         
+            console.log(req.query);
+          if(!(slug)||!(matchId))
+          {
+           
+            let data = slug?"please specify slug":"please specify match id";
+            res.json({ status: false, message: data });
+            return
+          }
+          const respo = await IplVideosDAO.getVideosByMatchId(matchId,slug,page)
+          let response = {
+            status: true,
+            message: "Retrived data!",
+            videos: respo.data,
+            entries_per_page: 20,
+            total_results: respo.total
+        }
+       
+        res.json(response)
+     
+        }
+        else
+        {
+            if (req.query.page)
             var page = req.query.page
         else
             page = 1;
@@ -216,6 +246,8 @@ module.exports = class IplVideosController {
             total_results: respo.total,
         }
         res.json(response)
+        }
+        
     }
 
 
