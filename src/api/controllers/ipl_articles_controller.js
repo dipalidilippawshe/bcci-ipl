@@ -283,6 +283,8 @@ module.exports = class IPLArticlesController {
         }
         var filters={};
         filters.type = slug;
+        if(req.query.team_id)
+            filters.team_id = req.query.team_id;
         try{
             let news = await IplArticlesDAO.getIplNewsByFilter(filters,1,30);
             if(!news){
