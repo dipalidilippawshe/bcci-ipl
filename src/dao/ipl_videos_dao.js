@@ -583,18 +583,7 @@ module.exports = class IplVideosDAO {
             return e
         }
     }
-    static async getVideosByMatchId(matchid,slug,page)
-    {
-     
-        let pageLimit = 20;
-        let skip = (page-1)*pageLimit;
-  
-     let count =await videos.find({'references.type':"CRICKET_MATCH",'references.id':parseInt(matchid),'tags.label':slug}).count();
-     let data = await videos.find({'references.type':"CRICKET_MATCH",'references.id':parseInt(matchid),'tags.label':slug}).limit(20).skip(skip).toArray();
-     
-     return {data:data,total:count};
-   
-    }
+    
 
 }
 
