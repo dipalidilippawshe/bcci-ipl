@@ -770,6 +770,9 @@ module.exports = class MatchController {
 
             let batting = await MatchDAO.getBattingStatsData(parseInt(player));
             let bawlings = await MatchDAO.getBawlingStatsData(parseInt(player));
+            batting.sr = batting.sr.toString();
+            if(Object.keys(bawlings).length !== 0)
+              bawlings.ov = bawlings.ov.toString();
             details.battingStats = batting;
             details.bowlingStats = bawlings;
             details.debut = "2008";
