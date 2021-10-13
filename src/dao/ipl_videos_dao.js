@@ -284,7 +284,8 @@ module.exports = class IplVideosDAO {
             }
             page = parseInt(page);
             var videosPerPage = limit;
-
+            var sort;
+           // sort = filters.sort==0?"views":filters.sort==1?"newest":"oldest";
             var skip = (page - 1) * videosPerPage;
             const mongoquery = { "tags.label": { $regex: new RegExp(filters.type, "i") } };
             if (filters.match_id) {
@@ -304,10 +305,18 @@ module.exports = class IplVideosDAO {
                 mongoquery["references.id"] = { $eq: parseInt(filters.season_id) }
                 mongoquery["references.type"] = { $eq: "CRICKET_TOURNAMENT" }
             }
+        
+            //sortings...
+            if(filters.sort == 0)
+                sort={"views":-1};
+            else if(filters.sort ==1)
+                sort={"date":1};
+            else
+                sort={date:-1};
 
             //page logic here..
             console.log("final qu", mongoquery)
-            var cursor = await videos.find(mongoquery).limit(videosPerPage).skip(skip);
+            var cursor = await videos.find(mongoquery).limit(videosPerPage).skip(skip).sort(sort);
 
             const displayCursor = cursor.limit(videosPerPage)
             const videoList = await displayCursor.toArray()

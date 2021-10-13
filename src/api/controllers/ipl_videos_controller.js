@@ -327,15 +327,21 @@ module.exports = class IplVideosController {
     static async apiAppGetMidpage(req,res,next){
         let slug = req.params.slug;
         let match_id = req.query.match_id;
-
+        let team_id = req.query.team_id;
+        let sort = 2;
+           if(req.query.sort)
+              sort = parseInt(req.query.sort);
         if(!slug){
             res.status(404).json({ status: false, error: config.error_codes["1001"] })
             return
         }
         var filters={};
         filters.type = slug;
+        filters.sort = sort;
         if(match_id)
-            filters.match_id = match_id
+            filters.match_id = match_id;
+        if(team_id)
+             filters.team_id = team_id;
         try{
             let videos = await IplVideosDAO.getIplVideosByFilter(filters,1,30);
             if(!videos){
