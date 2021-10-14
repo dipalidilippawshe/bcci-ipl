@@ -816,10 +816,12 @@ module.exports = class MatchController {
         let matchVideoFilter = { match_id: req.params.match_id }
         let matchVideoPage = 1
         let matchLimitPage = 1
+        //find team logos..
+        let dataWithLogos = await MatchDAO.findTeamLogos(matchesList);
         MatchVideos = await videosDAO.getIplVideosByFilter(matchVideoFilter, matchVideoPage, matchLimitPage)
         let response = {
             status: true,
-            data: matchesList,
+            data: dataWithLogos,
             match_video: MatchVideos && MatchVideos.list && MatchVideos.list.length ? MatchVideos.list[0] : {},
             page: page,
             filters: {},

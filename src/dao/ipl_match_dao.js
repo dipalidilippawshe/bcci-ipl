@@ -1517,4 +1517,13 @@ module.exports = class MatchDAO {
         return matchesList;
     }
 
+
+    static async findTeamLogos(matchesData){
+        for(let i=0;i<=matchesData[0].matchInfo.teams.length-1;i++){
+           
+            let logo = await franchisedata.findOne({id:matchesData[0].matchInfo.teams[i].team.id.toString()});
+            matchesData[0].matchInfo.teams[i].team.teamlogo = logo.logo_medium;
+        }
+        return matchesData
+    }
 }
