@@ -1523,6 +1523,7 @@ module.exports = class MatchDAO {
            
             let logo = await franchisedata.findOne({id:matchesData[0].matchInfo.teams[i].team.id.toString()});
             matchesData[0].matchInfo.teams[i].team.teamlogo = logo.logo_medium;
+            matchesData[0].matchInfo.teams[i].team.logo = logo.logo;
         }
         return matchesData
     }
