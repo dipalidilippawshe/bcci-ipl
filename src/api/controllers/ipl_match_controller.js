@@ -77,12 +77,14 @@ module.exports = class MatchController {
             filters.year = req.query.year && parseInt(req.query.year) || new Date().getFullYear()
             console.log(filters)
             if (["results", "fixtures"].includes(req.params.type)) {
-
+               
                 const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
                     filters,
                     page,
                     FIXTURES_PER_PAGE
                 })
+
+               
                 let response = {
                     status: true,
                     data: matchesList,
@@ -469,11 +471,13 @@ module.exports = class MatchController {
         })
         var MatchVideos = []
         if (req.body.matchId) {
+
+            var dataWithLogos = await MatchDAO.findTeamLogos(matchesList);
             let matchVideoFilter = { match_id: req.body.matchId }
             let matchVideoPage = 1
             let matchLimitPage = 1
             MatchVideos = await videosDAO.getIplVideosByFilter(matchVideoFilter, matchVideoPage, matchLimitPage)
-
+            
         }
         let response = {
             status: true,
@@ -483,6 +487,9 @@ module.exports = class MatchController {
             filters: {},
             entries_per_page: FIXTURES_PER_PAGE,
             total_results: totalNumMatches,
+        }
+        if(req.body.matchId){
+            response.data = dataWithLogos;
         }
         if (matchesList.length <= 0) {
             res.status(404).json({ status: false, error: config.error_codes["1001"] })
