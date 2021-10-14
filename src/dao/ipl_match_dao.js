@@ -1,10 +1,12 @@
 let matches
+let franchisedata
 const DEFAULT_SORT = [["matchDateMs", -1]]
 module.exports = class MatchDAO {
     static async injectDB(conn) {
 
         try {
             matches = await conn.db(process.env.BCCINS).collection("ipl_matches")
+            franchisedata = await conn.db(process.env.BCCINS).collection("franchises")
         } catch (e) {
             console.error(`Unable to establish collection handles in pagesDAO: ${e}`)
         }
@@ -1060,12 +1062,21 @@ module.exports = class MatchDAO {
         for (var i = 0; i <= teams.length - 1; i++) {
 
             const found = teams[i].players.find(element => element.id == playerId);
+           
             if (found) {
+                let franchise = await franchisedata.findOne({id:teams[i].team.id.toString()});
+              
                 var data = {
                     teamId: teams[i].team.id,
                     teamName: teams[i].team.fullName,
                     playersList: teams[i].players
 
+                }
+                if(franchise){
+                    data.primaryColor = franchise.primaryColor;
+                    data.secondaryColor = franchise.secondaryColor;
+                    data.logo = franchise.logo;
+                    data.logo_medium = franchise.logo_medium;
                 }
                 return data;
             }
