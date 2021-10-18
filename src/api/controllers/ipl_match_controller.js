@@ -318,13 +318,17 @@ module.exports = class MatchController {
     static async apiWebGetFranchiseById(req, res, next) {
         try {
             console.log("In frenchise by id..", req.params.ID);
-            let id = req.params.ID && parseInt(req.params.ID) || "0"
+            let id = req.params.ID || "0"
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
-            let slug = req.params.slug;
+            if(id.includes("-")){
+                let slug = id;
             
-            let franchiseId = await franchiseDAO.getfrenchiseBySlug(slug);
-            console.log("franchiseId: ",franchiseId);
-            let article = await MatchDAO.getSquadListByID({ id: parseInt(franchiseId.id), year: year })
+                let franchiseId = await franchiseDAO.getfrenchiseBySlug(slug);
+                console.log("franchiseId: ",franchiseId);
+                id = franchiseId.id;
+            }
+           
+            let article = await MatchDAO.getSquadListByID({ id: parseInt(id), year: year })
             console.log("in articles", article);
             if (!article || article.length <= 0) {
                 console.log("in uidididi", article);

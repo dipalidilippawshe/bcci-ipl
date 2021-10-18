@@ -22,7 +22,7 @@ router.get("/web/teamSchedule/:ID", iplMatchCtrl.apiScheduleById)
 
 router.get("/web/:type", iplMatchCtrl.apiWebGetMatch)
 router.get("/web/detail/:ID", iplMatchCtrl.apiWebGetMatchById)
-router.get("/web/franchise/detail/:slug", iplMatchCtrl.apiWebGetFranchiseById)
+router.get("/web/franchise/detail/:ID", iplMatchCtrl.apiWebGetFranchiseById)
 router.get("/web/squadlist/:ID", iplMatchCtrl.apiWebGetSquadById)
 
 //Teams 
