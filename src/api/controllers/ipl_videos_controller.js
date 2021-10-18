@@ -191,11 +191,14 @@ module.exports = class IplVideosController {
         res.json(response)
     }
     static async getWebIplVideos(req, res, next) {
+    
+ 
         var type = req.params.type;
         if (!type) {
             res.json({ status: false, message: "please specify video type" });
         }
-        if (req.query.page)
+      
+            if (req.query.page)
             var page = req.query.page
         else
             page = 1;
@@ -216,6 +219,8 @@ module.exports = class IplVideosController {
             total_results: respo.total,
         }
         res.json(response)
+        
+        
     }
 
 
