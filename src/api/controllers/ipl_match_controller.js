@@ -382,6 +382,9 @@ module.exports = class MatchController {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
+            data.men.sort(function (a, b) {
+                return a.id - b.id;
+            });
             res.json({ status: true, year: year, data: data })
         } catch (e) {
             console.log(`api, ${e}`)

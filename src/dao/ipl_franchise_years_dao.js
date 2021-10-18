@@ -145,7 +145,7 @@ module.exports = class IplRecordsDAO {
                 obj.logo_medium=logo.logo_medium;
                 obj.primaryColor = logo.primaryColor;
                 obj.secondaryColor = logo.secondaryColor;
-               
+                obj.slug = logo.slug;
 
                 //console.log(" frenchises.wonYears us: ", frenchises.wonYears);
                 returnData.push(obj);
