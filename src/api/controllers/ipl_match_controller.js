@@ -139,9 +139,15 @@ module.exports = class MatchController {
         if (req.params.type == 'season' || req.params.type == "team" || req.params.type == "venue") {
             try {
 
-
                 let page = req.query.page ? req.query.page : 1;
                 let id = req.query.id && parseInt(req.query.id) || "0";
+
+                //convert slug to id
+                if(req.params.type == "team" && id.includes("-")){
+                    let slug = req.params.type;
+                    let franchiseId = await franchiseDAO.getfrenchiseBySlug(slug);
+                    id = franchiseId.id;
+                }
 
                 let matches = await MatchDAO.getIplMatchesFilterByType(req.params.type, page, parseInt(id))
 
@@ -162,9 +168,6 @@ module.exports = class MatchController {
                 console.log(`api, ${e}`)
                 res.status(500).json({ error: e })
             }
-
-
-
         }
         else {
             console.log("CALLINGIN..");
@@ -176,6 +179,12 @@ module.exports = class MatchController {
             filters.team = req.query.team ? [req.query.team] : ["m", "w"]
             if (req.query.teamId) {
                 filters.team_id = req.query.teamId;
+
+                if(req.query.teamId.includes("-")){
+                    let slug = req.query.teamId;
+                    let franchiseId = await franchiseDAO.getfrenchiseBySlug(slug);
+                    filters.team_id = franchiseId.id;
+                }
             }
             if(req.query.venue_id){
                 filters.venue_id = req.query.venue_id;
@@ -311,8 +320,11 @@ module.exports = class MatchController {
             console.log("In frenchise by id..", req.params.ID);
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
-
-            let article = await MatchDAO.getSquadListByID({ id: parseInt(id), year: year })
+            let slug = req.params.slug;
+            
+            let franchiseId = await franchiseDAO.getfrenchiseBySlug(slug);
+            console.log("franchiseId: ",franchiseId);
+            let article = await MatchDAO.getSquadListByID({ id: parseInt(franchiseId.id), year: year })
             console.log("in articles", article);
             if (!article || article.length <= 0) {
                 console.log("in uidididi", article);
@@ -539,7 +551,15 @@ module.exports = class MatchController {
         filters.endDate = req.query.endDate && new Date(req.query.endDate) !== "Invalid Date" ? new Date(req.query.endDate).toISOString() : undefined
         filters.team = req.query.team ? [req.query.team] : ["m", "w"]
         if (req.params.franchise_id) {
-            filters.team_id = req.params.franchise_id
+            filters.team_id = req.params.franchise_id;
+
+            //convert slug to id
+            if(req.params.franchise_id.includes("-")){
+                let slug = req.params.franchise_id;
+                let franchiseId = await franchiseDAO.getfrenchiseBySlug(slug);
+                filters.team_id  = franchiseId.id;
+            }
+
         }
         filters.matchState = ["C"]
 
@@ -620,8 +640,14 @@ module.exports = class MatchController {
             let id = req.params.ID; //This is team ID
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
             console.log(year)
-            let data = await MatchDAO.getScheduleList(year, id)
-
+            if(id.includes("-")){
+                console.log("Inside iffififiifiif");
+                let slug = id;
+                let franchiseId = await franchiseDAO.getfrenchiseBySlug(slug);
+                id = franchiseId.id;
+            }
+               let data = await MatchDAO.getScheduleList(year, id)
+ 
             if (!data || data.length <= 0) {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
@@ -1214,8 +1240,17 @@ module.exports = class MatchController {
     }
 
     static async apiWebGetSquadById(req,res,next){
-        let id = req.params.ID && parseInt(req.params.ID) || "0"
+        let id = req.params.ID|| "0"
+       
         let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
+       //convert slug to id
+         id=id.toString();
+        
+         if(id.includes("-")){
+          
+             let franchiseId = await franchiseDAO.getfrenchiseBySlug(id);
+             id = franchiseId.id;
+        }
 
         let article = await MatchDAO.getSquadListByID({ id: parseInt(id), year: year })
      

@@ -25,9 +25,17 @@ module.exports = class IplRecordsDAO {
         return frenchise;
     }
     static async getfrenchiseByName(name){
+        console.log("in name: ",name);
         const frenchise = await franchise.findOne({name:name},{_id:0, logo:1});
         
         return frenchise.logo;
+    }
+
+    static async getfrenchiseBySlug(slug){
+        console.log("in name: ",slug);
+        const frenchise = await franchise.findOne({slug:slug},{_id:0, logo:1});
+        
+        return frenchise;
     }
 }
 
