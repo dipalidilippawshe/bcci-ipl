@@ -1,4 +1,5 @@
 const IplArticlesDAO = require("../../dao/ipl_articles_dao")
+const franchiseDAO = require("../../dao/ipl_franchise_dao")
 const config = require("config");
 const { compareSync } = require("bcryptjs");
 
@@ -222,7 +223,14 @@ module.exports = class IPLArticlesController {
         try {
             let page = req.query.page ? req.query.page : 1;
 
-            let id = req.params.ID && parseInt(req.params.ID) || "0"
+            let id = req.params.ID|| "0"
+
+            //convert slug to id
+            if(id.includes("-")){
+                let slug = id;
+                let franchiseId = await franchiseDAO.getfrenchiseBySlug(slug);
+                id  = franchiseId.id;
+            }
             let Iplarticle = await IplArticlesDAO.getIplArticleByTeamsId(page, parseInt(id))
             if (!Iplarticle || Iplarticle.length <= 0) {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
