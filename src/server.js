@@ -2,6 +2,7 @@ const express = require("express")
 const bodyParser = require("body-parser")
 const cors = require("cors")
 const morgan = require("morgan")
+const config = require("../config/default.json")
 // const movies = require("../src/api/routes/movies_route")
 // const users = require("../src/api/routes/users_route")
 
@@ -23,6 +24,16 @@ app.use(cors())
 process.env.NODE_ENV !== "prod" && app.use(morgan("dev"))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
+
+// app.use(function (req, res, next) {
+//     var auth_token = req.body.x_access_auth_token || req.query.auth_token || req.headers['x-access-auth-token'];
+//     if (!auth_token) {
+//       return res.status(403).send(JSON.stringify({ success: false, message: "Auth Token Not Provided" }));
+//     } else if (typeof config.auth_token[auth_token] === 'undefined') {
+//       return res.status(403).send(JSON.stringify({ success: false, message: "Invalid Auth Token" }));
+//     }
+//     next();
+// });
 
 app.use("/api/v1/bios", bios);
 app.use("/api/v1/promos", promos);
