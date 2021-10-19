@@ -287,7 +287,11 @@ module.exports = class IplVideosDAO {
             var sort;
            // sort = filters.sort==0?"views":filters.sort==1?"newest":"oldest";
             var skip = (page - 1) * videosPerPage;
-            const mongoquery = { "tags.label": { $regex: new RegExp(filters.type, "i") } };
+            let mongoquery = { "tags.label": { $regex: new RegExp(filters.type, "i") } };
+            if(filters.type=="all"){
+                console.log("in all videos");
+                mongoquery = {};
+            }
             if (filters.match_id) {
                 mongoquery["references.id"] = { $eq: parseInt(filters.match_id) }
                 mongoquery["references.type"] = { $eq: "CRICKET_MATCH" }
@@ -314,9 +318,14 @@ module.exports = class IplVideosDAO {
             else
                 sort={date:-1};
 
+            if(!filters.sort){
+                console.log("in not filters");
+                sort = {"_id":-1}
+            }
+
             //page logic here..
             console.log("final qu", mongoquery)
-            var cursor = await videos.find(mongoquery).limit(videosPerPage).skip(skip).sort(sort);
+            var cursor = await videos.find(mongoquery).sort(sort).limit(videosPerPage).skip(skip)
 
             const displayCursor = cursor.limit(videosPerPage)
             const videoList = await displayCursor.toArray()
