@@ -133,6 +133,11 @@
             ]
         }
         
+    },
+
+    "auth_token":{
+        "4wNai3gki4eFCbqqUhSCQ61OSqZb6AN7" :"web",
+        "QWmMTXMuL3I5AX4eYhRrK5rUrxZnY4br" :"app"
     }
    
 }
