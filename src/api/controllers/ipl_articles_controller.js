@@ -35,7 +35,7 @@ module.exports = class IPLArticlesController {
         }
         else {
             console.log("API iplarticles");
-            const ARTICLES_PER_PAGE = 20
+            let ARTICLES_PER_PAGE = 20
             let page
             try {
                 page = req.query.page ? parseInt(req.query.page, 10) : "0"
@@ -66,6 +66,9 @@ module.exports = class IPLArticlesController {
                 filters.tag = req.params.type
 
             }
+            ARTICLES_PER_PAGE = req.params.type.toLocaleLowerCase()== "Latest".toLocaleLowerCase()?6:ARTICLES_PER_PAGE;
+           
+
             const { articlesList, totalNumArticles } = await IplArticlesDAO.getIplArticles({
                 filters,
                 page,
