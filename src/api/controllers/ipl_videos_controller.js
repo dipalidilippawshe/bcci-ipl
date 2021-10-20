@@ -205,7 +205,8 @@ module.exports = class IplVideosController {
             var page = req.query.page
         else
             page = 1;
-        let limit = 20
+            let limit = 20
+            limit = req.params.type.toLocaleLowerCase() == "Latest".toLocaleLowerCase()?6:limit;
         let filters = { type: type, match_id: req.query.match_id, player_id: req.query.player_id, season_id: req.query.season_id, team_id: req.query.team_id }
         console.log("......................", filters)
         const respo = await IplVideosDAO.getIplVideosByFilter(filters, page, limit);
@@ -219,6 +220,7 @@ module.exports = class IplVideosController {
             message: "Retrived data!",
             videos: respo.list,
             page: page,
+            entries_per_page: limit,
             total_results: respo.total,
         }
         res.json(response)
