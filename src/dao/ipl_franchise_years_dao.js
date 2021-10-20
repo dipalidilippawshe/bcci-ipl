@@ -149,7 +149,7 @@ module.exports = class IplRecordsDAO {
                 obj.venue = logo.venue;
                 obj.roundSmall = logo.roundSmall;
                 obj.roundBig = logo.roundBig;
-                obj.roundBig = logo.roundBig;
+                obj.logoOutline = logo.logoOutline;
                 //console.log(" frenchises.wonYears us: ", frenchises.wonYears);
                 returnData.push(obj);
                 if (returnData.length == frenchises.length) {
