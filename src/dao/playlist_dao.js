@@ -10,7 +10,7 @@ module.exports = class IplVideosDAO {
             return
         }
         try {
-            videos = await conn.db(process.env.BCCINS).collection("playlist_copy")
+            videos = await conn.db(process.env.BCCINS).collection("playlist")
             this.videos = videos // this is only for testing
             //this.promos = promos
         } catch (e) {
