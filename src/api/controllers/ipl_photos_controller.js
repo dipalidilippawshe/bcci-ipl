@@ -19,7 +19,7 @@ module.exports = class PhotosController {
         let response = {
             status: true,
             message: "Images retrived successfully!!",
-            images: imageList,
+            data: imageList,
             page: page,
             filters: {},
             entries_per_page: PHOTOS_PER_PAGE,

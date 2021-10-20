@@ -322,7 +322,9 @@ module.exports = class MatchController {
                 returnData[0].venue = frenchise.venue;
                 returnData[0].logo_medium = frenchise.logo_medium;
                 returnData[0].banner_app = frenchise.banner_app;
-                
+                returnData[0].roundSmall = frenchise.roundSmall;
+                returnData[0].roundBig = frenchise.roundBig;
+                returnData[0].logoOutline = frenchise.logoOutline;
                 //winning years of team
                 let won = await MatchDAO.findWinsByTeam(parseInt(id), frenchise.name);
 
@@ -381,6 +383,9 @@ module.exports = class MatchController {
                 returnData[0].social = frenchise.social;
                 returnData[0].banner = frenchise.banner;
                 returnData[0].logo_medium = frenchise.logo_medium;
+                returnData[0].roundSmall = frenchise.roundSmall;
+                returnData[0].roundBig = frenchise.roundBig;
+                returnData[0].logoOutline = frenchise.logoOutline;
 
                 //winning years of team
                 let won = await MatchDAO.findWinsByTeam(parseInt(id), frenchise.name);

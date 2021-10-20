@@ -16,7 +16,7 @@ module.exports = class IplVideosController {
         let response = {
             status: true,
             message: "Retrived data!",
-            videos: respo.list,
+            data: respo.list,
             page: page,
             total_results: respo.total,
         }

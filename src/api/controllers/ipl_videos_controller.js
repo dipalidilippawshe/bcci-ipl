@@ -22,7 +22,7 @@ module.exports = class IplVideosController {
         let response = {
             status: true,
             message: "Retrived data!",
-            videos: respo.list,
+            data: respo.list,
             page: page,
             total_results: respo.total,
         }
@@ -51,7 +51,7 @@ module.exports = class IplVideosController {
             let response = {
                 status: true,
                 message: "Retrived data!",
-                videos: respo.list,
+                data: respo.list,
                 page: page,
                 entries_per_page: limit,
                 total_results: respo.total,
@@ -141,7 +141,7 @@ module.exports = class IplVideosController {
         let response = {
             status: true,
             message: "data received!",
-            videos: videosList,
+            data: videosList,
             page: page,
             filters: {},
             entries_per_page: LIMIT_PER_PAGE,

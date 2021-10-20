@@ -18,6 +18,7 @@ const menus = require("../src/api/routes/menu_route");
 const auctions = require("../src/api/routes/auction_route");
 const document = require("../src/api/routes/document_route");
 const static_url_route = require("../src/api/routes/static_url_route");
+const { request } = require("express")
 const app = express()
 
 app.use(cors())
@@ -25,15 +26,20 @@ process.env.NODE_ENV !== "prod" && app.use(morgan("dev"))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-// app.use(function (req, res, next) {
-//     var auth_token = req.body.x_access_auth_token || req.query.auth_token || req.headers['x-access-auth-token'];
-//     if (!auth_token) {
-//       return res.status(403).send(JSON.stringify({ success: false, message: "Auth Token Not Provided" }));
-//     } else if (typeof config.auth_token[auth_token] === 'undefined') {
-//       return res.status(403).send(JSON.stringify({ success: false, message: "Invalid Auth Token" }));
-//     }
-//     next();
-// });
+app.use(function (req, res, next) {
+   if(req.url.includes("/app/")){
+    var auth_token = req.body.x_access_auth_token || req.query.auth_token || req.headers['x-access-auth-token'];
+    if (!auth_token) {
+      return res.status(403).send(JSON.stringify({ success: false, message: "Auth Token Not Provided" }));
+    } else if (typeof config.auth_token[auth_token] === 'undefined') {
+      return res.status(403).send(JSON.stringify({ success: false, message: "Invalid Auth Token" }));
+    }
+    next();
+   }else{
+       next();
+   }
+    
+});
 
 app.use("/api/v1/bios", bios);
 app.use("/api/v1/promos", promos);
