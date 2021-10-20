@@ -9,7 +9,7 @@ router.post("/app/fixtures", iplMatchCtrl.apiAppGetFixtures);
 router.post("/app/results", iplMatchCtrl.apiAppGetResults);
 router.get("/app/results/:match_id", iplMatchCtrl.apiAppGetResultsByMatchId);
 router.get("/app/fixtures/:match_Id",iplMatchCtrl.apiAppGetFranchesByMatchId);
-
+router.get("/app/franchise/season-list", iplMatchCtrl.apiWebGetSeasonList);
 //teams
 //router.get("/app/teams/list", iplMatchCtrl.apiAppGetTeams)
 router.get("/app/franchise/teams-list", iplMatchCtrl.apiAppGetTeams)
