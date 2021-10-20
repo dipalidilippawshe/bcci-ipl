@@ -6,7 +6,8 @@ const IplArticlesDAO = require("../../dao/ipl_articles_dao")
 const menuDAO = require("../../dao/menus_dao")
 const PagesDAO = require("../../dao/pages_dao")
 const PhotosDAO = require("../../dao/ipl_photos_dao")
-const config = require("config")
+const config = require("config");
+const { iplArticles } = require("../../dao/ipl_articles_dao");
 
 module.exports = class MatchController {
     static async apiAppGetMatch(req, res, next) {
@@ -1335,6 +1336,18 @@ module.exports = class MatchController {
             res.status(404).json({ status: false, error: config.error_codes["1001"], data: e })
 
         }
+
+    }
+
+    static async getReportsByMatch(req,res,next){
+        let matchId = req.query.matchId;
+        if(!matchId){
+            res.status(404).json({ status: false, error: config.error_codes["1003"] })
+            return
+        }
+        let article = await MatchDAO.getArticleByMatch(matchId);
+       // console.log("article: ",article);
+        res.json({ status: true, data: article })
 
     }
 }

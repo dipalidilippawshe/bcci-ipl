@@ -1,5 +1,7 @@
 let matches
 let franchisedata
+let iplArticles
+let videos
 const DEFAULT_SORT = [["matchDateMs", -1]]
 module.exports = class MatchDAO {
     static async injectDB(conn) {
@@ -7,6 +9,8 @@ module.exports = class MatchDAO {
         try {
             matches = await conn.db(process.env.BCCINS).collection("ipl_matches")
             franchisedata = await conn.db(process.env.BCCINS).collection("franchises")
+            iplArticles = await conn.db(process.env.BCCINS).collection("ipl_articles")
+            videos = await conn.db(process.env.BCCINS).collection("ipl_videos")
         } catch (e) {
             console.error(`Unable to establish collection handles in pagesDAO: ${e}`)
         }
@@ -1175,8 +1179,6 @@ module.exports = class MatchDAO {
         const matchesList = await (await matches.aggregate(pipeline)).toArray()
         return matchesList
     }
-
-
     static async getMatchByIDTeamsResult(id) {
         try {
             const pipeline = [
@@ -1518,7 +1520,6 @@ module.exports = class MatchDAO {
         return matchesList;
     }
 
-
     static async findTeamLogos(matchesData){
         for(let i=0;i<=matchesData[0].matchInfo.teams.length-1;i++){
            
@@ -1527,5 +1528,20 @@ module.exports = class MatchDAO {
             matchesData[0].matchInfo.teams[i].team.logo = logo.logo;
         }
         return matchesData
+    }
+
+    static async getArticleByMatch(matchId){
+
+        let query = {$or:[{"references.type":"CRICKET_MATCH"},{"references.type":"CRICKET_TOURNAMENT"}],
+                           "references.id":parseInt(matchId)};
+
+        
+        let article=await iplArticles.findOne(query);
+        let video = await videos.findOne(query);
+
+        let detail={article:article, video:video}
+        return detail
+
+
     }
 }
