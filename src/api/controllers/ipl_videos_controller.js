@@ -206,7 +206,7 @@ module.exports = class IplVideosController {
         let filters = { type: type, match_id: req.query.match_id, player_id: req.query.player_id, season_id: req.query.season_id, team_id: req.query.team_id }
         console.log("......................", filters)
         const respo = await IplVideosDAO.getIplVideosByFilter(filters, page, limit);
-        console.log(respo)
+        //console.log(respo)
         if (respo && !respo.list.length) {
             res.status(404).json({ status: false, error: config.error_codes["1001"] })
             return
