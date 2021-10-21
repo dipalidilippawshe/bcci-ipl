@@ -318,10 +318,10 @@ module.exports = class IplVideosDAO {
             else
                 sort={date:-1};
 
-            if(!filters.sort){
-                console.log("in not filters");
-                sort = {"_id":-1}
-            }
+            // if(!filters.sort){
+            //     console.log("in not filters");
+            //     sort = {"_id":-1}
+            // }
 
             //page logic here..
             console.log("final qu", mongoquery)
