@@ -736,78 +736,154 @@ module.exports = class MatchDAO {
                 "matchInfo.teams.team.id": { $eq: parseInt(filters["team_id"]) }
             }
         }
-        const countingPipeline = [
-            {
-                $match: {
-                    "matchInfo.teams.team.type": { $in: filters["team"] ? filters["team"] : ["m"] },
-                    "matchInfo.matchDate": new RegExp(filters["year"], "i")
-                }
-            },
-            { $unwind: "$innings" },
-            filters.team_id ? { $unwind: "$matchInfo.teams" } : { $match: {} },
-            {
-                $match: match
-            },
-            { $unwind: "$innings.scorecard.battingStats" },
-            { $match: { "innings.scorecard.battingStats.b": { $gt: 0 } } },
-            {
-                $project: {
-                    "matchInfo.matchDate": 1,
-                    "matchInfo.teams": 1,
-                    "innings.scorecard.battingStats": 1,
-                    "matchId": 1,
-                    "most50s": {
-                        "$cond": [{ $and: [{ "$gte": ["$innings.scorecard.battingStats.r", 50] }, { "$lt": ["$innings.scorecard.battingStats.r", 100] }] }, 1, 0]
-                    },
-                    "most100s": {
-                        "$cond": [{ "$gte": ["$innings.scorecard.battingStats.r", 100] }, 1, 0]
-                    },
-                }
-            },
-            {
-                $group:
+        let countingPipeline;
+        if(filters["year"]=="all"){
+            countingPipeline = [
                 {
-
-                    _id: "$innings.scorecard.battingStats.playerId",
-                    inns: { $sum: 1 },
-                    mostRuns: { $sum: "$innings.scorecard.battingStats.r" },
-                    most4s: { $sum: "$innings.scorecard.battingStats.4s" },
-                    most6s: { $sum: "$innings.scorecard.battingStats.6s" },
-                    bestBat: { $push: { "runs": "$innings.scorecard.battingStats.r", matchId: "$matchId" } },
-                    highestInnScore: { $max: "$innings.scorecard.battingStats.r" },
-                    most50s: { $sum: "$most50s" },
-                    isOut: { $push: "$innings.scorecard.battingStats.mod.isOut" },
-                    most100s: { $sum: "$most100s" },
-                    ballsFaced: { $sum: "$innings.scorecard.battingStats.b" },
-                }
-            }, {
-                $project: {
-                    player_id: "$_id",
-                    ballsFaced: 1,
-                    // matches: 1, //{ $size: "$matches" },
-                    highScore: "$highestInnScore",
-                    notOut: { $subtract: ["$inn", { $size: "$isOut" }] },
-                    stickeRate: { $toString: { $round: [{ $multiply: [100, { $divide: ['$mostRuns', '$ballsFaced'] }] }, 2] } },
-                    highestInnScore: {
-                        $filter: {
-                            input: "$bestBat",
-                            as: "item",
-                            cond: { $eq: ["$highestInnScore", "$$item.runs"] }
-                        }
-                    },
-                    avg: { $toString: { $cond: [{ $eq: [{ $size: "$isOut" }, 0] }, "NA", { $round: [{ $divide: ['$mostRuns', { $size: "$isOut" }] }, 2] }] } },
-                    most50s: 1,
-                    most100s: 1,
-                    mostRuns: 1,
-                    most4s: 1,
-                    most6s: 1,
-                    inns: 1,
-                    _id: 0,
-                }
-            },
-            sort
-
-        ]
+                    $match: {
+                        "matchInfo.teams.team.type": { $in: filters["team"] ? filters["team"] : ["m"] }
+                    }
+                },
+                { $unwind: "$innings" },
+                filters.team_id ? { $unwind: "$matchInfo.teams" } : { $match: {} },
+                {
+                    $match: match
+                },
+                { $unwind: "$innings.scorecard.battingStats" },
+                { $match: { "innings.scorecard.battingStats.b": { $gt: 0 } } },
+                {
+                    $project: {
+                        "matchInfo.matchDate": 1,
+                        "matchInfo.teams": 1,
+                        "innings.scorecard.battingStats": 1,
+                        "matchId": 1,
+                        "most50s": {
+                            "$cond": [{ $and: [{ "$gte": ["$innings.scorecard.battingStats.r", 50] }, { "$lt": ["$innings.scorecard.battingStats.r", 100] }] }, 1, 0]
+                        },
+                        "most100s": {
+                            "$cond": [{ "$gte": ["$innings.scorecard.battingStats.r", 100] }, 1, 0]
+                        },
+                    }
+                },
+                {
+                    $group:
+                    {
+    
+                        _id: "$innings.scorecard.battingStats.playerId",
+                        inns: { $sum: 1 },
+                        mostRuns: { $sum: "$innings.scorecard.battingStats.r" },
+                        most4s: { $sum: "$innings.scorecard.battingStats.4s" },
+                        most6s: { $sum: "$innings.scorecard.battingStats.6s" },
+                        bestBat: { $push: { "runs": "$innings.scorecard.battingStats.r", matchId: "$matchId" } },
+                        highestInnScore: { $max: "$innings.scorecard.battingStats.r" },
+                        most50s: { $sum: "$most50s" },
+                        isOut: { $push: "$innings.scorecard.battingStats.mod.isOut" },
+                        most100s: { $sum: "$most100s" },
+                        ballsFaced: { $sum: "$innings.scorecard.battingStats.b" },
+                    }
+                }, {
+                    $project: {
+                        player_id: "$_id",
+                        ballsFaced: 1,
+                        // matches: 1, //{ $size: "$matches" },
+                        highScore: "$highestInnScore",
+                        notOut: { $subtract: ["$inn", { $size: "$isOut" }] },
+                        stickeRate: { $toString: { $round: [{ $multiply: [100, { $divide: ['$mostRuns', '$ballsFaced'] }] }, 2] } },
+                        highestInnScore: {
+                            $filter: {
+                                input: "$bestBat",
+                                as: "item",
+                                cond: { $eq: ["$highestInnScore", "$$item.runs"] }
+                            }
+                        },
+                        avg: { $toString: { $cond: [{ $eq: [{ $size: "$isOut" }, 0] }, "NA", { $round: [{ $divide: ['$mostRuns', { $size: "$isOut" }] }, 2] }] } },
+                        most50s: 1,
+                        most100s: 1,
+                        mostRuns: 1,
+                        most4s: 1,
+                        most6s: 1,
+                        inns: 1,
+                        _id: 0,
+                    }
+                },
+                sort
+    
+            ]
+        }else{
+            countingPipeline = [
+                {
+                    $match: {
+                        "matchInfo.teams.team.type": { $in: filters["team"] ? filters["team"] : ["m"] },
+                        "matchInfo.matchDate": new RegExp(filters["year"], "i")
+                    }
+                },
+                { $unwind: "$innings" },
+                filters.team_id ? { $unwind: "$matchInfo.teams" } : { $match: {} },
+                {
+                    $match: match
+                },
+                { $unwind: "$innings.scorecard.battingStats" },
+                { $match: { "innings.scorecard.battingStats.b": { $gt: 0 } } },
+                {
+                    $project: {
+                        "matchInfo.matchDate": 1,
+                        "matchInfo.teams": 1,
+                        "innings.scorecard.battingStats": 1,
+                        "matchId": 1,
+                        "most50s": {
+                            "$cond": [{ $and: [{ "$gte": ["$innings.scorecard.battingStats.r", 50] }, { "$lt": ["$innings.scorecard.battingStats.r", 100] }] }, 1, 0]
+                        },
+                        "most100s": {
+                            "$cond": [{ "$gte": ["$innings.scorecard.battingStats.r", 100] }, 1, 0]
+                        },
+                    }
+                },
+                {
+                    $group:
+                    {
+    
+                        _id: "$innings.scorecard.battingStats.playerId",
+                        inns: { $sum: 1 },
+                        mostRuns: { $sum: "$innings.scorecard.battingStats.r" },
+                        most4s: { $sum: "$innings.scorecard.battingStats.4s" },
+                        most6s: { $sum: "$innings.scorecard.battingStats.6s" },
+                        bestBat: { $push: { "runs": "$innings.scorecard.battingStats.r", matchId: "$matchId" } },
+                        highestInnScore: { $max: "$innings.scorecard.battingStats.r" },
+                        most50s: { $sum: "$most50s" },
+                        isOut: { $push: "$innings.scorecard.battingStats.mod.isOut" },
+                        most100s: { $sum: "$most100s" },
+                        ballsFaced: { $sum: "$innings.scorecard.battingStats.b" },
+                    }
+                }, {
+                    $project: {
+                        player_id: "$_id",
+                        ballsFaced: 1,
+                        // matches: 1, //{ $size: "$matches" },
+                        highScore: "$highestInnScore",
+                        notOut: { $subtract: ["$inn", { $size: "$isOut" }] },
+                        stickeRate: { $toString: { $round: [{ $multiply: [100, { $divide: ['$mostRuns', '$ballsFaced'] }] }, 2] } },
+                        highestInnScore: {
+                            $filter: {
+                                input: "$bestBat",
+                                as: "item",
+                                cond: { $eq: ["$highestInnScore", "$$item.runs"] }
+                            }
+                        },
+                        avg: { $toString: { $cond: [{ $eq: [{ $size: "$isOut" }, 0] }, "NA", { $round: [{ $divide: ['$mostRuns', { $size: "$isOut" }] }, 2] }] } },
+                        most50s: 1,
+                        most100s: 1,
+                        mostRuns: 1,
+                        most4s: 1,
+                        most6s: 1,
+                        inns: 1,
+                        _id: 0,
+                    }
+                },
+                sort
+    
+            ]
+        }
+        
         const pipeline = [...countingPipeline]
         console.dir(pipeline, { depth: null, color: true })
         const matchesList = await (await matches.aggregate(pipeline)).toArray()
@@ -837,65 +913,129 @@ module.exports = class MatchDAO {
                 "matchInfo.teams.team.id": { $eq: parseInt(filters["team_id"]) }
             }
         }
-        const countingPipeline = [
-            {
-                $match: {
-                    "matchInfo.teams.team.type": { $in: filters["team"] ? filters["team"] : ["m"] },
-                    "matchInfo.matchDate": new RegExp(filters["year"], "i")
-                }
-            },
-            { $unwind: "$innings" },
-            filters.team_id ? { $unwind: "$matchInfo.teams" } : { $match: {} },
-            {
-                $match: match
-            },
-            { $unwind: "$innings.scorecard.bowlingStats" },
 
-            {
-                $project: {
-                    "matchInfo.matchDate": 1,
-                    "innings.scorecard.bowlingStats": 1,
-                    "matchId": 1
-                }
-            },
-            {
-                $group:
+        let countingPipeline;
+        if(filters["years"]=="all"){
+            countingPipeline = [
                 {
-                    _id: "$innings.scorecard.bowlingStats.playerId",
-                    mostWkts: { $sum: "$innings.scorecard.bowlingStats.w" },
-                    wkts: { $push: "$innings.scorecard.bowlingStats.w" },
-                    ov: { $push: "$innings.scorecard.bowlingStats.ov" },
-                    mostRuns: { $sum: "$innings.scorecard.bowlingStats.r" },
-                    mostOvers: { $sum: { "$toDouble": "$innings.scorecard.bowlingStats.ov" } },
-                    bestBowl: { $push: { ov: { "$toDouble": "$innings.scorecard.bowlingStats.ov" }, "runs": "$innings.scorecard.bowlingStats.r", wkts: "$innings.scorecard.bowlingStats.w", matchId: "$matchId" } },
-                    maxWktsInn: { $max: "$innings.scorecard.bowlingStats.w" }
-                }
-            },
-            {
-                $project: {
-                    player_id: "$_id",
-                    mostWkts: 1,
-                    mostRuns: 1,
-                    mostOvers: 1,
-                    bestBowlInn: {
-                        $filter: {
-                            input: "$bestBowl",
-                            as: "item",
-                            cond: { $eq: ["$maxWktsInn", "$$item.wkts"] }
-                        }
-                    },
-                    bestBowlEco: { $toString: { $round: [{ $divide: ['$mostRuns', '$mostOvers'] }, 2] } },
-                    bestBowlAvg: { $toString: { $cond: [{ $eq: ["$mostWkts", 0] }, "NA", { $round: [{ $divide: ['$mostRuns', '$mostWkts'] }, 2] }] } },
-                    _id: 0
-                }
-            },
-            {
-                $match: bowlAvgMatch
-            },
-            { $unwind: "$bestBowlInn" },
-            sort
-
-        ]
+                    $match: {
+                        "matchInfo.teams.team.type": { $in: filters["team"] ? filters["team"] : ["m"] }
+                    }
+                },
+                { $unwind: "$innings" },
+                filters.team_id ? { $unwind: "$matchInfo.teams" } : { $match: {} },
+                {
+                    $match: match
+                },
+                { $unwind: "$innings.scorecard.bowlingStats" },
+    
+                {
+                    $project: {
+                        "matchInfo.matchDate": 1,
+                        "innings.scorecard.bowlingStats": 1,
+                        "matchId": 1
+                    }
+                },
+                {
+                    $group:
+                    {
+                        _id: "$innings.scorecard.bowlingStats.playerId",
+                        mostWkts: { $sum: "$innings.scorecard.bowlingStats.w" },
+                        wkts: { $push: "$innings.scorecard.bowlingStats.w" },
+                        ov: { $push: "$innings.scorecard.bowlingStats.ov" },
+                        mostRuns: { $sum: "$innings.scorecard.bowlingStats.r" },
+                        mostOvers: { $sum: { "$toDouble": "$innings.scorecard.bowlingStats.ov" } },
+                        bestBowl: { $push: { ov: { "$toDouble": "$innings.scorecard.bowlingStats.ov" }, "runs": "$innings.scorecard.bowlingStats.r", wkts: "$innings.scorecard.bowlingStats.w", matchId: "$matchId" } },
+                        maxWktsInn: { $max: "$innings.scorecard.bowlingStats.w" }
+                    }
+                },
+                {
+                    $project: {
+                        player_id: "$_id",
+                        mostWkts: 1,
+                        mostRuns: 1,
+                        mostOvers: 1,
+                        bestBowlInn: {
+                            $filter: {
+                                input: "$bestBowl",
+                                as: "item",
+                                cond: { $eq: ["$maxWktsInn", "$$item.wkts"] }
+                            }
+                        },
+                        bestBowlEco: { $toString: { $round: [{ $divide: ['$mostRuns', '$mostOvers'] }, 2] } },
+                        bestBowlAvg: { $toString: { $cond: [{ $eq: ["$mostWkts", 0] }, "NA", { $round: [{ $divide: ['$mostRuns', '$mostWkts'] }, 2] }] } },
+                        _id: 0
+                    }
+                },
+                {
+                    $match: bowlAvgMatch
+                },
+                { $unwind: "$bestBowlInn" },
+                sort
+    
+            ]
+        }else{
+            countingPipeline = [
+                {
+                    $match: {
+                        "matchInfo.teams.team.type": { $in: filters["team"] ? filters["team"] : ["m"] },
+                        "matchInfo.matchDate": new RegExp(filters["year"], "i")
+                    }
+                },
+                { $unwind: "$innings" },
+                filters.team_id ? { $unwind: "$matchInfo.teams" } : { $match: {} },
+                {
+                    $match: match
+                },
+                { $unwind: "$innings.scorecard.bowlingStats" },
+    
+                {
+                    $project: {
+                        "matchInfo.matchDate": 1,
+                        "innings.scorecard.bowlingStats": 1,
+                        "matchId": 1
+                    }
+                },
+                {
+                    $group:
+                    {
+                        _id: "$innings.scorecard.bowlingStats.playerId",
+                        mostWkts: { $sum: "$innings.scorecard.bowlingStats.w" },
+                        wkts: { $push: "$innings.scorecard.bowlingStats.w" },
+                        ov: { $push: "$innings.scorecard.bowlingStats.ov" },
+                        mostRuns: { $sum: "$innings.scorecard.bowlingStats.r" },
+                        mostOvers: { $sum: { "$toDouble": "$innings.scorecard.bowlingStats.ov" } },
+                        bestBowl: { $push: { ov: { "$toDouble": "$innings.scorecard.bowlingStats.ov" }, "runs": "$innings.scorecard.bowlingStats.r", wkts: "$innings.scorecard.bowlingStats.w", matchId: "$matchId" } },
+                        maxWktsInn: { $max: "$innings.scorecard.bowlingStats.w" }
+                    }
+                },
+                {
+                    $project: {
+                        player_id: "$_id",
+                        mostWkts: 1,
+                        mostRuns: 1,
+                        mostOvers: 1,
+                        bestBowlInn: {
+                            $filter: {
+                                input: "$bestBowl",
+                                as: "item",
+                                cond: { $eq: ["$maxWktsInn", "$$item.wkts"] }
+                            }
+                        },
+                        bestBowlEco: { $toString: { $round: [{ $divide: ['$mostRuns', '$mostOvers'] }, 2] } },
+                        bestBowlAvg: { $toString: { $cond: [{ $eq: ["$mostWkts", 0] }, "NA", { $round: [{ $divide: ['$mostRuns', '$mostWkts'] }, 2] }] } },
+                        _id: 0
+                    }
+                },
+                {
+                    $match: bowlAvgMatch
+                },
+                { $unwind: "$bestBowlInn" },
+                sort
+    
+            ]
+        }
+       
         const pipeline = [...countingPipeline]
         console.dir(pipeline, { depth: null, color: true })
         const matchesList = await (await matches.aggregate(pipeline)).toArray()

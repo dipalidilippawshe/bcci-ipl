@@ -792,7 +792,7 @@ module.exports = class MatchController {
         if (req.body.season)
             filters.year = req.body.season;
         else
-            filters.year = "2020"
+            filters.year = "all"
 
         if (req.body.team_id)
             filters.team_id = req.body.team_id;
@@ -1147,8 +1147,7 @@ module.exports = class MatchController {
 
             let battings = await MatchDAO.getHighestBattingStats();
             let bowlings = await MatchDAO.getHighestBowlingStats();
-            let run = battings.reduce((max, obj) => (max.mostRuns > obj.mostRuns) ? max : obj);
-           
+            let run = battings.reduce((max, obj) => (max.mostRuns > obj.mostRuns) ? max : obj);           
             let fours = battings.reduce((max, obj) => (max.most4s > obj.most4s) ? max : obj);
             let six = battings.reduce((max, obj) => (max.most6s > obj.most6s) ? max : obj);
             let strikeRate = battings.reduce((max, obj) => (parseInt(max.sr) > parseInt(obj.sr)) ? max : obj);
