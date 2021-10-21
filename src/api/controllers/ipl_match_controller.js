@@ -407,6 +407,15 @@ module.exports = class MatchController {
             data.men.sort(function (a, b) {
                 return a.id - b.id;
             });
+            let fr = uniqByKeepLast(data.men,it=>it.id);
+            function uniqByKeepLast(a, key) {
+                return [
+                    ...new Map(
+                        a.map(x => [key(x), x])
+                    ).values()
+                ]
+            }
+            data.men = fr;
             res.json({ status: true, year: year, data: data })
         } catch (e) {
             console.log(`api, ${e}`)
@@ -675,6 +684,7 @@ module.exports = class MatchController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : "2021"
             let article = await MatchDAO.getTeams({ year: year });
+            console.log("articled: ",article.length);
             let data = { men: [], women: [] }
             for (var i in article) {
                 var franchiseWithWiningYears = await RecordDAO.processFrenchise(article[i].franchises)
@@ -684,7 +694,6 @@ module.exports = class MatchController {
                     data.women = franchiseWithWiningYears
                 }
             }
-            console.log(req.query.type)
             if (req.query.type == "m") {
                 data.women = undefined
             }
@@ -698,13 +707,22 @@ module.exports = class MatchController {
             data.men.sort(function (a, b) {
                 return a.id - b.id;
             });
+            let fr = uniqByKeepLast(data.men,it=>it.id);
+            function uniqByKeepLast(a, key) {
+                return [
+                    ...new Map(
+                        a.map(x => [key(x), x])
+                    ).values()
+                ]
+            }
+            data.men = fr;
             res.json({ status: true, year: year, data: data })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
         }
     }
-
+    
     static async getAppStatsData(req, res, next) {
         /**
          * filters needs to be added are
@@ -1350,6 +1368,23 @@ module.exports = class MatchController {
         res.json({ status: true, data: article })
 
     }
+
+
+    static async addheadshots(req,res,next){
+        const players = await MatchDAO.playerQuery();
+        var data = []
+        for(let i=0;i<=players.length-1;i++){
+            data.push(players[i].player_detail);
+            if(i==players.length-1){
+
+                //insert in collection
+                let insert = await MatchDAO.addAllPlayers(data);
+
+                res.json({status:true, data:insert});
+            }
+        }
+       
+    } 
 }
 
 

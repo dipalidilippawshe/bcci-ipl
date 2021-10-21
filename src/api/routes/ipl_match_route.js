@@ -51,4 +51,7 @@ router.post("/web/leaders",iplMatchCtrl.getapiWebLeaders);
 
 //reports
 router.get("/web/match/reports",iplMatchCtrl.getReportsByMatch);
+
+//headshorts
+router.get("/web/addheadshots/players",iplMatchCtrl.addheadshots);
 module.exports = router
