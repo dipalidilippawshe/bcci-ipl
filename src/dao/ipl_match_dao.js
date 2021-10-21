@@ -2,6 +2,7 @@ let matches
 let franchisedata
 let iplArticles
 let videos
+let matchPlayers
 const DEFAULT_SORT = [["matchDateMs", -1]]
 module.exports = class MatchDAO {
     static async injectDB(conn) {
@@ -11,6 +12,7 @@ module.exports = class MatchDAO {
             franchisedata = await conn.db(process.env.BCCINS).collection("franchises")
             iplArticles = await conn.db(process.env.BCCINS).collection("ipl_articles")
             videos = await conn.db(process.env.BCCINS).collection("ipl_videos")
+            matchPlayers = await conn.db(process.env.BCCINS).collection("matchesplayers")
         } catch (e) {
             console.error(`Unable to establish collection handles in pagesDAO: ${e}`)
         }
@@ -687,7 +689,8 @@ module.exports = class MatchDAO {
             ]
             console.log(pipeline)
             //  console.log(franchise_years)
-            return await matches.aggregate(pipeline).toArray()
+
+             return await matches.aggregate(pipeline).toArray()
         } catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
                 return null
@@ -1543,5 +1546,41 @@ module.exports = class MatchDAO {
         return detail
 
 
+    }
+
+    static async playerQuery(){
+        var year="2021";
+        const pipeline = [
+            {
+                $match: {
+                     "matchInfo.matchDate": new RegExp(year, "i") 
+                },
+                
+            },
+            { $unwind: "$matchInfo.teams" },
+            { $unwind: "$matchInfo.teams.players" },
+            {$project:{"matchInfo.teams.team.id":1,"matchInfo.teams.players":1}},
+            {
+                $group:
+                {
+                    _id: "$matchInfo.teams.players.id",
+                    player_detail: { $first: "$matchInfo.teams.players" }
+
+                }
+            },
+            {
+                $project: {  player_detail: 1, _id: 0 }
+            }
+        ]
+
+        let data = await matches.aggregate(pipeline).toArray();
+        return data;
+
+
+    }
+    static async addAllPlayers(data){
+        const doc = await matchPlayers.insertMany(data);
+            return doc;
+            
     }
 }
