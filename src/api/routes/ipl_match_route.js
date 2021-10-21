@@ -14,8 +14,6 @@ router.get("/app/franchise/season-list", iplMatchCtrl.apiWebGetSeasonList);
 //router.get("/app/teams/list", iplMatchCtrl.apiAppGetTeams)
 router.get("/app/franchise/teams-list", iplMatchCtrl.apiAppGetTeams)
 
-
-
 //result match id wise videos data
 router.get("/app/videoByMatch/:ID", iplMatchCtrl.apiAppGetVideoByMatchId)
 router.get("/web/teamSchedule/:ID", iplMatchCtrl.apiScheduleById)
@@ -54,4 +52,5 @@ router.get("/web/match/reports",iplMatchCtrl.getReportsByMatch);
 
 //headshorts
 router.get("/web/addheadshots/players",iplMatchCtrl.addheadshots);
+
 module.exports = router

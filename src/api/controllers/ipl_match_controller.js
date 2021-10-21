@@ -294,6 +294,9 @@ module.exports = class MatchController {
                 returnData[0].roundSmall = frenchise.roundSmall;
                 returnData[0].roundBig = frenchise.roundBig;
                 returnData[0].logoOutline = frenchise.logoOutline;
+                returnData[0].website = frenchise.website;
+                
+
                 //winning years of team
                 let won = await MatchDAO.findWinsByTeam(parseInt(id), frenchise.name);
 
@@ -355,7 +358,7 @@ module.exports = class MatchController {
                 returnData[0].roundSmall = frenchise.roundSmall;
                 returnData[0].roundBig = frenchise.roundBig;
                 returnData[0].logoOutline = frenchise.logoOutline;
-
+                returnData[0].website = frenchise.website;
                 //winning years of team
                 let won = await MatchDAO.findWinsByTeam(parseInt(id), frenchise.name);
 
@@ -1368,7 +1371,6 @@ module.exports = class MatchController {
         res.json({ status: true, data: article })
 
     }
-
 
     static async addheadshots(req,res,next){
         const players = await MatchDAO.playerQuery();
