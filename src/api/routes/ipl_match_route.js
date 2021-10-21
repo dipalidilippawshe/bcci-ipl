@@ -48,4 +48,7 @@ router.post("/web/playerstats",iplMatchCtrl.getStatsPerPlayer);
 
 //leaders api
 router.post("/web/leaders",iplMatchCtrl.getapiWebLeaders);
+
+//reports
+router.get("/web/match/reports",iplMatchCtrl.getReportsByMatch);
 module.exports = router

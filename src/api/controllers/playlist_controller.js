@@ -46,6 +46,7 @@ module.exports = class IplVideosController {
         try {
             const id = req.params.id ? req.params.id : "";
             const playList = await playlistDAO.getPlayListByid(parseInt(id));
+            playList.content=playList.playlistGroup;
             if (!playList) {
                 res.status(404).json({ succcess: false, error: config.error_codes["1001"] });
             }

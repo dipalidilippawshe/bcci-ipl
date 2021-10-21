@@ -358,7 +358,7 @@ module.exports = class IplVideosController {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-                res.json({ status: true, data: videos })
+                res.json({ status: true, data: videos.list, total:videos.total })
         }catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
