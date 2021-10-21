@@ -243,11 +243,20 @@ module.exports = class MatchController {
                      {
                          if(teamId1==logos[i].id)
                          {
+                             
                              item.matchInfo.teams[0].team.logo=logos[i].logo;
+                             item.matchInfo.teams[0].team.logo_match=logos[i].logo_match;
+                             item.matchInfo.teams[0].team.logo_player=logos[i].logo_player;
+                             item.matchInfo.teams[0].team.logo_medium=logos[i].logo_medium;
+                             item.matchInfo.teams[0].team.banner=logos[i].banner;
                          }
                          if(teamId2==logos[i].id)
                          {
-                             item.matchInfo.teams[1].team.logo=logos[i].logo;
+                            item.matchInfo.teams[1].team.logo=logos[i].logo;
+                            item.matchInfo.teams[1].team.logo_match=logos[i].logo_match;
+                            item.matchInfo.teams[1].team.logo_player=logos[i].logo_player;
+                            item.matchInfo.teams[1].team.logo_medium=logos[i].logo_medium;
+                            item.matchInfo.teams[1].team.banner=logos[i].banner;
                          }
                      }
                  })
@@ -700,40 +709,8 @@ module.exports = class MatchController {
                 let franchiseId = await franchiseDAO.getfrenchiseBySlug(slug);
                 id = franchiseId.id;
             }
-               let data = await MatchDAO.getScheduleList(year, id)
-               var items = [];
-               data.forEach(item=>{
-                     
-                  let teamId1 = item.matchInfo.teams[0].team.id;
-              
-                  let teamId2 = item.matchInfo.teams[1].team.id;
-                 items.push(teamId1.toString());
-                 items.push(teamId2.toString());
-        
-    
-               })
-              
-               items =  [...new Set(items)];
-            //    console.log("result================");
-          
-                let logos =await franchiseDAO.getTeamLogos(items);
-                data.map(item=>{
-                    let teamId1 = item.matchInfo.teams[0].team.id;
-              
-                    let teamId2 = item.matchInfo.teams[1].team.id;
-                    for(let i=0;i<logos.length;i++)
-                    {
-                        if(teamId1==logos[i].id)
-                        {
-                            item.matchInfo.teams[0].team.logo=logos[i].logo;
-                        }
-                        if(teamId2==logos[i].id)
-                        {
-                            item.matchInfo.teams[1].team.logo=logos[i].logo;
-                        }
-                    }
-                })
-                //console.log(logos);
+               let data = await MatchDAO.getScheduleList(year, id);
+
             if (!data || data.length <= 0) {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return

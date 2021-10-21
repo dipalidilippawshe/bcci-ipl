@@ -42,7 +42,7 @@ module.exports = class IplRecordsDAO {
         let pipeline = 
             [
                 {$match:{'id':{$in:data}}},
-                {$project:{'id':1,'logo':1}}
+                {$project:{'id':1,'logo':1,'logo_match':1,'logo_player':1,"logo_medium":1,'banner':1}}
                 ]
             
         
