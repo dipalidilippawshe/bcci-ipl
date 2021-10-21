@@ -751,7 +751,7 @@ module.exports = class MatchController {
         if (req.body.season)
             filters.year = req.body.season;
         else
-            filters.year = "2020"
+            filters.year = "all"
 
         if (req.body.team_id)
             filters.team_id = req.body.team_id;
