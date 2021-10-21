@@ -808,6 +808,7 @@ module.exports = class MatchDAO {
             sort
 
         ]
+      
         const pipeline = [...countingPipeline]
         console.dir(pipeline, { depth: null, color: true })
         const matchesList = await (await matches.aggregate(pipeline)).toArray()
