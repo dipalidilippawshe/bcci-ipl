@@ -299,7 +299,7 @@ module.exports = class IPLArticlesController {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-                res.json({ status: true, data: news })
+                res.json({ status: true, data: news.list,total:news.total })
         }catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })

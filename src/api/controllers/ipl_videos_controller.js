@@ -22,7 +22,7 @@ module.exports = class IplVideosController {
         let response = {
             status: true,
             message: "Retrived data!",
-            videos: respo.list,
+            data: respo.list,
             page: page,
             total_results: respo.total,
         }
@@ -49,7 +49,7 @@ module.exports = class IplVideosController {
             let response = {
                 status: true,
                 message: "Retrived data!",
-                videos: respo.list,
+                data: respo.list,
                 page: page,
                 total_results: respo.total,
             }
@@ -138,7 +138,7 @@ module.exports = class IplVideosController {
         let response = {
             status: true,
             message: "data received!",
-            videos: videosList,
+            data: videosList,
             page: page,
             filters: {},
             entries_per_page: LIMIT_PER_PAGE,
@@ -206,7 +206,7 @@ module.exports = class IplVideosController {
         let filters = { type: type, match_id: req.query.match_id, player_id: req.query.player_id, season_id: req.query.season_id, team_id: req.query.team_id }
         console.log("......................", filters)
         const respo = await IplVideosDAO.getIplVideosByFilter(filters, page, limit);
-        console.log(respo)
+        //console.log(respo)
         if (respo && !respo.list.length) {
             res.status(404).json({ status: false, error: config.error_codes["1001"] })
             return
@@ -353,7 +353,7 @@ module.exports = class IplVideosController {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
             }
-                res.json({ status: true, data: videos })
+                res.json({ status: true, data: videos.list, total:videos.total })
         }catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })

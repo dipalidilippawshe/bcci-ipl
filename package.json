@@ -38,6 +38,7 @@
     "jsonwebtoken": "^8.3.0",
     "mongodb": "^3.6.6",
     "morgan": "^1.10.0",
-    "npm-check-updates": "^3.2.2"
+    "npm-check-updates": "^3.2.2",
+    "request": "^2.88.2"
   }
 }

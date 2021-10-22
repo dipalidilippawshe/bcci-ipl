@@ -6,7 +6,8 @@ const IplArticlesDAO = require("../../dao/ipl_articles_dao")
 const menuDAO = require("../../dao/menus_dao")
 const PagesDAO = require("../../dao/pages_dao")
 const PhotosDAO = require("../../dao/ipl_photos_dao")
-const config = require("config")
+const config = require("config");
+const { iplArticles } = require("../../dao/ipl_articles_dao");
 
 module.exports = class MatchController {
     static async apiAppGetMatch(req, res, next) {
@@ -290,7 +291,12 @@ module.exports = class MatchController {
                 returnData[0].venue = frenchise.venue;
                 returnData[0].logo_medium = frenchise.logo_medium;
                 returnData[0].banner_app = frenchise.banner_app;
+                returnData[0].roundSmall = frenchise.roundSmall;
+                returnData[0].roundBig = frenchise.roundBig;
+                returnData[0].logoOutline = frenchise.logoOutline;
+                returnData[0].website = frenchise.website;
                 
+
                 //winning years of team
                 let won = await MatchDAO.findWinsByTeam(parseInt(id), frenchise.name);
 
@@ -349,7 +355,10 @@ module.exports = class MatchController {
                 returnData[0].social = frenchise.social;
                 returnData[0].banner = frenchise.banner;
                 returnData[0].logo_medium = frenchise.logo_medium;
-
+                returnData[0].roundSmall = frenchise.roundSmall;
+                returnData[0].roundBig = frenchise.roundBig;
+                returnData[0].logoOutline = frenchise.logoOutline;
+                returnData[0].website = frenchise.website;
                 //winning years of team
                 let won = await MatchDAO.findWinsByTeam(parseInt(id), frenchise.name);
 
@@ -401,6 +410,15 @@ module.exports = class MatchController {
             data.men.sort(function (a, b) {
                 return a.id - b.id;
             });
+            let fr = uniqByKeepLast(data.men,it=>it.id);
+            function uniqByKeepLast(a, key) {
+                return [
+                    ...new Map(
+                        a.map(x => [key(x), x])
+                    ).values()
+                ]
+            }
+            data.men = fr;
             res.json({ status: true, year: year, data: data })
         } catch (e) {
             console.log(`api, ${e}`)
@@ -669,6 +687,7 @@ module.exports = class MatchController {
             let id = req.params.ID && parseInt(req.params.ID) || "0"
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : "2021"
             let article = await MatchDAO.getTeams({ year: year });
+            console.log("articled: ",article.length);
             let data = { men: [], women: [] }
             for (var i in article) {
                 var franchiseWithWiningYears = await RecordDAO.processFrenchise(article[i].franchises)
@@ -678,7 +697,6 @@ module.exports = class MatchController {
                     data.women = franchiseWithWiningYears
                 }
             }
-            console.log(req.query.type)
             if (req.query.type == "m") {
                 data.women = undefined
             }
@@ -692,13 +710,22 @@ module.exports = class MatchController {
             data.men.sort(function (a, b) {
                 return a.id - b.id;
             });
+            let fr = uniqByKeepLast(data.men,it=>it.id);
+            function uniqByKeepLast(a, key) {
+                return [
+                    ...new Map(
+                        a.map(x => [key(x), x])
+                    ).values()
+                ]
+            }
+            data.men = fr;
             res.json({ status: true, year: year, data: data })
         } catch (e) {
             console.log(`api, ${e}`)
             res.status(500).json({ error: e })
         }
     }
-
+    
     static async getAppStatsData(req, res, next) {
         /**
          * filters needs to be added are
@@ -724,7 +751,7 @@ module.exports = class MatchController {
         if (req.body.season)
             filters.year = req.body.season;
         else
-            filters.year = "2020"
+            filters.year = "all"
 
         if (req.body.team_id)
             filters.team_id = req.body.team_id;
@@ -1089,8 +1116,7 @@ module.exports = class MatchController {
 
             let battings = await MatchDAO.getHighestBattingStats();
             let bowlings = await MatchDAO.getHighestBowlingStats();
-            let run = battings.reduce((max, obj) => (max.mostRuns > obj.mostRuns) ? max : obj);
-           
+            let run = battings.reduce((max, obj) => (max.mostRuns > obj.mostRuns) ? max : obj);           
             let fours = battings.reduce((max, obj) => (max.most4s > obj.most4s) ? max : obj);
             let six = battings.reduce((max, obj) => (max.most6s > obj.most6s) ? max : obj);
             let strikeRate = battings.reduce((max, obj) => (parseInt(max.sr) > parseInt(obj.sr)) ? max : obj);
@@ -1342,6 +1368,34 @@ module.exports = class MatchController {
         }
 
     }
+
+    static async getReportsByMatch(req,res,next){
+        let matchId = req.query.matchId;
+        if(!matchId){
+            res.status(404).json({ status: false, error: config.error_codes["1003"] })
+            return
+        }
+        let article = await MatchDAO.getArticleByMatch(matchId);
+       // console.log("article: ",article);
+        res.json({ status: true, data: article })
+
+    }
+
+    static async addheadshots(req,res,next){
+        const players = await MatchDAO.playerQuery();
+        var data = []
+        for(let i=0;i<=players.length-1;i++){
+            data.push(players[i].player_detail);
+            if(i==players.length-1){
+
+                //insert in collection
+                let insert = await MatchDAO.addAllPlayers(data);
+
+                res.json({status:true, data:insert});
+            }
+        }
+       
+    } 
 }
 
 
