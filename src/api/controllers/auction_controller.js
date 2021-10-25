@@ -29,21 +29,25 @@ module.exports = class AuctionController {
             let page = 1
             let limit = 5
             let year = req.params.year && parseInt(req.params.year) || new Date().getFullYear()
+            let table = req.body.table
+            if (!table) {
+                res.json({ status: false, message: "please specify table type" });
+            }
             let startDate = new Date(year, 0, 1);
             let endDate = new Date(year, 11, 31);
-            let filters = { year, startDate, endDate, tag: "auction" }
+            let filters = { year, startDate, endDate, tag: "auction", table }
             let image = await PhotosDAO.getPhotos({ filters, page, limit })
             let video = await IplVideosDAO.getVideos({ filters, page, limit })
             let articles = await IplArticlesDAO.getIplArticles({ filters, page, limit })
             let auctionData = await FranchiseYearsDAO.getAuctionDetails(filters)
 
-            // console.log(articles)
-            // let data = {
-            //     realted_videos: video.videoList,
-            //     realted_images: image.imageList,
-            //     realted_articles: articles.articlesList
-            // }
-            res.json({ status: true, data: auctionData })
+            let data = {
+                realted_videos: video.videoList,
+                realted_images: image.imageList,
+                realted_articles: articles.articlesList,
+                auction_table : auctionData
+            }
+            res.json({ status: true, data: data })
         } catch (e) {
 
             res.status(500).json({ error: e })
