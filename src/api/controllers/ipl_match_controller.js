@@ -219,6 +219,47 @@ module.exports = class MatchController {
                     res.status(404).json({ status: false, error: config.error_codes["1001"] })
                     return
                 }
+                var items = [];
+                matchesList.forEach(item=>{
+                      
+                   let teamId1 = item.matchInfo.teams[0].team.id;
+               
+                   let teamId2 = item.matchInfo.teams[1].team.id;
+                  items.push(teamId1.toString());
+                  items.push(teamId2.toString());
+         
+     
+                })
+               ;
+                items =  [...new Set(items)];
+            
+               //  console.log(items);
+                 let logos =await franchiseDAO.getTeamLogos(items);
+                 matchesList.map(item=>{
+                     let teamId1 = item.matchInfo.teams[0].team.id;
+               
+                     let teamId2 = item.matchInfo.teams[1].team.id;
+                     for(let i=0;i<logos.length;i++)
+                     {
+                         if(teamId1==logos[i].id)
+                         {
+                             
+                             item.matchInfo.teams[0].team.logo=logos[i].logo;
+                             item.matchInfo.teams[0].team.logo_match=logos[i].logo_match;
+                             item.matchInfo.teams[0].team.logo_player=logos[i].logo_player;
+                             item.matchInfo.teams[0].team.logo_medium=logos[i].logo_medium;
+                             item.matchInfo.teams[0].team.banner=logos[i].banner;
+                         }
+                         if(teamId2==logos[i].id)
+                         {
+                            item.matchInfo.teams[1].team.logo=logos[i].logo;
+                            item.matchInfo.teams[1].team.logo_match=logos[i].logo_match;
+                            item.matchInfo.teams[1].team.logo_player=logos[i].logo_player;
+                            item.matchInfo.teams[1].team.logo_medium=logos[i].logo_medium;
+                            item.matchInfo.teams[1].team.banner=logos[i].banner;
+                         }
+                     }
+                 })
                 let response = {
                     status: true,
                     data: matchesList,
@@ -668,8 +709,49 @@ module.exports = class MatchController {
                 let franchiseId = await franchiseDAO.getfrenchiseBySlug(slug);
                 id = franchiseId.id;
             }
-               let data = await MatchDAO.getScheduleList(year, id)
- 
+               let data = await MatchDAO.getScheduleList(year, id);
+               var items = [];
+               data.forEach(item=>{
+                     
+                  let teamId1 = item.matchInfo.teams[0].team.id;
+              
+                  let teamId2 = item.matchInfo.teams[1].team.id;
+                 items.push(teamId1.toString());
+                 items.push(teamId2.toString());
+        
+    
+               })
+              
+               items =  [...new Set(items)];
+          
+          
+                let logos =await franchiseDAO.getTeamLogos(items);
+                  //    console.log("result================");
+                  console.log(logos);
+               data.map(item=>{
+                    let teamId1 = item.matchInfo.teams[0].team.id;
+              
+                    let teamId2 = item.matchInfo.teams[1].team.id;
+                    for(let i=0;i<logos.length;i++)
+                    {
+                        if(teamId1==logos[i].id)
+                        {
+                            item.matchInfo.teams[0].team.logo=logos[i].logo;
+                            item.matchInfo.teams[0].team.logo_match=logos[i].logo_match;
+                            item.matchInfo.teams[0].team.logo_player=logos[i].logo_player;
+                            item.matchInfo.teams[0].team.logo_medium=logos[i].logo_medium;
+                            item.matchInfo.teams[0].team.banner=logos[i].banner;
+                        }
+                        if(teamId2==logos[i].id)
+                        {
+                            item.matchInfo.teams[1].team.logo=logos[i].logo;
+                            item.matchInfo.teams[1].team.logo_match=logos[i].logo_match;
+                            item.matchInfo.teams[1].team.logo_player=logos[i].logo_player;
+                            item.matchInfo.teams[1].team.logo_medium=logos[i].logo_medium;
+                            item.matchInfo.teams[1].team.banner=logos[i].banner;;
+                        }
+                    }
+                })
             if (!data || data.length <= 0) {
                 res.status(404).json({ status: false, error: config.error_codes["1001"] })
                 return
@@ -769,8 +851,6 @@ module.exports = class MatchController {
         let bat, bowl;
         if (filters.stats_type == "batting") {
             bat = await MatchDAO.statsBattingData(filters);
-
-
         } else if (filters.stats_type == "bowling") {
             bowl = await MatchDAO.statsBowlingData(filters);
         } else {
@@ -1133,8 +1213,9 @@ module.exports = class MatchController {
             let run = battings.reduce((max, obj) => (max.mostRuns > obj.mostRuns) ? max : obj);           
             let fours = battings.reduce((max, obj) => (max.most4s > obj.most4s) ? max : obj);
             let six = battings.reduce((max, obj) => (max.most6s > obj.most6s) ? max : obj);
-            let strikeRate = battings.reduce((max, obj) => (parseInt(max.sr) > parseInt(obj.sr)) ? max : obj);
-
+            //let strikeRate = battings.reduce((max, obj) => (parseInt(max.stickeRate) > parseInt(obj.stickeRate)) ? max : obj);
+            //let innScore = battings.reduce((max, obj) => (parseInt(max.highestInnScore) > parseInt(obj.highestInnScore)) ? max : obj)
+           
             //bowlings:
              let w = bowlings.reduce((max, obj) => (max.w > obj.w) ? max : obj);
              let d = bowlings.reduce((max, obj) => (max.d > obj.d) ? max : obj);
@@ -1143,21 +1224,60 @@ module.exports = class MatchController {
              let wd = bowlings.reduce((max, obj) => (max.wd > obj.wd) ? max : obj);
              let nb = bowlings.reduce((max, obj) => (max.nb > obj.nb) ? max : obj);
 
-            let battingStats ={runs:run,fours:fours,six:six, strikeRate:strikeRate};
+            let battingStats ={runs:run,fours:fours,six:six};
             let bowlingStats = {w:w,d:d,maid:maid,e:e,wd:wd,nb:nb};
-
+            console.log("battinbowlingStatsgStats.bats: ",bowlingStats);
             for(let bats in battingStats){
-               let details = await MatchDAO.playerInfo(battingStats[bats].player_id);
-               let bawling = await MatchDAO.getBawlingStatsData(parseInt(battingStats[bats].player_id));
-                battingStats[bats].details = details;
-                battingStats[bats].wickets = bawling.w;
+               let details = await MatchDAO.playerInfoByYear(battingStats[bats].player_id,"2021");
+               
+                let logo;
+               for (let i = 0; i <= details.matchInfo.teams.length-1; i++) {
+                let player = details.matchInfo.teams[i].players.find(element => element.id == battingStats[bats].player_id);
+               
+                if(player && player !==undefined){
+                    console.log("in ififiifif");
+                    battingStats[bats].player = player;
+                    battingStats[bats].details = details.matchInfo.teams[i].team;
+                   let frenchise = await franchiseDAO.getfrenchiseDetails(details.matchInfo.teams[i].team.id);
+                  
+                   logo = frenchise.logo;
+                   battingStats[bats].details.logo = logo;
+                   
+                }else{
+                    console.log("in elesleelse");
+                    //do nothing
+                }
+                 
+            }
+              
             }
             for(let bats in bowlingStats){
-                let details = await MatchDAO.playerInfo(bowlingStats[bats].player_id);
-                let bawling = await MatchDAO.getBawlingStatsData(parseInt(bowlingStats[bats].player_id));
-                bowlingStats[bats].details = details;
-                bowlingStats[bats].wickets = bawling.w;
+                let details = await MatchDAO.playerInfoByYear(bowlingStats[bats].player_id,"2021");
+               
+                let logo;
+               for (let i = 0; i <= details.matchInfo.teams.length-1; i++) {
+                let player = details.matchInfo.teams[i].players.find(element => element.id == bowlingStats[bats].player_id);
+               
+                if(player && player !==undefined){
+                    console.log("in ififiifif");
+                    bowlingStats[bats].player = player;
+                    bowlingStats[bats].details = details.matchInfo.teams[i].team;
+                   let frenchise = await franchiseDAO.getfrenchiseDetails(details.matchInfo.teams[i].team.id);
+                  
+                   logo = frenchise.logo;
+                   bowlingStats[bats].details.logo = logo;
+                   
+                }else{
+                    console.log("in elesleelse");
+                    //do nothing
+                }
+                 
+                // let details = await MatchDAO.playerInfo(bowlingStats[bats].player_id);
+                // let bawling = await MatchDAO.getBawlingStatsData(parseInt(bowlingStats[bats].player_id));
+                // bowlingStats[bats].details = details;
+                // bowlingStats[bats].wickets = bawling.w;
              }
+            }
 
             res.json({ status: true, data: {battingStats:battingStats, bowlingStats:bowlingStats} });
         } catch (e) {

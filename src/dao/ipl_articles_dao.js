@@ -147,11 +147,16 @@ module.exports = class ArticlesDAO {
         page = 0,
         articlesPerPage = 20,
     } = {}) {
-
+        var sort;
         let queryParams = { query: {} }
+       
         if (filters.tag) {
             //filters logic to be added.
             queryParams.query["tags.label"] = { $in: [filters.tag] }
+        }
+        if(filters.tag=="all"){
+            console.log("in all videos");
+            queryParams = { query: {} };
         }
         // if (filters.year) {
         //     //filters logic to be added.
@@ -166,17 +171,24 @@ module.exports = class ArticlesDAO {
             }
         }
 
-        let { query = {}, project = {}, sort = DEFAULT_SORT } = queryParams
-        console.log(query)
+        let { query = {}, project = {}} = queryParams
+       // console.log(query)
+       let pageLimit =articlesPerPage;
+       pageLimit = filters.tag == "Latest"? 6 :articlesPerPage;
+       
         let cursor
-
+        if(!filters.sort){
+            console.log("in not filters");
+            sort = {"_id":-1}
+        }
+        
         try {
             cursor = await iplArticles
                 .find(query)
                 .project(project)
                 .sort(sort)
-                .limit(articlesPerPage)
-                .skip(page * articlesPerPage)
+                .limit(pageLimit)
+                .skip(page * pageLimit)
 
         } catch (e) {
             console.error(`Unable to issue find command, ${e}`)
@@ -184,7 +196,7 @@ module.exports = class ArticlesDAO {
         }
 
 
-        const displayCursor = cursor.limit(articlesPerPage)
+        const displayCursor = cursor.limit(pageLimit)
 
         try {
             const articlesList = await displayCursor.toArray()

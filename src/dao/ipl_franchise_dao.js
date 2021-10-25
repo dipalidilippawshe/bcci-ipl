@@ -37,6 +37,19 @@ module.exports = class IplRecordsDAO {
         
         return frenchise;
     }
+    static async getTeamLogos(data)
+    {
+        let pipeline = 
+            [
+                {$match:{'id':{$in:data}}},
+                {$project:{'id':1,'logo':1,'logo_match':1,'logo_player':1,"logo_medium":1,'banner':1}}
+                ]
+            
+        
+        console.log(pipeline);
+        const logos = await franchise.aggregate(pipeline).toArray();
+        return logos;
+    }
 }
 
 
