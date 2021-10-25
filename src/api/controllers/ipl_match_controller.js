@@ -983,6 +983,16 @@ module.exports = class MatchController {
         }
         res.json(response)
     }
+
+    static async getTeamsLogo (req, res, next){
+        let teamLogo = await MatchDAO.getTeamsLogos();
+        if (!teamLogo) {
+            res.status(404).json({ status: false, error: config.error_codes["1001"] })
+            return
+        }
+        res.status(200).json({ status: true, data: teamLogo });
+    }
+
     static async apiAppGetFranchesByMatchId(req, res, next) {
         //franches
 
