@@ -1043,7 +1043,6 @@ module.exports = class MatchDAO {
 
     }
 
-
     static async playerInfoById(id, matchId) {
         try {
             const countingPipeline = [
@@ -1257,21 +1256,20 @@ module.exports = class MatchDAO {
                 {
                     _id: "$innings.scorecard.battingStats.playerId",
                     mostRuns: { $sum: "$innings.scorecard.battingStats.r" },
+                   // highestInnScore: { $max: "$innings.scorecard.battingStats.r" },
                     most4s: { $sum: "$innings.scorecard.battingStats.4s" },
                     most6s: { $sum: "$innings.scorecard.battingStats.6s" },
-                    score: { $sum: "$innings.scorecard.battingStats.sr" }
+                   // stickeRate: { $sum: "$innings.scorecard.battingStats.sr" }
                 }
             },
-
-
             {
                 $project: {
                     player_id: "$_id",
                     mostRuns: 1,
                     most4s: 1,
                     most6s: 1,
-                    //bestBat:1,
-                    score: 1,
+                   // highestInnScore:1,
+                   // stickeRate: 1,
                     _id: 0,
                 }
             }

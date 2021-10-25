@@ -769,8 +769,6 @@ module.exports = class MatchController {
         let bat, bowl;
         if (filters.stats_type == "batting") {
             bat = await MatchDAO.statsBattingData(filters);
-
-
         } else if (filters.stats_type == "bowling") {
             bowl = await MatchDAO.statsBowlingData(filters);
         } else {
@@ -1109,8 +1107,9 @@ module.exports = class MatchController {
             let run = battings.reduce((max, obj) => (max.mostRuns > obj.mostRuns) ? max : obj);           
             let fours = battings.reduce((max, obj) => (max.most4s > obj.most4s) ? max : obj);
             let six = battings.reduce((max, obj) => (max.most6s > obj.most6s) ? max : obj);
-            let strikeRate = battings.reduce((max, obj) => (parseInt(max.sr) > parseInt(obj.sr)) ? max : obj);
-
+            //let strikeRate = battings.reduce((max, obj) => (parseInt(max.stickeRate) > parseInt(obj.stickeRate)) ? max : obj);
+            //let innScore = battings.reduce((max, obj) => (parseInt(max.highestInnScore) > parseInt(obj.highestInnScore)) ? max : obj)
+           
             //bowlings:
              let w = bowlings.reduce((max, obj) => (max.w > obj.w) ? max : obj);
              let d = bowlings.reduce((max, obj) => (max.d > obj.d) ? max : obj);
@@ -1119,21 +1118,60 @@ module.exports = class MatchController {
              let wd = bowlings.reduce((max, obj) => (max.wd > obj.wd) ? max : obj);
              let nb = bowlings.reduce((max, obj) => (max.nb > obj.nb) ? max : obj);
 
-            let battingStats ={runs:run,fours:fours,six:six, strikeRate:strikeRate};
+            let battingStats ={runs:run,fours:fours,six:six};
             let bowlingStats = {w:w,d:d,maid:maid,e:e,wd:wd,nb:nb};
-
+            console.log("battinbowlingStatsgStats.bats: ",bowlingStats);
             for(let bats in battingStats){
-               let details = await MatchDAO.playerInfo(battingStats[bats].player_id);
-               let bawling = await MatchDAO.getBawlingStatsData(parseInt(battingStats[bats].player_id));
-                battingStats[bats].details = details;
-                battingStats[bats].wickets = bawling.w;
+               let details = await MatchDAO.playerInfoByYear(battingStats[bats].player_id,"2021");
+               
+                let logo;
+               for (let i = 0; i <= details.matchInfo.teams.length-1; i++) {
+                let player = details.matchInfo.teams[i].players.find(element => element.id == battingStats[bats].player_id);
+               
+                if(player && player !==undefined){
+                    console.log("in ififiifif");
+                    battingStats[bats].player = player;
+                    battingStats[bats].details = details.matchInfo.teams[i].team;
+                   let frenchise = await franchiseDAO.getfrenchiseDetails(details.matchInfo.teams[i].team.id);
+                  
+                   logo = frenchise.logo;
+                   battingStats[bats].details.logo = logo;
+                   
+                }else{
+                    console.log("in elesleelse");
+                    //do nothing
+                }
+                 
+            }
+              
             }
             for(let bats in bowlingStats){
-                let details = await MatchDAO.playerInfo(bowlingStats[bats].player_id);
-                let bawling = await MatchDAO.getBawlingStatsData(parseInt(bowlingStats[bats].player_id));
-                bowlingStats[bats].details = details;
-                bowlingStats[bats].wickets = bawling.w;
+                let details = await MatchDAO.playerInfoByYear(bowlingStats[bats].player_id,"2021");
+               
+                let logo;
+               for (let i = 0; i <= details.matchInfo.teams.length-1; i++) {
+                let player = details.matchInfo.teams[i].players.find(element => element.id == bowlingStats[bats].player_id);
+               
+                if(player && player !==undefined){
+                    console.log("in ififiifif");
+                    bowlingStats[bats].player = player;
+                    bowlingStats[bats].details = details.matchInfo.teams[i].team;
+                   let frenchise = await franchiseDAO.getfrenchiseDetails(details.matchInfo.teams[i].team.id);
+                  
+                   logo = frenchise.logo;
+                   bowlingStats[bats].details.logo = logo;
+                   
+                }else{
+                    console.log("in elesleelse");
+                    //do nothing
+                }
+                 
+                // let details = await MatchDAO.playerInfo(bowlingStats[bats].player_id);
+                // let bawling = await MatchDAO.getBawlingStatsData(parseInt(bowlingStats[bats].player_id));
+                // bowlingStats[bats].details = details;
+                // bowlingStats[bats].wickets = bawling.w;
              }
+            }
 
             res.json({ status: true, data: {battingStats:battingStats, bowlingStats:bowlingStats} });
         } catch (e) {
