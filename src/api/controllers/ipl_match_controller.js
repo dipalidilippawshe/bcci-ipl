@@ -836,7 +836,15 @@ module.exports = class MatchController {
         try {
             let details = await MatchDAO.playerInfo(player);
             let players = await MatchDAO.getTeamListByYear(player);
-
+             //get player headshot
+             let playerImage = await MatchDAO.playerHeadshot(player);
+             details.player_detail.image = playerImage;
+             let playersDetail = players.playersList
+             for(let i=0; i < playersDetail.length; i++){
+                 players.playersList[i].images = await MatchDAO.playerHeadshot(playersDetail[i].id); 
+             }
+ 
+//playr.playlist
             let batting = await MatchDAO.getBattingStatsData(parseInt(player));
             let bawlings = await MatchDAO.getBawlingStatsData(parseInt(player));
             batting.sr = batting.sr.toString();
@@ -1068,6 +1076,12 @@ module.exports = class MatchController {
             let details = await MatchDAO.playerInfo(player);
             let players = await MatchDAO.getTeamListByYear(player);
 
+            let playerImage = await MatchDAO.playerHeadshot(player);
+            details.player_detail.image = playerImage;
+            let playersDetail = players.playersList
+            for(let i=0; i < playersDetail.length; i++){
+                players.playersList[i].images = await MatchDAO.playerHeadshot(playersDetail[i].id); 
+            }
             let batting = await MatchDAO.getBattingStatsData(parseInt(player));
             let bawlings = await MatchDAO.getBawlingStatsData(parseInt(player));
             details.battingStats = batting;
@@ -1304,7 +1318,6 @@ module.exports = class MatchController {
         for(let i=0;i<=article[0].players.length-1;i++){
             playerArr.push(article[0].players[i].id);
         }
-
         let runs = await MatchDAO.getPlayersRunsDataByYear(playerArr,year);
         let wickets = await MatchDAO.getPlayersWicketsDataByYear(playerArr,year);
         for(let i=0;i<=article[0].players.length-1;i++){
@@ -1317,13 +1330,13 @@ module.exports = class MatchController {
              
             article[0].players[i].matches = wickets.count;
             article[0].players[i].debut = "2008";
+            article[0].players[i].images = await MatchDAO.playerHeadshot(article[0].players[i].id); 
             var playerwik = wickets.bawlings.find(element => element._id == article[0].players[i].id);
             if(!playerwik)
               article[0].players[i].wickets = 0
             else
               article[0].players[i].wickets = playerwik.wickets
         }
-     
         return res.json({ status: true, data: article })
 
     }
