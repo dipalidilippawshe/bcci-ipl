@@ -167,7 +167,9 @@ module.exports = class ArticlesDAO {
         }
 
         let { query = {}, project = {}, sort = DEFAULT_SORT } = queryParams
-        console.log(query)
+       // console.log(query)
+       let pageLimit =articlesPerPage;
+       pageLimit = filters.tag == "Latest"? 6 :articlesPerPage;
         let cursor
 
         try {
@@ -175,8 +177,8 @@ module.exports = class ArticlesDAO {
                 .find(query)
                 .project(project)
                 .sort(sort)
-                .limit(articlesPerPage)
-                .skip(page * articlesPerPage)
+                .limit(pageLimit)
+                .skip(page * pageLimit)
 
         } catch (e) {
             console.error(`Unable to issue find command, ${e}`)
@@ -184,7 +186,7 @@ module.exports = class ArticlesDAO {
         }
 
 
-        const displayCursor = cursor.limit(articlesPerPage)
+        const displayCursor = cursor.limit(pageLimit)
 
         try {
             const articlesList = await displayCursor.toArray()

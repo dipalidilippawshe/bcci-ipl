@@ -1665,7 +1665,7 @@ module.exports = class MatchDAO {
         for(let i=0;i<=matchesData[0].matchInfo.teams.length-1;i++){
            
             let logo = await franchisedata.findOne({id:matchesData[0].matchInfo.teams[i].team.id.toString()});
-            matchesData[0].matchInfo.teams[i].team.teamlogo = logo.logo_medium;
+            matchesData[0].matchInfo.teams[i].team.logo_medium = logo.logo_medium;
             matchesData[0].matchInfo.teams[i].team.logo = logo.logo;
         }
         return matchesData
@@ -1720,5 +1720,35 @@ module.exports = class MatchDAO {
         const doc = await matchPlayers.insertMany(data);
             return doc;
             
+    }
+
+    static async getTeamsLogos(){
+        return new Promise(function(resolve, reject){
+            franchisedata.find({}).toArray( async function(err, result){
+                if(!err && result.length >0){
+                    // console.log("response==>", result);
+                    var data = {};
+                    var counter = 0
+                    for(let i=0; i<result.length; i++){
+                        counter++
+                        data[`${result[i].abbreviation}`] = {
+                            "logo":`${result[i].logo ? result[i].logo : ""}`,
+                            "logo_medium":`${result[i].logo_medium ? result[i].logo_medium : ""}`,
+                            "roundSmall" : `${result[i].roundSmall ? result[i].roundSmall : ""}`,
+                            "roundBig" : `${result[i].roundBig ? result[i].roundBig : ""}`,
+                            "logoOutline" : `${result[i].logoOutline ? result[i].logoOutline : ""}`
+                        }
+                    }
+                    console.log("result.length", result.length);
+                    console.log("data[=====>", counter);
+                }else{
+                    resolve([]);
+                }
+                if(counter == result.length){
+                    console.log("data[=====>", data);
+                    resolve(data)
+                }
+            })
+        })
     }
 }
