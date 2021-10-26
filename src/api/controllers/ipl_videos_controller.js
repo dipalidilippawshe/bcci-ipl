@@ -11,7 +11,7 @@ module.exports = class IplVideosController {
             var page = req.query.page
         else
             page = 1;
-        let limit = 20
+        let limit = 21
         let filters = { type: type, match_id: req.query.match_id, player_id: req.query.player_id, season_id: req.query.season_id, team_id: req.query.team_id }
 
         const respo = await IplVideosDAO.getIplVideosByFilter(filters, page, limit);
@@ -38,7 +38,7 @@ module.exports = class IplVideosController {
                 var page = req.query.page
             else
                 page = 1;
-            let limit = 20
+            let limit = 21
             limit = req.params.type.toLocaleLowerCase() == "Latest".toLocaleLowerCase()?6:limit;
          
             let filters = { type: type, match_id: req.query.match_id, player_id: req.query.player_id, season_id: req.query.season_id, team_id: req.query.team_id }
@@ -135,7 +135,7 @@ module.exports = class IplVideosController {
             console.error(`Got bad value for page:, ${e}`)
             page = 0
         }
-        const LIMIT_PER_PAGE = 20
+        const LIMIT_PER_PAGE = 21
         const filter = null
         const { videosList, totalNumIplVideos } = await IplVideosDAO.getPromos(filter, page, LIMIT_PER_PAGE)
         let response = {
@@ -170,7 +170,7 @@ module.exports = class IplVideosController {
 
 
     static async apiWebGetIplVideos(req, res, next) {
-        const LIMIT_PER_PAGE = 20
+        const LIMIT_PER_PAGE = 21
         let page
         try {
             page = req.query.page ? parseInt(req.query.page, 10) : "0"
@@ -205,7 +205,7 @@ module.exports = class IplVideosController {
             var page = req.query.page
         else
             page = 1;
-            let limit = 20
+            let limit = 21
             limit = req.params.type.toLocaleLowerCase() == "Latest".toLocaleLowerCase()?6:limit;
         let filters = { type: type, match_id: req.query.match_id, player_id: req.query.player_id, season_id: req.query.season_id, team_id: req.query.team_id }
         console.log("......................", filters)
@@ -276,7 +276,7 @@ module.exports = class IplVideosController {
             console.error(`Got bad value for page:, ${e}`)
             page = 0
         }
-        const LIMIT_PER_PAGE = 20
+        const LIMIT_PER_PAGE = 21
         const filter = null
         const { videosList, totalNumIplVideos } = await IplVideosDAO.getPromos(filter, page, LIMIT_PER_PAGE)
         let response = {
