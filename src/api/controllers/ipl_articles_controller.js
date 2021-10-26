@@ -18,7 +18,10 @@ module.exports = class IPLArticlesController {
                     res.status(404).json({ status: false, error: config.error_codes["1001"] })
                     return
                 }
-                let pageLimit = 20;
+                let pageLimit = 21;
+                if(req.query.limit)
+                    pageLimit = req.query.limit
+                
 
                 let response = {
                     status: true,
@@ -35,7 +38,7 @@ module.exports = class IPLArticlesController {
         }
         else {
             console.log("API iplarticles");
-            let ARTICLES_PER_PAGE = 20
+            let ARTICLES_PER_PAGE = 21
             let page
             try {
                 page = req.query.page ? parseInt(req.query.page, 10) : "0"
@@ -127,7 +130,7 @@ module.exports = class IPLArticlesController {
                     status: true,
                     data: Iplarticle.data,
                     page: page,
-                    entries_per_page: 20,
+                    entries_per_page: 21,
                     total_results: Iplarticle.total_results,
                 }
                 res.json(response);
@@ -147,7 +150,7 @@ module.exports = class IPLArticlesController {
                 })
             }
 
-            let ARTICLES_PER_PAGE = 20
+            let ARTICLES_PER_PAGE = 21
             let page
             try {
                 page = req.query.page ? parseInt(req.query.page, 10) : "0"
@@ -223,7 +226,7 @@ module.exports = class IPLArticlesController {
     }
     static async apiWebGetIplArticleTeamById(req, res, next) {
 
-        const ARTICLES_PER_PAGE = 20
+        const ARTICLES_PER_PAGE = 21
         try {
             let page = req.query.page ? req.query.page : 1;
 
@@ -260,7 +263,7 @@ module.exports = class IPLArticlesController {
     static async apiAppGetIplArticleTeamById(req, res, next) {
 
         try {
-            const ARTICLES_PER_PAGE = 20
+            const ARTICLES_PER_PAGE = 21
 
             let page = req.query.page ? req.query.page : 1;
             let id = req.params.ID && parseInt(req.params.ID) || "0"

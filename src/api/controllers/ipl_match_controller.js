@@ -11,7 +11,7 @@ const { iplArticles } = require("../../dao/ipl_articles_dao");
 
 module.exports = class MatchController {
     static async apiAppGetMatch(req, res, next) {
-        const FIXTURES_PER_PAGE = 20
+        const FIXTURES_PER_PAGE = 21
         if (req.params.type == "team_results" || req.params.type == "fixture") {
             try {
                 let filters = {}
@@ -172,7 +172,7 @@ module.exports = class MatchController {
         }
         else {
             console.log("CALLINGIN..");
-            const FIXTURES_PER_PAGE = 20
+            const FIXTURES_PER_PAGE = 21
             let page = req.query.page ? parseInt(req.query.page, 10) : 0
             let filters = {};
             // filters.startDate = req.query.startDate && new Date(req.query.startDate) !== "Invalid Date" ? new Date(req.query.startDate).getFullYear() : undefined
@@ -486,7 +486,8 @@ module.exports = class MatchController {
     static async apiAppGetFixtures(req, res, next) {
         //fixtures
         console.log("IN FIXTURES....");
-        const FIXTURES_PER_PAGE = 20;
+        const FIXTURES_PER_PAGE = 21;
+        
         let page
         try {
             page = req.query.page ? parseInt(req.query.page, 10) : "0"
@@ -526,7 +527,8 @@ module.exports = class MatchController {
     static async apiAppGetResults(req, res, next) {
         //results
         console.log("IN RESULTS....");
-        const FIXTURES_PER_PAGE = 20;
+        const FIXTURES_PER_PAGE = 21;
+        
         let page
         try {
             page = req.query.page ? parseInt(req.query.page, 10) : "0"
@@ -600,7 +602,8 @@ module.exports = class MatchController {
 
     static async apiWebArchiveByTeam(req, res, next) {
         console.log("////////////////////////")
-        const FIXTURES_PER_PAGE = 20
+        const FIXTURES_PER_PAGE = 21
+        
         let page
         try {
             page = req.query.page ? parseInt(req.query.page, 10) : "0"
@@ -659,7 +662,7 @@ module.exports = class MatchController {
 
     static async apiAppGetVideoByMatchId(req, res, next) {
         try {
-            const FIXTURES_PER_PAGE = 20
+            const FIXTURES_PER_PAGE = 21
             let page
             try {
                 page = req.query.page ? parseInt(req.query.page, 10) : 1

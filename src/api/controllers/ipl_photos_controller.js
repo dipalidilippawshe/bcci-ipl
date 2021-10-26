@@ -6,7 +6,7 @@ module.exports = class PhotosController {
             res.status(404).json({ status: false, error: config.error_codes["1002"] })
             return
         }
-        const PHOTOS_PER_PAGE = 20
+        const PHOTOS_PER_PAGE = 21
         let page
         try {
             page = req.query.page ? parseInt(req.query.page, 10) : "0"
@@ -33,7 +33,7 @@ module.exports = class PhotosController {
             res.status(404).json({ status: false, error: config.error_codes["1002"] })
             return
         }
-        const PHOTOS_PER_PAGE = 20
+        const PHOTOS_PER_PAGE = 21
         let page
         try {
             page = req.query.page ? parseInt(req.query.page, 10) : "0"
