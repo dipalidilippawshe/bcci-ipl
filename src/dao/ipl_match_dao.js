@@ -1433,11 +1433,12 @@ module.exports = class MatchDAO {
     }
 
     static async playerInfoByYear(id,year){
+        console.log("playerInfo: ",id);
         const countingPipeline = [
             {
                 $match: {
                     "matchInfo.teams.players.id": parseInt(id),
-                    "matchInfo.matchDate": new RegExp(year, "i")
+                    //"matchInfo.matchDate": new RegExp(year, "i")
                 }
             }
 
@@ -1445,7 +1446,8 @@ module.exports = class MatchDAO {
         const pipeline = [...countingPipeline]
         console.log("pipeline: ",pipeline);
         const matchesList = await matches.aggregate(pipeline).toArray()
-        return matchesList[0]
+        console.log("matchesList: ",[matchesList.length-1]);
+        return matchesList[matchesList.length-1];
     }
 
     static async playerBattingStatsPerYear(playerId){

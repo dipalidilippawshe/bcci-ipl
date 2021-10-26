@@ -1211,24 +1211,26 @@ module.exports = class MatchController {
              let nb = bowlings.reduce((max, obj) => (max.nb > obj.nb) ? max : obj);
 
             let battingStats ={runs:run,fours:fours,six:six};
-            let bowlingStats = {w:w,d:d,maid:maid,e:e,wd:wd,nb:nb};
-            console.log("battinbowlingStatsgStats.bats: ",bowlingStats);
+            let bowlingStats = {wickets:w,dots:d,maid:maid,economy:e,wide:wd,noball:nb};
+            let battingData=[]; let bowlingData=[];
+           // console.log("battinbowlingStatsgStats.bats: ",battingStats);
             for(let bats in battingStats){
-               let details = await MatchDAO.playerInfoByYear(battingStats[bats].player_id,"2021");
-               
+               let tempObject = {};
+               let details = await MatchDAO.playerInfoByYear(battingStats[bats].player_id);
+              
                 let logo;
                for (let i = 0; i <= details.matchInfo.teams.length-1; i++) {
                 let player = details.matchInfo.teams[i].players.find(element => element.id == battingStats[bats].player_id);
                
                 if(player && player !==undefined){
-                    console.log("in ififiifif");
+                    
                     battingStats[bats].player = player;
                     battingStats[bats].details = details.matchInfo.teams[i].team;
                    let frenchise = await franchiseDAO.getfrenchiseDetails(details.matchInfo.teams[i].team.id);
                   
                    logo = frenchise.logo;
                    battingStats[bats].details.logo = logo;
-                   
+                   //tempObject.playerId = 
                 }else{
                     console.log("in elesleelse");
                     //do nothing
@@ -1238,7 +1240,7 @@ module.exports = class MatchController {
               
             }
             for(let bats in bowlingStats){
-                let details = await MatchDAO.playerInfoByYear(bowlingStats[bats].player_id,"2021");
+                let details = await MatchDAO.playerInfoByYear(bowlingStats[bats].player_id);
                
                 let logo;
                for (let i = 0; i <= details.matchInfo.teams.length-1; i++) {
@@ -1264,6 +1266,8 @@ module.exports = class MatchController {
                 // bowlingStats[bats].wickets = bawling.w;
              }
             }
+            //after all processing
+
 
             res.json({ status: true, data: {battingStats:battingStats, bowlingStats:bowlingStats} });
         } catch (e) {
