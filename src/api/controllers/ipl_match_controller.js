@@ -1218,28 +1218,24 @@ module.exports = class MatchController {
         try {
 
             let battings = await MatchDAO.getHighestBattingStats();
-           // bowlings = await MatchDAO.getHighestBowlingStats();
+            let bowlings = await MatchDAO.getHighestBowlingStats();
             let run = battings.reduce((max, obj) => (max.mostRuns > obj.mostRuns) ? max : obj);           
             let fours = battings.reduce((max, obj) => (max.most4s > obj.most4s) ? max : obj);
             let six = battings.reduce((max, obj) => (max.most6s > obj.most6s) ? max : obj);
-            //let strikeRate = battings.reduce((max, obj) => (parseInt(max.stickeRate) > parseInt(obj.stickeRate)) ? max : obj);
-            //let innScore = battings.reduce((max, obj) => (parseInt(max.highestInnScore) > parseInt(obj.highestInnScore)) ? max : obj)
-           
+            let strikeRate = battings.reduce((max, obj) => (parseInt(max.stickeRate) > parseInt(obj.stickeRate)) ? max : obj);
+            let innScore = battings.reduce((max, obj) => (parseInt(max.highestScore) > parseInt(obj.highestScore)) ? max : obj)
+          
             // //bowlings:
-            //  let w = bowlings.reduce((max, obj) => (max.w > obj.w) ? max : obj);
-            //  let d = bowlings.reduce((max, obj) => (max.d > obj.d) ? max : obj);
-            //  let maid = bowlings.reduce((max, obj) => (max.maid > obj.maid) ? max : obj);
-            //  let e = bowlings.reduce((max, obj) => (max.e > obj.e) ? max : obj);
-            //  let wd = bowlings.reduce((max, obj) => (max.wd > obj.wd) ? max : obj);
-            //  let nb = bowlings.reduce((max, obj) => (max.nb > obj.nb) ? max : obj);
-
-            let battingStats ={runs:run,fours:fours,six:six};
-           // let bowlingStats = {wickets:w,dots:d,maid:maid,economy:e,wide:wd,noball:nb};
+             let w = bowlings.reduce((max, obj) => (max.w > obj.w) ? max : obj);
+             let d = bowlings.reduce((max, obj) => (max.d > obj.d) ? max : obj);
+             let mostov = bowlings.reduce((max,obj) =>(max.mostOvers > obj.mostOvers)?max : obj);
+           
+            let battingStats ={runs:run,fours:fours,six:six,sr:strikeRate,hs:innScore};
+            let bowlingStats = {wickets:w,dots:d,economy:mostov};
             let battingData=[]; let bowlingData=[];
            // console.log("battinbowlingStatsgStats.bats: ",battingStats);
             for(let bats in battingStats){
                let tempObject = {};
-               console.log("bats us: ",bats);
                let details = await MatchDAO.playerInfoByYear(battingStats[bats].player_id);
                 let logo;
                for (let i = 0; i <= details.matchInfo.teams.length-1; i++) {
@@ -1263,6 +1259,16 @@ module.exports = class MatchController {
                        tempObject.number = battingStats[bats].mostRuns;
                         tempObject.cap="Orange cap";
                    }
+                   if(bats =="hs"){
+                    tempObject.tag="Score";
+                    tempObject.number = battingStats[bats].highestScore;
+                     tempObject.cap="Highest Score";
+                   }
+                   if(bats =="sr"){
+                    tempObject.tag=" ";
+                    tempObject.number = battingStats[bats].stickeRate;
+                     tempObject.cap="Best Strike Rate";
+                   }
                    if(bats == "fours"){
                     tempObject.tag="FOURS";
                     tempObject.number = battingStats[bats].most4s;
@@ -1284,10 +1290,66 @@ module.exports = class MatchController {
               
             }
             
-            //after all processing
+            for(let bats in bowlingStats){
+                
+                let tempObject = {};
+                let details = await MatchDAO.playerInfoByYear(bowlingStats[bats].player_id);
+                 let logo;
+                for (let i = 0; i <= details.matchInfo.teams.length-1; i++) {
+                 let player = details.matchInfo.teams[i].players.find(element => element.id == bowlingStats[bats].player_id);
+                
+                 if(player && player !==undefined){
+                    let headshots = await MatchDAO.playerHeadshot(bowlingStats[bats].player_id)
+                   
+                     if(headshots)
+                       player.images = headshots;
+                       bowlingStats[bats].player = player;
+                       bowlingStats[bats].details = details.matchInfo.teams[i].team;
+                      let frenchise = await franchiseDAO.getfrenchiseDetails(details.matchInfo.teams[i].team.id);
+                     
+                      logo = frenchise.logo;
+                      bowlingStats[bats].details.logo = logo;
+                      tempObject.playerId = bowlingStats[bats].player_id;
+                      tempObject.player = player;
+                      tempObject.team = bowlingStats[bats].details;
+                    if(bats=="wickets"){
+                        tempObject.tag="WICKETS";
+                        tempObject.number = bowlingStats[bats].w;
+                         tempObject.cap="Purple cap";
+                    }
+                    if(bats =="dots"){
+                     tempObject.tag="";
+                     tempObject.number = bowlingStats[bats].d;
+                      tempObject.cap="Most Dots";
+                    }
+                    if(bats =="economy"){
+                     tempObject.tag="";
+                     tempObject.number = bowlingStats[bats].r / bowlingStats[bats].mostOvers;
+                     tempObject.cap="Best Economy";
+                    }
+                    // if(bats == "bestbowling"){
+                    //     tempObject.tag="";
+                    //     tempObject.number = bowlingStats[bats].r / bowlingStats[bats].mostOvers;
+                    //     tempObject.cap="Best Bowling Figures"
+                    // }
+                    // if(bats == "bawlAvg"){
+                    //     tempObject.tag="";
+                    //     tempObject.number = bowlingStats[bats].r / bowlingStats[bats].w;
+                    //     tempObject.cap="Best Bowling Average";
+                    // }
+                    //console.log("tempObject is: ",tempObject);
+                    bowlingData.push(tempObject);
+                 }else{
+                     console.log("in elesleelse");
+                     //do nothing
+                 }
+                  
+                }
+               
+             }
 
 
-            res.json({ status: true, data: {battingStats:battingData} });
+            res.json({ status: true, data: {battingStats:battingData,bowlingStats:bowlingData} });
         } catch (e) {
             res.status(404).json({ status: false, error: config.error_codes["1003"], data: e })
         }

@@ -1327,10 +1327,10 @@ module.exports = class MatchDAO {
                 {
                     _id: "$innings.scorecard.battingStats.playerId",
                     mostRuns: { $sum: "$innings.scorecard.battingStats.r" },
-                   // highestInnScore: { $max: "$innings.scorecard.battingStats.r" },
+                    highestScore: { $max: "$innings.scorecard.battingStats.r" },
                     most4s: { $sum: "$innings.scorecard.battingStats.4s" },
                     most6s: { $sum: "$innings.scorecard.battingStats.6s" },
-                   // stickeRate: { $sum: "$innings.scorecard.battingStats.sr" }
+                    stickeRate: { $sum: "$innings.scorecard.battingStats.sr" }
                 }
             },
             {
@@ -1339,8 +1339,8 @@ module.exports = class MatchDAO {
                     mostRuns: 1,
                     most4s: 1,
                     most6s: 1,
-                   // highestInnScore:1,
-                   // stickeRate: 1,
+                    highestScore:1,
+                    stickeRate: 1,
                     _id: 0,
                 }
             }
@@ -1367,20 +1367,24 @@ module.exports = class MatchDAO {
                 $group:
                 {
                     _id: "$innings.scorecard.bowlingStats.playerId",
-                    ov: { $sum: "$innings.scorecard.bowlingStats.ov" },
+                    ov: { $push: "$innings.scorecard.bowlingStats.ov" },
                     r: { $sum: "$innings.scorecard.bowlingStats.r" },
                     w: { $sum: "$innings.scorecard.bowlingStats.w" },
                     d: { $sum: "$innings.scorecard.bowlingStats.d" },
-                    maid: { $sum: "$innings.scorecard.bowlingStats.maid" },
-                    e: { $sum: "$innings.scorecard.bowlingStats.e" },
-                    wd: { $sum: "$innings.scorecard.bowlingStats.wd" },
-                    nb: { $sum: "$innings.scorecard.bowlingStats.nb" }
+                    mostOvers: { $sum: { "$toDouble": "$innings.scorecard.bowlingStats.ov" } },
+                    //maid: { $sum: "$innings.scorecard.bowlingStats.maid" },
+                    // e: { $sum: {$toInt:"$innings.scorecard.bowlingStats.e"} },
+                    // wd: { $sum: "$innings.scorecard.bowlingStats.wd" },
+                    // nb: { $sum: "$innings.scorecard.bowlingStats.nb" },
+                   // bestBowlEco: [{ $divide: ['$r', '$mostOvers'] }, 2],
+                    //bestBowlAvg: { $toString: { $cond: [{ $eq: ["$w", 0] }, "NA", { $round: [{ $divide: ['$r', '$w'] }, 2] }] } },
                 }
             },
             {
                 $project: {
                     player_id: "$_id",
-                    ov:1,r:1,w:1,d:1,maid:1,e:1,wd:1,nb:1,
+                    ov:1,r:1,w:1,d:1,mostOvers:1,//bestBowlAvg:1,//maid:1,
+                    //e:1,wd:1,nb:1,
                     _id: 0,
                 }
             }
