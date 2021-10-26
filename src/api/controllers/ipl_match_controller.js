@@ -1098,7 +1098,7 @@ module.exports = class MatchController {
                 for (var i = 0; i < bat.length; i++) {
 
                     bat[i].teams = await MatchDAO.playerInfoById(bat[i].player_id, bat[i].highestInnScore[0].matchId.id);
-                    console.log("teams data: ",bat[i].teams);
+                   
                     if(i==0){
                         bat[i].teams.player_detail.images=await MatchDAO.playerHeadshot(bat[i].player_id);
                     }
