@@ -178,11 +178,11 @@ module.exports = class MatchController {
             // filters.startDate = req.query.startDate && new Date(req.query.startDate) !== "Invalid Date" ? new Date(req.query.startDate).getFullYear() : undefined
             //filters.endDate = req.query.endDate && new Date(req.query.endDate) !== "Invalid Date" ? new Date(req.query.endDate).getFullYear() : undefined
             filters.team = req.query.team ? [req.query.team] : ["m", "w"]
-            if (req.query.teamId) {
-                filters.team_id = req.query.teamId;
+            if (req.query.team_id) {
+                filters.team_id = req.query.team_id;
 
-                if(req.query.teamId.includes("-")){
-                    let slug = req.query.teamId;
+                if(req.query.team_id.includes("-")){
+                    let slug = req.query.team_id;
                     let franchiseId = await franchiseDAO.getfrenchiseBySlug(slug);
                     filters.team_id = franchiseId.id;
                 }
