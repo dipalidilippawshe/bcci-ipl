@@ -858,11 +858,13 @@ module.exports = class MatchController {
             bowl = await MatchDAO.statsBowlingData(filters);
 
         }
-
         if (bat && bat.length > 0 || bowl && bowl.length > 0) {
             if (bat && bat.length > 0) {
                 for (var i = 0; i < bat.length; i++) {
                     bat[i].teams = await MatchDAO.playerInfoById(bat[i].player_id, bat[i].highestInnScore[0].matchId.id);
+                    if(i==0){
+                        bat[i].teams.player_detail.images=await MatchDAO.playerHeadshot(bat[i].player_id);
+                    }
                     bat[i].matches = await MatchDAO.countMatchesPlayerByPlayer(bat[i].player_id, filters.year);
                     if (filters.player_type && filters.player_type == "Indian" && bat[i].teams.player_detail.nationality !== "Indian") {
                         bat.splice(i, 1);
@@ -883,6 +885,9 @@ module.exports = class MatchController {
                 for (var i = 0; i < bowl.length; i++) {
 
                     bowl[i].teams = await MatchDAO.playerInfoById(bowl[i].player_id, bowl[i].bestBowlInn.matchId.id);
+                    if(i==0){
+                        bowl[i].teams.player_detail.images=await MatchDAO.playerHeadshot(bowl[i].player_id);
+                    }
                     bowl[i].matches = await MatchDAO.countMatchesPlayerByPlayer(bowl[i].player_id, filters.year);
 
                     if (filters.player_type && filters.player_type == "Indian" && bowl[i].teams.player_detail.nationality !== "Indian") {
