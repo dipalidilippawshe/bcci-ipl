@@ -3,6 +3,7 @@ const { ObjectId } = require("bson")
 let franchise_years
 let matches
 let frenchisesData
+let records
 let promos
 let mflix
 const DEFAULT_SORT = [["tomatoes.viewer.numReviews", -1]]
@@ -13,6 +14,7 @@ module.exports = class IplRecordsDAO {
         try {
             franchise_years = await conn.db(process.env.BCCINS).collection("franchise_years")
             matches = await conn.db(process.env.BCCINS).collection("ipl_matches");
+            records = await conn.db(process.env.BCCINS).collection("records");
             frenchisesData = await conn.db(process.env.BCCINS).collection("franchises");
             this.franchise_years = franchise_years // this is only for testing
             this.matches = matches
@@ -28,73 +30,253 @@ module.exports = class IplRecordsDAO {
 
     static async getAuctionDetails(params) {
         try {
+            console.log("paramss===>,", params)
             let match = parseInt(params.year) ? {
                 "year": params.year.toString()
             } : {};
-            const pipeline = [
-                {
-                    $match: match
-                },
-                {
-                    $lookup:
+            var pipeline = [];
+            var pipelineTopBuys=[];
+            if(params.table == "overview"){
+                 pipeline = [
                     {
-                        from: "records",
-                        localField: "id",
-                        foreignField: "franchise_year_id",
-                        as: "records"
-                    }
-                },
-                {
-                    $lookup:
+                        $match: match
+                    },
                     {
-                        from: "franchises",
-                        localField: "franchise_id",
-                        foreignField: "id",
-                        as: "franchises"
-                    }
-                },
-                {
-                    $addFields: {
-                        "franchises_name": { $first: "$franchises.name" },
-                        "franchises_abbreviation": { $first: "$franchises.abbreviation" },
-                        "franchises_owner": { $first: "$franchises.owner" },
-                        "franchises_venue": { $first: "$franchises.venue" },
-                        "franchises_coach": { $first: "$franchises.coach" },
-                        "franchises_captain": { $first: "$franchises.captain" },
-                        "franchises_logo": { $first: "$franchises.logo" },
-                        "franchises_social": { $first: "$franchises.social" },
-                        "franchises_is_playing": { $first: "$franchises.is_playing" },
-                        "franchises_logo_medium":{$first: "$franchises.logo_medium"}
-                        // "speciality": { $first: "$records.speciality" },
-                        // "reserve_price": { $first: "$records.reserve_price" },
-                        // "status": { $first: "$records.status" },
-                        // "hammer_price": { $first: "$records.hammer_price" },
-                        // "marquee_player": { $first: "$records.marquee_player" },
-                        // "player_id": { $first: "$records.player_id" },
-                    }
-                },
-                {
-                    $lookup:
+                        $lookup:
+                        {
+                            from: "franchises",
+                            localField: "franchise_id",
+                            foreignField: "id",
+                            as: "franchises"
+                        }
+                    },
+                    {   $unwind:"$franchises" },
                     {
-                        from: "players",
-                        localField: "records.player_id",
-                        foreignField: "id",
-                        as: "players"
-                    }
-                },
-                {
-                    $project: {
-                        "franchises": 0
-                    }
-                }
+                        $addFields: {
+                           "franchises.name":"$franchises.name", 
+                           "franchises.budget_left":"$budget_left", 
+                           "franchises.total_overseas_players":"$total_overseas_players", 
+                           "franchises.total_players":{$add :[{"$toInt":"$total_indian_players"}, {"$toInt":"$total_overseas_players"}]}
+                        }
+                     },
+                    {
+                        $project :{
+                           "franchises.name":1,
+                           "franchises.budget_left":1,
+                           "franchises.total_overseas_players":1,
+                           "franchises.total_players":1,
+                           "_id":0
+                        }
+                    },
+                    {
+                        $sort:{
+                            "franchises.name":1,
+                        }
+                    }, 
+                    {
+                        $group:{
+                            "_id": null, overview:{$push: "$franchises"}, 
+                        }
+                    },
+                    {
+                        $project:{
+                            _id:0
+                        }
+                    },
+                ]  
 
-            ]
+                pipelineTopBuys = [
+                    {
+                        $match: match
+                    },
+                    {
+                        $lookup:
+                        {
+                            from: "franchises",
+                            localField: "franchise_id",
+                            foreignField: "id",
+                            as: "franchises"
+                        }
+                    },
+                    {   $unwind:"$franchises" },
+                    {
+                        $lookup:
+                        {
+                            from: "records",
+                            localField: "id",
+                            foreignField: "franchise_year_id",
+                            as: "records"
+                        }
+                    },
+                    {   $unwind:"$records" },
+                    {
+                        $lookup :{
+                            from: "players",
+                            localField: "records.player_id",
+                            foreignField: "id",
+                            as: "player"
+                        }
+                    },
+                    {   $unwind:"$player" },
+                    {
+                        $addFields: {
+                           "topBuys.team_name":"$franchises.name", 
+                           "topBuys.player_name":"$player.name", 
+                           "topBuys.speciality":"$records.speciality",
+                           "topBuys.hammer_price":{"$toInt":"$records.hammer_price"}
+                        }
+                     },
+                     {
+                         $project : {
+                             "topBuys":1,
+                             _id:0
+                         }
+                     },
+                    //  {"$toInt":"$total_indian_players"},
+                     {
+                         $sort:{
+                            "topBuys.hammer_price":-1
+                         }
+                     },
+                     { "$limit": 8 },
+                     {
+                         $group:{
+                             _id:null,
+                             topBuys:{$push: "$topBuys"}
+                         }
+                     },
+                     {
+                         $project:{
+                             _id:0
+                         }
+                     }
+                ]
+            }else if(params.table == "to_be_auctioned"){
+                return [];
+            }else if(params.table == "sold_players"){
+                console.log("abcccc")
+                 pipeline = [
+                    {
+                        $match: match
+                    },
+                     {
+                        $lookup:
+                        {
+                            from: "records",
+                            localField: "id",
+                            foreignField: "franchise_year_id",
+                            as: "records"
+                        }
+                    },
+                    {   $unwind:"$records" },
+                    {   $match: {"records.status":"S"} },
+                    {
+                        $lookup : {
+                            from:"franchises",
+                            localField:"franchise_id",
+                            foreignField:"id",
+                            as:"franchises"
+                        }
+                    },
+                    { $unwind : "$franchises"},
+                    {
+                        $lookup : {
+                            from:"players",
+                            localField:"records.player_id",
+                            foreignField:"id",
+                            as:"players"
+                        }
+                    },
+                    { $unwind : "$players"},
+                    {
+                        $addFields : {
+                            "sold_players.team_name":"$franchises.name",
+                            "sold_players.abbreviation":"$franchises.abbreviation",
+                            "sold_players.player_name":"$players.name",
+                            "sold_players.speciality":"$records.speciality",
+                            "sold_players.hammer_price":"$records.hammer_price",
+                            
+                        }
+                    },
+                    {
+                        $project :{
+                            "sold_players":1
+                        }
+                    },
+                    {
+                        $group:{
+                            _id:"$sold_players.abbreviation",
+                            soldPlayers: { $push: "$sold_players"}
+                        }
+                    },
+                    {
+                        $sort:{
+                            _id:1
+                        }
+                    }
+                 
+                ]  
+            }
+            else if(params.table == "unsold_players"){
+
+                pipeline = [
+                    {
+                        $match: match
+                    },
+                    {   $match: {"status":"U"} },
+                    {
+                        $lookup : {
+                            from:"players",
+                            localField:"player_id",
+                            foreignField:"id",
+                            as:"players"
+                        }
+                    },
+                    { $unwind : "$players"},
+                    
+                    {
+                        $addFields:{
+                            "unsoldPlayers.player_name":"$players.name",
+                            "unsoldPlayers.speciality":"$speciality",
+                            "unsoldPlayers.reserve_price": {"$toInt":"$reserve_price"}
+                        }
+                    },
+                    {
+                        $project:{
+                            "unsoldPlayers":1
+                        }
+                    },
+                    {$sort:{
+                        "unsoldPlayers.reserve_price":-1
+                    }},
+                    {
+                        $group:{
+                            _id:null,
+                            unsoldPlayers:{$push: "$unsoldPlayers"}
+                        }
+                    },
+                    {
+                        $project:{
+                            _id:0
+                        }
+                    }
+                ]  
+            }
+            
             console.log(pipeline)
             //  console.log(franchise_years)
-            let frenchises = await franchise_years.aggregate(pipeline).toArray()
-            // let data = this.processFrenchise(frenchises);
-            return frenchises;
-            //  return await franchise_years.aggregate(pipeline).toArray()
+            
+            if(params.table == "overview"){
+                let overview = await (await franchise_years.aggregate(pipeline).toArray())
+                let topBuys = await (await franchise_years.aggregate(pipelineTopBuys).toArray())
+                return [overview[0],topBuys[0]]
+            }else if(params.table == "sold_players"){
+                let sold_players = await (await franchise_years.aggregate(pipeline).toArray())
+                return sold_players
+            }else if(params.table == "unsold_players"){
+                let unsoldPlayers = await  records.aggregate(pipeline).toArray()
+                return unsoldPlayers;
+            }
         } catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {
                 return null

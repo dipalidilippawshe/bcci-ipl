@@ -467,6 +467,48 @@ module.exports = class MatchDAO {
                 },
                 { $unwind: "$matchInfo.teams.players" },
                 {
+                    $lookup : {
+                        from:"matchesplayers",
+                        localField:"matchInfo.teams.captain.id",
+                        foreignField: "id",
+                        as: "playerImages"
+                    }
+                },
+                { $unwind: "$playerImages" },
+                {
+                    $addFields : {
+                        "matchInfo.teams.captain.images":"$playerImages.images"
+                    }
+                },
+                {
+                    $lookup : {
+                        from:"matchesplayers",
+                        localField:"matchInfo.teams.wicketKeeper.id",
+                        foreignField: "id",
+                        as: "keeperPlayerImages"
+                    }
+                },
+                { $unwind: "$keeperPlayerImages" },
+                {
+                    $addFields : {
+                        "matchInfo.teams.wicketKeeper.images":"$keeperPlayerImages.images"
+                    }
+                },
+                {
+                    $lookup : {
+                        from:"matchesplayers",
+                        localField:"matchInfo.teams.players.id",
+                        foreignField: "id",
+                        as: "playersImages"
+                    }
+                },
+                { $unwind: "$playersImages" },
+                {
+                    $addFields : {
+                        "matchInfo.teams.players.images":"$playersImages.images"
+                    }
+                },
+                {
                     $group: {
                         _id: "$matchInfo.teams.team.id",
                         "fullName": { $first: "$matchInfo.teams.team.fullName" },
@@ -1752,5 +1794,18 @@ module.exports = class MatchDAO {
                 }
             })
         })
+    }
+
+    static async playerHeadshot(id){
+        var id = parseInt(id);
+        // console.log("iddddd====>", id);
+
+    let images  = await matchPlayers.findOne({id:id}, {images:1,_id:0});
+    // console.log("images===>", images);
+    if(images && images.images){
+        return images.images
+    }else{
+        return {}
+    }
     }
 }
