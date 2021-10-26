@@ -926,7 +926,7 @@ module.exports = class MatchController {
             let players = await MatchDAO.getTeamListByYear(player);
              //get player headshot
              let playerImage = await MatchDAO.playerHeadshot(player);
-             details.player_detail.image = playerImage;
+             details.player_detail.images = playerImage;
              let playersDetail = players.playersList
              for(let i=0; i < playersDetail.length; i++){
                  players.playersList[i].images = await MatchDAO.playerHeadshot(playersDetail[i].id); 
@@ -1169,7 +1169,7 @@ module.exports = class MatchController {
             let players = await MatchDAO.getTeamListByYear(player);
 
             let playerImage = await MatchDAO.playerHeadshot(player);
-            details.player_detail.image = playerImage;
+            details.player_detail.images = playerImage;
             let playersDetail = players.playersList
             for(let i=0; i < playersDetail.length; i++){
                 players.playersList[i].images = await MatchDAO.playerHeadshot(playersDetail[i].id); 
