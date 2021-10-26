@@ -1104,7 +1104,18 @@ module.exports = class MatchDAO {
                         'matchInfo.teams.players.id': id
                     }
                 },
-                { $project: { "matchInfo.matchDate": 1, "matchInfo.teams": 1, "matchId": 1 } },
+                { $project: { "matchInfo.matchDate": 1, "matchInfo.teams": 1, "teamId":{$toString:"$matchInfo.teams.team.id"},"matchId": 1 } },
+                // { $unwind: "$matchInfo.teams" },
+                {
+                    $lookup :{
+                        from: "franchises",
+                        localField: "teamId",
+                        foreignField: "id",
+                        as: "franchise"
+                    }
+                },
+                {   $unwind:"$franchise" },
+               
                 // {
                 //     $group:
                 //     {
@@ -1128,10 +1139,28 @@ module.exports = class MatchDAO {
                                 }
                             }
                         },
-                        // players: "$matchInfo.teams.players",
+                        teamlogo:"$franchise.logo",
+                        teamSlug:"$franchise.slug",
                         _id: 0
                     }
-                }
+                },
+
+                //by dipali
+                // {
+                //     $lookup :{
+                //         from: "matchesplayers",
+                //         localField: "playersId",
+                //         foreignField: "id",
+                //         as: "playerdetail"
+                //     }
+                // },
+                // {
+                //     $project:{
+                //         team_detail:"$team_detail",
+                //         player_detail:"$player_detail",
+                //         playerdetail:"$playerdetail.images"
+                //     }
+                // }
             ]
 
             const pipeline = [...countingPipeline]

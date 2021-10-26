@@ -1086,14 +1086,11 @@ module.exports = class MatchController {
         let bat, bowl;
         if (filters.stats_type == "batting") {
             bat = await MatchDAO.statsBattingData(filters);
-
-
         } else if (filters.stats_type == "bowling") {
             bowl = await MatchDAO.statsBowlingData(filters);
         } else {
             bat = await MatchDAO.statsBattingData(filters);
             bowl = await MatchDAO.statsBowlingData(filters);
-
         }
 
         if (bat && bat.length > 0 || bowl && bowl.length > 0) {
@@ -1101,6 +1098,10 @@ module.exports = class MatchController {
                 for (var i = 0; i < bat.length; i++) {
 
                     bat[i].teams = await MatchDAO.playerInfoById(bat[i].player_id, bat[i].highestInnScore[0].matchId.id);
+                    console.log("teams data: ",bat[i].teams);
+                    if(i==0){
+                        bat[i].teams.player_detail.images=await MatchDAO.playerHeadshot(bat[i].player_id);
+                    }
                     bat[i].matches = await MatchDAO.countMatchesPlayerByPlayer(bat[i].player_id, filters.year);
 
                     if (filters.player_type && filters.player_type == "Indian" && bat[i].teams.player_detail.nationality !== "Indian") {
@@ -1122,6 +1123,9 @@ module.exports = class MatchController {
                 for (var i = 0; i < bowl.length; i++) {
 
                     bowl[i].teams = await MatchDAO.playerInfoById(bowl[i].player_id, bowl[i].bestBowlInn.matchId.id);
+                    if(i==0){
+                        bowl[i].teams.player_detail.images=await MatchDAO.playerHeadshot(bowl[i].player_id);
+                    }
                     bowl[i].matches = await MatchDAO.countMatchesPlayerByPlayer(bowl[i].player_id, filters.year);
 
                     if (filters.player_type && filters.player_type == "Indian" && bowl[i].teams.player_detail.nationality !== "Indian") {
@@ -1209,81 +1213,76 @@ module.exports = class MatchController {
         try {
 
             let battings = await MatchDAO.getHighestBattingStats();
-            let bowlings = await MatchDAO.getHighestBowlingStats();
+           // bowlings = await MatchDAO.getHighestBowlingStats();
             let run = battings.reduce((max, obj) => (max.mostRuns > obj.mostRuns) ? max : obj);           
             let fours = battings.reduce((max, obj) => (max.most4s > obj.most4s) ? max : obj);
             let six = battings.reduce((max, obj) => (max.most6s > obj.most6s) ? max : obj);
             //let strikeRate = battings.reduce((max, obj) => (parseInt(max.stickeRate) > parseInt(obj.stickeRate)) ? max : obj);
             //let innScore = battings.reduce((max, obj) => (parseInt(max.highestInnScore) > parseInt(obj.highestInnScore)) ? max : obj)
            
-            //bowlings:
-             let w = bowlings.reduce((max, obj) => (max.w > obj.w) ? max : obj);
-             let d = bowlings.reduce((max, obj) => (max.d > obj.d) ? max : obj);
-             let maid = bowlings.reduce((max, obj) => (max.maid > obj.maid) ? max : obj);
-             let e = bowlings.reduce((max, obj) => (max.e > obj.e) ? max : obj);
-             let wd = bowlings.reduce((max, obj) => (max.wd > obj.wd) ? max : obj);
-             let nb = bowlings.reduce((max, obj) => (max.nb > obj.nb) ? max : obj);
+            // //bowlings:
+            //  let w = bowlings.reduce((max, obj) => (max.w > obj.w) ? max : obj);
+            //  let d = bowlings.reduce((max, obj) => (max.d > obj.d) ? max : obj);
+            //  let maid = bowlings.reduce((max, obj) => (max.maid > obj.maid) ? max : obj);
+            //  let e = bowlings.reduce((max, obj) => (max.e > obj.e) ? max : obj);
+            //  let wd = bowlings.reduce((max, obj) => (max.wd > obj.wd) ? max : obj);
+            //  let nb = bowlings.reduce((max, obj) => (max.nb > obj.nb) ? max : obj);
 
             let battingStats ={runs:run,fours:fours,six:six};
-            let bowlingStats = {wickets:w,dots:d,maid:maid,economy:e,wide:wd,noball:nb};
+           // let bowlingStats = {wickets:w,dots:d,maid:maid,economy:e,wide:wd,noball:nb};
             let battingData=[]; let bowlingData=[];
            // console.log("battinbowlingStatsgStats.bats: ",battingStats);
             for(let bats in battingStats){
                let tempObject = {};
+               console.log("bats us: ",bats);
                let details = await MatchDAO.playerInfoByYear(battingStats[bats].player_id);
-              
                 let logo;
                for (let i = 0; i <= details.matchInfo.teams.length-1; i++) {
                 let player = details.matchInfo.teams[i].players.find(element => element.id == battingStats[bats].player_id);
                
                 if(player && player !==undefined){
-                    
+                   let headshots = await MatchDAO.playerHeadshot(battingStats[bats].player_id)
+                    if(headshots)
+                      player.images = headshots;
                     battingStats[bats].player = player;
                     battingStats[bats].details = details.matchInfo.teams[i].team;
-                   let frenchise = await franchiseDAO.getfrenchiseDetails(details.matchInfo.teams[i].team.id);
-                  
-                   logo = frenchise.logo;
-                   battingStats[bats].details.logo = logo;
-                   //tempObject.playerId = 
+                     let frenchise = await franchiseDAO.getfrenchiseDetails(details.matchInfo.teams[i].team.id);
+                    
+                     logo = frenchise.logo;
+                     battingStats[bats].details.logo = logo;
+                     tempObject.playerId = battingStats[bats].player_id;
+                     tempObject.player = player;
+                     tempObject.team = battingStats[bats].details;
+                   if(bats=="runs"){
+                       tempObject.tag="RUNS";
+                       tempObject.number = battingStats[bats].mostRuns;
+                        tempObject.cap="Orange cap";
+                   }
+                   if(bats == "fours"){
+                    tempObject.tag="FOURS";
+                    tempObject.number = battingStats[bats].most4s;
+                     tempObject.cap="Most Fours";
+                   }
+                   if(bats == "six"){
+                    tempObject.tag="SIXES";
+                    tempObject.number = battingStats[bats].most4s;
+                     tempObject.cap="Most Sixes";
+                   }
+                   //console.log("tempObject is: ",tempObject);
+                   battingData.push(tempObject);
                 }else{
                     console.log("in elesleelse");
                     //do nothing
                 }
                  
-            }
+               }
               
             }
-            for(let bats in bowlingStats){
-                let details = await MatchDAO.playerInfoByYear(bowlingStats[bats].player_id);
-               
-                let logo;
-               for (let i = 0; i <= details.matchInfo.teams.length-1; i++) {
-                let player = details.matchInfo.teams[i].players.find(element => element.id == bowlingStats[bats].player_id);
-               
-                if(player && player !==undefined){
-                    console.log("in ififiifif");
-                    bowlingStats[bats].player = player;
-                    bowlingStats[bats].details = details.matchInfo.teams[i].team;
-                   let frenchise = await franchiseDAO.getfrenchiseDetails(details.matchInfo.teams[i].team.id);
-                  
-                   logo = frenchise.logo;
-                   bowlingStats[bats].details.logo = logo;
-                   
-                }else{
-                    console.log("in elesleelse");
-                    //do nothing
-                }
-                 
-                // let details = await MatchDAO.playerInfo(bowlingStats[bats].player_id);
-                // let bawling = await MatchDAO.getBawlingStatsData(parseInt(bowlingStats[bats].player_id));
-                // bowlingStats[bats].details = details;
-                // bowlingStats[bats].wickets = bawling.w;
-             }
-            }
+            
             //after all processing
 
 
-            res.json({ status: true, data: {battingStats:battingStats, bowlingStats:bowlingStats} });
+            res.json({ status: true, data: {battingStats:battingData} });
         } catch (e) {
             res.status(404).json({ status: false, error: config.error_codes["1003"], data: e })
         }
