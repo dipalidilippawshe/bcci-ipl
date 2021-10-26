@@ -131,8 +131,107 @@
                     "faqanswer": "The updated app from version 2.1.1 onward is a complete overhaul of the EPIC On platform. As a result, downloaded videos from the previous version will be unavailable. We apologize for the inconvenience."
                 }
             ]
+        },
+        "teamsLogo":{
+            "CSK": {
+                "logo": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/CSK/logos/Small/CSK.png",
+                "logo_medium": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/CSK/logos/Medium/CSK.png",
+                "roundSmall": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/CSK/logos/Roundsmall/Group+6339.png",
+                "roundBig": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/CSK/logos/Roundbig/CSKroundbig.png",
+                "logoOutline": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/CSK/logos/Logooutline/CSKoutline.png"
+            },
+            "DC": {
+                "logo": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/DC/Logos/Small/DC.png",
+                "logo_medium": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/DC/Logos/Medium/DC.png",
+                "roundSmall": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/DC/Logos/Roundsmall/DCroundsmall.png",
+                "roundBig": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/DC/Logos/Roundbig/DCroundbig.png",
+                "logoOutline": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/DC/Logos/LogoOutline/DCoutline.png"
+            },
+            "PBKS": {
+                "logo": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/PBKS/Logos/Small/PBKS.png",
+                "logo_medium": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/PBKS/Logos/Medium/PBKS.png",
+                "roundSmall": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/PBKS/Logos/Roundsmall/PBKSroundsmall.png",
+                "roundBig": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/PBKS/Logos/Roundbig/PBKSroundbig.png",
+                "logoOutline": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/PBKS/Logos/Logooutline/PBKSoutline.png"
+            },
+            "MI": {
+                "logo": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/MI/Logos/Small/MI.png",
+                "logo_medium": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/MI/Logos/Medium/MI.png",
+                "roundSmall": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/MI/Logos/Roundsmall/MIroundsmall.png",
+                "roundBig": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/MI/Logos/Roundbig/MIroundbig.png",
+                "logoOutline": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/MI/Logos/Logooutline/MIoutline.png"
+            },
+            "PWI": {
+                "logo": "",
+                "logo_medium": "",
+                "roundSmall": "",
+                "roundBig": "",
+                "logoOutline": ""
+            },
+            "RR": {
+                "logo": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/RR/Logos/Small/RR.png",
+                "logo_medium": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/RR/Logos/Medium/RR.png",
+                "roundSmall": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/RR/Logos/Roundsmall/RRroundsmall.png",
+                "roundBig": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/RR/Logos/Roundbig/RRroundbig.png",
+                "logoOutline": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/RR/Logos/Logooutline/RRoutline.png"
+            },
+            "RCB": {
+                "logo": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/RCB/Logos/Small/RCB.png",
+                "logo_medium": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/RCB/Logos/Medium/RCB.png",
+                "roundSmall": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/RCB/Logos/Roundsmall/RCBroundsmall.png",
+                "roundBig": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/RCB/Logos/Roundbig/RCBroundbig.png",
+                "logoOutline": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/RCB/Logos/Logooutline/RCBoutline.png"
+            },
+            "SRH": {
+                "logo": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/SRH/Logos/Small/SRH.png",
+                "logo_medium": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/SRH/Logos/Medium/SRH.png",
+                "roundSmall": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/SRH/Logos/Roundsmall/SRHroundsmall.png",
+                "roundBig": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/SRH/Logos/Roundbig/SRHroundbig.png",
+                "logoOutline": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/SRH/Logos/Logooutline/SRHoutline.png"
+            },
+            "KKR": {
+                "logo": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/KKR/Logos/Small/KKR.png",
+                "logo_medium": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/KKR/Logos/Medium/KKR.png",
+                "roundSmall": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/KKR/Logos/Roundsmall/KKRroundsmall.png",
+                "roundBig": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/KKR/Logos/Roundbig/KKRroundbig.png",
+                "logoOutline": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/KKR/Logos/Logooutline/KKRoutline.png"
+            },
+            "RPS": {
+                "logo": "",
+                "logo_medium": "",
+                "roundSmall": "",
+                "roundBig": "",
+                "logoOutline": ""
+            },
+            "GL": {
+                "logo": "",
+                "logo_medium": "",
+                "roundSmall": "",
+                "roundBig": "",
+                "logoOutline": ""
+            },
+            "Supernovas": {
+                "logo": "",
+                "logo_medium": "",
+                "roundSmall": "",
+                "roundBig": "",
+                "logoOutline": ""
+            },
+            "Trailblazers": {
+                "logo": "",
+                "logo_medium": "",
+                "roundSmall": "",
+                "roundBig": "",
+                "logoOutline": ""
+            },
+            "Velocity": {
+                "logo": "",
+                "logo_medium": "",
+                "roundSmall": "",
+                "roundBig": "",
+                "logoOutline": ""
+            }
         }
-        
     },
 
     "auth_token":{
