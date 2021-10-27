@@ -1411,7 +1411,7 @@ module.exports = class MatchDAO {
                     }
                 }
             ]
-            console.log(pipeline)
+            // console.log(pipeline)
             return await matches.aggregate(pipeline).next()
         } catch (e) {
             if (e.toString().startsWith("Error: Argument passed in must be a single String of 12 bytes or a string of 24 hex characters")) {

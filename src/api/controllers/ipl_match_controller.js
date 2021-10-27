@@ -77,7 +77,7 @@ module.exports = class MatchController {
             }
             filters.year = req.query.year && parseInt(req.query.year) || new Date().getFullYear()
             console.log(filters)
-            if (["results", "fixtures"].includes(req.params.type)) {
+            if (["results"/*, "fixtures"*/].includes(req.params.type)) {
                
                 const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
                     filters,
@@ -96,7 +96,17 @@ module.exports = class MatchController {
                 }
                 res.json(response)
 
-            } else {
+            }else if(["fixtures"].includes(req.params.type)){
+                let response = {
+                    status: true,
+                    data: {title:"No upcoming matches to display",
+                    note:"The schedule is subject to change.",
+                    ist:" Indian Standard Time",gmt:"Greenwich Mean Time"}
+                   
+                }
+                res.json(response)
+            } 
+            else {
 
                 const { matchesList, totalNumMatches } = await MatchDAO.getSeriesnTournaments({
                     filters, page,
@@ -205,7 +215,7 @@ module.exports = class MatchController {
             }
 
             console.log(filters)
-            if (["results", "fixtures"].includes(req.params.type)) {
+            if (["results"/*, "fixtures"*/].includes(req.params.type)) {
                 if (req.query.franchise_id) {
                     filters.team_id = req.query.franchise_id
                 }
@@ -270,7 +280,18 @@ module.exports = class MatchController {
                 }
                 res.json(response)
 
-            } else {
+            } 
+            else if(["fixtures"].includes(req.params.type)){
+                let response = {
+                    status: true,
+                    data: {title:"No upcoming matches to display",
+                    note:"The schedule is subject to change.",
+                    ist:" Indian Standard Time",gmt:"Greenwich Mean Time"}
+                   
+                }
+                res.json(response)
+            }
+            else {
 
                 const { matchesList, totalNumMatches } = await MatchDAO.getSeriesnTournaments({
                     filters, page,
@@ -487,7 +508,15 @@ module.exports = class MatchController {
         //fixtures
         console.log("IN FIXTURES....");
         const FIXTURES_PER_PAGE = 21;
-        
+        let response = {
+            status: true,
+            data: {title:"No upcoming matches to display",
+            note:"The schedule is subject to change.",
+            ist:" Indian Standard Time",gmt:"Greenwich Mean Time"}
+           
+        }
+        res.json(response)
+        /*
         let page
         try {
             page = req.query.page ? parseInt(req.query.page, 10) : "0"
@@ -521,7 +550,7 @@ module.exports = class MatchController {
             res.status(404).json({ status: false, error: config.error_codes["1001"] })
             return
         }
-        res.json(response)
+        res.json(response)*/
     }
 
     static async apiAppGetResults(req, res, next) {
@@ -1390,11 +1419,15 @@ module.exports = class MatchController {
                     }
                     let diff = difference(validData.teams[i].players, teamWise.scorecard.battingStats);
                     for (let k = 0; k <= teamWise.scorecard.bowlingStats.length - 1; k++) {
+                        let bowlingTeam;
                         if(i==0)
-                        validData.teams[i] =validData.teams[i+1]
+                        //validData.teams[i] =validData.teams[i+1]
+                           bowlingTeam = validData.teams[i+1]
                         if(i==1) 
-                        validData.teams[i] =validData.teams[i-1]
-                        teamWise.scorecard.bowlingStats[k].player = validData.teams[i].players.find(element => element.id == teamWise.scorecard.bowlingStats[k].playerId);
+                           bowlingTeam = validData.teams[i-1]
+                        //validData.teams[i] =validData.teams[i-1]
+                    
+                        teamWise.scorecard.bowlingStats[k].player = bowlingTeam.players.find(element => element.id == teamWise.scorecard.bowlingStats[k].playerId);
                        
                     }
   

@@ -34,7 +34,7 @@ router.get("/web/archive/:franchise_id", iplMatchCtrl.apiWebArchiveByTeam)
 
 //team-match centre
 router.get("/web/franchise/team-results/:type",iplMatchCtrl.apiWebTeamsResults)
-
+router.get("/app/franchise/team-results/:type",iplMatchCtrl.apiWebTeamsResults)
 //stats apis
 router.post("/app/stats", iplMatchCtrl.getAppStatsData);
 router.post("/app/playersdetails", iplMatchCtrl.getAppPlayersDetails);
