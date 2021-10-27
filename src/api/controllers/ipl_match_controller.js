@@ -1262,11 +1262,11 @@ module.exports = class MatchController {
                        tempObject.number = battingStats[bats].mostRuns;
                         tempObject.cap="Orange cap";
                    }
-                   if(bats =="hs"){
-                    tempObject.tag="Score";
-                    tempObject.number = battingStats[bats].highestScore;
-                     tempObject.cap="Highest Score";
-                   }
+                //    if(bats =="hs"){
+                //     tempObject.tag="Score";
+                //     tempObject.number = battingStats[bats].highestScore;
+                //      tempObject.cap="Highest Score";
+                //    }
                 //    if(bats =="sr"){
                 //     tempObject.tag=" ";
                 //     tempObject.number = battingStats[bats].stickeRate;
