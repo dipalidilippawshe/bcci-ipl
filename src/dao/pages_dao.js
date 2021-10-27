@@ -58,7 +58,7 @@ module.exports = class PagesDAO {
         console.log("query: ",query);
         cursor = await iplArticles.find(query)
         
-        const displayCursor = cursor.limit(7)
+        const displayCursor = cursor.limit(12)
         const list = await displayCursor.toArray()
        
         return list;
