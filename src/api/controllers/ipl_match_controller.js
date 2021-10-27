@@ -1252,7 +1252,7 @@ module.exports = class MatchController {
                     battingStats[bats].details = details.matchInfo.teams[i].team;
                      let frenchise = await franchiseDAO.getfrenchiseDetails(details.matchInfo.teams[i].team.id);
                     
-                     logo = frenchise.logo;
+                     logo = frenchise.logo_medium;
                      battingStats[bats].details.logo = logo;
                      tempObject.playerId = battingStats[bats].player_id;
                      tempObject.player = player;
@@ -1267,11 +1267,11 @@ module.exports = class MatchController {
                     tempObject.number = battingStats[bats].highestScore;
                      tempObject.cap="Highest Score";
                    }
-                   if(bats =="sr"){
-                    tempObject.tag=" ";
-                    tempObject.number = battingStats[bats].stickeRate;
-                     tempObject.cap="Best Strike Rate";
-                   }
+                //    if(bats =="sr"){
+                //     tempObject.tag=" ";
+                //     tempObject.number = battingStats[bats].stickeRate;
+                //      tempObject.cap="Best Strike Rate";
+                //    }
                    if(bats == "fours"){
                     tempObject.tag="FOURS";
                     tempObject.number = battingStats[bats].most4s;
@@ -1310,8 +1310,10 @@ module.exports = class MatchController {
                        bowlingStats[bats].details = details.matchInfo.teams[i].team;
                       let frenchise = await franchiseDAO.getfrenchiseDetails(details.matchInfo.teams[i].team.id);
                      
-                      logo = frenchise.logo;
+                      logo = frenchise.logo_medium;
                       bowlingStats[bats].details.logo = logo;
+                      bowlingStats[bats].details.primaryColor = frenchise.primaryColor;
+                      bowlingStats[bats].details.secondaryColor = frenchise.secondaryColor;
                       tempObject.playerId = bowlingStats[bats].player_id;
                       tempObject.player = player;
                       tempObject.team = bowlingStats[bats].details;
