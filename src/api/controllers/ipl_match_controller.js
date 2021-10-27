@@ -1233,7 +1233,7 @@ module.exports = class MatchController {
              let d = bowlings.reduce((max, obj) => (max.d > obj.d) ? max : obj);
              let mostov = bowlings.reduce((max,obj) =>(max.mostOvers > obj.mostOvers)?max : obj);
            
-            let battingStats ={runs:run,fours:fours,six:six,sr:strikeRate,hs:innScore};
+            let battingStats ={runs:run,fours:fours,six:six}//,sr:strikeRate,hs:innScore};
             let bowlingStats = {wickets:w,dots:d,economy:mostov};
             let battingData=[]; let bowlingData=[];
            // console.log("battinbowlingStatsgStats.bats: ",battingStats);
