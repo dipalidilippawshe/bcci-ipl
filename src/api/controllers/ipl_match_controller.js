@@ -1500,7 +1500,69 @@ module.exports = class MatchController {
                 let pointTable = await menuDAO.getStadings("m", "app");
             
                 matchDetail.pointsTable = pointTable;
-                let page = await PagesDAO.getPage("video-list-web");
+                //let page = await PagesDAO.getPage("video-list-web");
+                //pages processings
+                //all-videos,wickets,super6's,feature,highlights,interviews
+                //all-videos
+                let page={list:[]}
+                
+                let allvideos = await videosDAO.getVideoByMatch(matchId);
+               
+                if(allvideos && allvideos.length>0){
+                    let objd = {
+                        slug:"all-video",name:"all Video",display_type:"videos",contents:allvideos,show_more:true
+                    }
+                    page.list.push(objd)
+                    
+                }
+                let wickets = await videosDAO.getVideoByMatch(matchId,"wicket");
+              
+                if(wickets && wickets.length>0){
+                    let objd = {
+                        slug:"wicket",name:"Wickets",display_type:"videos",contents:wickets,show_more:true
+                    }
+                    page.list.push(objd)
+                    
+                }
+                let supersixes = await videosDAO.getVideoByMatch(matchId,"super-sixes");
+              
+                if(supersixes && supersixes.length>0){
+                    let objd = {
+                        slug:"super-sixes",name:"Super 6's",display_type:"videos",contents:supersixes,show_more:true
+                    }
+                    page.list.push(objd)
+                    
+                }
+                let features = await videosDAO.getVideoByMatch(matchId,"feature");
+              
+                if(features && features.length>0){
+                    let objd = {
+                        slug:"feature",name:"features",display_type:"videos",contents:features,show_more:true
+                    }
+                    page.list.push(objd)
+                    
+                }
+
+                let highlights = await videosDAO.getVideoByMatch(matchId,"highlights");
+              
+                if(highlights && highlights.length>0){
+                    let objd = {
+                        slug:"highlights",name:"Top Highlights",display_type:"videos",contents:highlights,show_more:true
+                    }
+                    page.list.push(objd)
+                    
+                }
+                let interviews = await videosDAO.getVideoByMatch(matchId,"interview");
+              
+                if(interviews && interviews.length>0){
+                    let objd = {
+                        slug:"interview",name:"Interviews",display_type:"videos",contents:interviews,show_more:true
+                    }
+                    page.list.push(objd)
+                    
+                }
+
+
                 matchDetail.pagedata = page;
                 res.json({ status: true, data: { match: matchDetail } });
 
