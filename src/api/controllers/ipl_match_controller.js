@@ -1404,8 +1404,13 @@ module.exports = class MatchController {
             if (pageType == "scorecard") {
 
                 let validData = { teams: matchDetail.matchInfo.teams, innings: matchDetail.innings };
-
+                console.log("matchdata cha info: ",matchDetail.matchInfo.battingOrder);
                 let data = [];
+                if(matchDetail.matchInfo.battingOrder[0]==1){
+                    let teams = validData.teams[0];
+                    validData.teams[0] = validData.teams[1];
+                    validData.teams[1]=teams;
+                }
                 for (let i = 0; i <= validData.teams.length - 1; i++) {
                     let teamData = { team: validData.teams[i].team.fullName }
                     let teamWise = validData.innings[i];
@@ -1415,7 +1420,7 @@ module.exports = class MatchController {
                     }
                     for (let l = 0; l <= teamWise.scorecard.fow.length - 1; l++) {
                         teamWise.scorecard.fow[l].player = validData.teams[i].players.find(element => element.id == teamWise.scorecard.fow[l].playerId);
-                       
+  
                     }
                     let diff = difference(validData.teams[i].players, teamWise.scorecard.battingStats);
                     for (let k = 0; k <= teamWise.scorecard.bowlingStats.length - 1; k++) {
@@ -1428,7 +1433,7 @@ module.exports = class MatchController {
                         //validData.teams[i] =validData.teams[i-1]
                     
                         teamWise.scorecard.bowlingStats[k].player = bowlingTeam.players.find(element => element.id == teamWise.scorecard.bowlingStats[k].playerId);
-                       
+                      
                     }
   
                     teamData.innings = teamWise;

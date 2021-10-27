@@ -1406,7 +1406,7 @@ module.exports = class MatchDAO {
                 {
                     $project: {
                         "matchInfo.additionalInfo": 1, "matchInfo.teams": 1, "matchInfo.venue": 1, "matchInfo.matchStatus": 1, "matchInfo.matchDate": 1, matchId: 1,
-                        "matchInfo.description": 1, "matchInfo.currentState.currentInningsIndex": 1,
+                        "matchInfo.description": 1, "matchInfo.currentState.currentInningsIndex": 1,"matchInfo.battingOrder": 1,
                         innings: 1
                     }
                 }
