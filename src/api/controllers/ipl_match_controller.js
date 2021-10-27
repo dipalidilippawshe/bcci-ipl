@@ -178,11 +178,11 @@ module.exports = class MatchController {
             // filters.startDate = req.query.startDate && new Date(req.query.startDate) !== "Invalid Date" ? new Date(req.query.startDate).getFullYear() : undefined
             //filters.endDate = req.query.endDate && new Date(req.query.endDate) !== "Invalid Date" ? new Date(req.query.endDate).getFullYear() : undefined
             filters.team = req.query.team ? [req.query.team] : ["m", "w"]
-            if (req.query.teamId) {
-                filters.team_id = req.query.teamId;
+            if (req.query.team_id) {
+                filters.team_id = req.query.team_id;
 
-                if(req.query.teamId.includes("-")){
-                    let slug = req.query.teamId;
+                if(req.query.team_id.includes("-")){
+                    let slug = req.query.team_id;
                     let franchiseId = await franchiseDAO.getfrenchiseBySlug(slug);
                     filters.team_id = franchiseId.id;
                 }
@@ -1432,6 +1432,18 @@ module.exports = class MatchController {
 
                     var logo = await franchiseDAO.getfrenchiseByName(matchDetail.matchInfo.teams[team].team.fullName);
                     matchDetail.matchInfo.teams[team].team.logo = logo;
+
+                    var wicketKeeperImg =   await MatchDAO.playerHeadshot(matchDetail.matchInfo.teams[team].wicketKeeper.id);
+                    matchDetail.matchInfo.teams[team].wicketKeeper.images = wicketKeeperImg;
+
+
+                    var captainImg =   await MatchDAO.playerHeadshot(matchDetail.matchInfo.teams[team].captain.id);
+                    matchDetail.matchInfo.teams[team].captain.images = captainImg;
+
+                    let playersData = matchDetail.matchInfo.teams[team].players;
+                    for(let i=0; i <  playersData.length; i++){
+                        matchDetail.matchInfo.teams[team].players[i].images = await MatchDAO.playerHeadshot(playersData[i].id); 
+                    }
                 }
 
                 let pointTable = await menuDAO.getStadings("m", "app");
