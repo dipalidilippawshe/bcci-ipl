@@ -77,7 +77,7 @@ module.exports = class MatchController {
             }
             filters.year = req.query.year && parseInt(req.query.year) || new Date().getFullYear()
             console.log(filters)
-            if (["results", "fixtures"].includes(req.params.type)) {
+            if (["results"/*, "fixtures"*/].includes(req.params.type)) {
                
                 const { matchesList, totalNumMatches } = await MatchDAO.getMatches({
                     filters,
@@ -96,7 +96,17 @@ module.exports = class MatchController {
                 }
                 res.json(response)
 
-            } else {
+            }else if(["fixtures"].includes(req.params.type)){
+                let response = {
+                    status: true,
+                    data: {title:"No upcoming matches to display",
+                    note:"The schedule is subject to change.",
+                    ist:" Indian Standard Time",gmt:"Greenwich Mean Time"}
+                   
+                }
+                res.json(response)
+            } 
+            else {
 
                 const { matchesList, totalNumMatches } = await MatchDAO.getSeriesnTournaments({
                     filters, page,
@@ -205,7 +215,7 @@ module.exports = class MatchController {
             }
 
             console.log(filters)
-            if (["results", "fixtures"].includes(req.params.type)) {
+            if (["results"/*, "fixtures"*/].includes(req.params.type)) {
                 if (req.query.franchise_id) {
                     filters.team_id = req.query.franchise_id
                 }
@@ -270,7 +280,18 @@ module.exports = class MatchController {
                 }
                 res.json(response)
 
-            } else {
+            } 
+            else if(["fixtures"].includes(req.params.type)){
+                let response = {
+                    status: true,
+                    data: {title:"No upcoming matches to display",
+                    note:"The schedule is subject to change.",
+                    ist:" Indian Standard Time",gmt:"Greenwich Mean Time"}
+                   
+                }
+                res.json(response)
+            }
+            else {
 
                 const { matchesList, totalNumMatches } = await MatchDAO.getSeriesnTournaments({
                     filters, page,
@@ -487,7 +508,15 @@ module.exports = class MatchController {
         //fixtures
         console.log("IN FIXTURES....");
         const FIXTURES_PER_PAGE = 21;
-        
+        let response = {
+            status: true,
+            data: {title:"No upcoming matches to display",
+            note:"The schedule is subject to change.",
+            ist:" Indian Standard Time",gmt:"Greenwich Mean Time"}
+           
+        }
+        res.json(response)
+        /*
         let page
         try {
             page = req.query.page ? parseInt(req.query.page, 10) : "0"
@@ -521,7 +550,7 @@ module.exports = class MatchController {
             res.status(404).json({ status: false, error: config.error_codes["1001"] })
             return
         }
-        res.json(response)
+        res.json(response)*/
     }
 
     static async apiAppGetResults(req, res, next) {
@@ -1233,7 +1262,7 @@ module.exports = class MatchController {
              let d = bowlings.reduce((max, obj) => (max.d > obj.d) ? max : obj);
              let mostov = bowlings.reduce((max,obj) =>(max.mostOvers > obj.mostOvers)?max : obj);
            
-            let battingStats ={runs:run,fours:fours,six:six,sr:strikeRate,hs:innScore};
+            let battingStats ={runs:run,fours:fours,six:six}//,sr:strikeRate,hs:innScore};
             let bowlingStats = {wickets:w,dots:d,economy:mostov};
             let battingData=[]; let bowlingData=[];
            // console.log("battinbowlingStatsgStats.bats: ",battingStats);
@@ -1252,7 +1281,7 @@ module.exports = class MatchController {
                     battingStats[bats].details = details.matchInfo.teams[i].team;
                      let frenchise = await franchiseDAO.getfrenchiseDetails(details.matchInfo.teams[i].team.id);
                     
-                     logo = frenchise.logo;
+                     logo = frenchise.logo_medium;
                      battingStats[bats].details.logo = logo;
                      tempObject.playerId = battingStats[bats].player_id;
                      tempObject.player = player;
@@ -1262,16 +1291,16 @@ module.exports = class MatchController {
                        tempObject.number = battingStats[bats].mostRuns;
                         tempObject.cap="Orange cap";
                    }
-                   if(bats =="hs"){
-                    tempObject.tag="Score";
-                    tempObject.number = battingStats[bats].highestScore;
-                     tempObject.cap="Highest Score";
-                   }
-                   if(bats =="sr"){
-                    tempObject.tag=" ";
-                    tempObject.number = battingStats[bats].stickeRate;
-                     tempObject.cap="Best Strike Rate";
-                   }
+                //    if(bats =="hs"){
+                //     tempObject.tag="Score";
+                //     tempObject.number = battingStats[bats].highestScore;
+                //      tempObject.cap="Highest Score";
+                //    }
+                //    if(bats =="sr"){
+                //     tempObject.tag=" ";
+                //     tempObject.number = battingStats[bats].stickeRate;
+                //      tempObject.cap="Best Strike Rate";
+                //    }
                    if(bats == "fours"){
                     tempObject.tag="FOURS";
                     tempObject.number = battingStats[bats].most4s;
@@ -1310,8 +1339,10 @@ module.exports = class MatchController {
                        bowlingStats[bats].details = details.matchInfo.teams[i].team;
                       let frenchise = await franchiseDAO.getfrenchiseDetails(details.matchInfo.teams[i].team.id);
                      
-                      logo = frenchise.logo;
+                      logo = frenchise.logo_medium;
                       bowlingStats[bats].details.logo = logo;
+                      bowlingStats[bats].details.primaryColor = frenchise.primaryColor;
+                      bowlingStats[bats].details.secondaryColor = frenchise.secondaryColor;
                       tempObject.playerId = bowlingStats[bats].player_id;
                       tempObject.player = player;
                       tempObject.team = bowlingStats[bats].details;
@@ -1373,8 +1404,13 @@ module.exports = class MatchController {
             if (pageType == "scorecard") {
 
                 let validData = { teams: matchDetail.matchInfo.teams, innings: matchDetail.innings };
-
+                console.log("matchdata cha info: ",matchDetail.matchInfo.battingOrder);
                 let data = [];
+                if(matchDetail.matchInfo.battingOrder[0]==1){
+                    let teams = validData.teams[0];
+                    validData.teams[0] = validData.teams[1];
+                    validData.teams[1]=teams;
+                }
                 for (let i = 0; i <= validData.teams.length - 1; i++) {
                     let teamData = { team: validData.teams[i].team.fullName }
                     let teamWise = validData.innings[i];
@@ -1384,16 +1420,20 @@ module.exports = class MatchController {
                     }
                     for (let l = 0; l <= teamWise.scorecard.fow.length - 1; l++) {
                         teamWise.scorecard.fow[l].player = validData.teams[i].players.find(element => element.id == teamWise.scorecard.fow[l].playerId);
-                       
+  
                     }
                     let diff = difference(validData.teams[i].players, teamWise.scorecard.battingStats);
                     for (let k = 0; k <= teamWise.scorecard.bowlingStats.length - 1; k++) {
+                        let bowlingTeam;
                         if(i==0)
-                        validData.teams[i] =validData.teams[i+1]
+                        //validData.teams[i] =validData.teams[i+1]
+                           bowlingTeam = validData.teams[i+1]
                         if(i==1) 
-                        validData.teams[i] =validData.teams[i-1]
-                        teamWise.scorecard.bowlingStats[k].player = validData.teams[i].players.find(element => element.id == teamWise.scorecard.bowlingStats[k].playerId);
-                       
+                           bowlingTeam = validData.teams[i-1]
+                        //validData.teams[i] =validData.teams[i-1]
+                    
+                        teamWise.scorecard.bowlingStats[k].player = bowlingTeam.players.find(element => element.id == teamWise.scorecard.bowlingStats[k].playerId);
+                      
                     }
   
                     teamData.innings = teamWise;
@@ -1460,7 +1500,69 @@ module.exports = class MatchController {
                 let pointTable = await menuDAO.getStadings("m", "app");
             
                 matchDetail.pointsTable = pointTable;
-                let page = await PagesDAO.getPage("video-list-web");
+                //let page = await PagesDAO.getPage("video-list-web");
+                //pages processings
+                //all-videos,wickets,super6's,feature,highlights,interviews
+                //all-videos
+                let page={list:[]}
+                
+                let allvideos = await videosDAO.getVideoByMatch(matchId);
+               
+                if(allvideos && allvideos.length>0){
+                    let objd = {
+                        slug:"all-video",name:"all Video",display_type:"videos",contents:allvideos,show_more:true
+                    }
+                    page.list.push(objd)
+                    
+                }
+                let wickets = await videosDAO.getVideoByMatch(matchId,"wicket");
+              
+                if(wickets && wickets.length>0){
+                    let objd = {
+                        slug:"wicket",name:"Wickets",display_type:"videos",contents:wickets,show_more:true
+                    }
+                    page.list.push(objd)
+                    
+                }
+                let supersixes = await videosDAO.getVideoByMatch(matchId,"super-sixes");
+              
+                if(supersixes && supersixes.length>0){
+                    let objd = {
+                        slug:"super-sixes",name:"Super 6's",display_type:"videos",contents:supersixes,show_more:true
+                    }
+                    page.list.push(objd)
+                    
+                }
+                let features = await videosDAO.getVideoByMatch(matchId,"feature");
+              
+                if(features && features.length>0){
+                    let objd = {
+                        slug:"feature",name:"features",display_type:"videos",contents:features,show_more:true
+                    }
+                    page.list.push(objd)
+                    
+                }
+
+                let highlights = await videosDAO.getVideoByMatch(matchId,"highlights");
+              
+                if(highlights && highlights.length>0){
+                    let objd = {
+                        slug:"highlights",name:"Top Highlights",display_type:"videos",contents:highlights,show_more:true
+                    }
+                    page.list.push(objd)
+                    
+                }
+                let interviews = await videosDAO.getVideoByMatch(matchId,"interview");
+              
+                if(interviews && interviews.length>0){
+                    let objd = {
+                        slug:"interview",name:"Interviews",display_type:"videos",contents:interviews,show_more:true
+                    }
+                    page.list.push(objd)
+                    
+                }
+
+
                 matchDetail.pagedata = page;
                 res.json({ status: true, data: { match: matchDetail } });
 

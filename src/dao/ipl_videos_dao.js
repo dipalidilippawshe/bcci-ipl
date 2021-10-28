@@ -603,6 +603,31 @@ module.exports = class IplVideosDAO {
             return e
         }
     }
+
+    static async getVideoByMatch(matchId,type){
+        console.log("type is : ",type);
+        if(!type || type == ''|| type==undefined)
+            var query = {'references.sid':matchId}
+        else{
+            var query = {'references.sid':matchId,'tags.label':type}
+        }
+
+        let cursor
+        try {
+            console.log("query: ",query);
+            cursor = await videos.find(query)
+            const displayCursor = cursor.limit(7)
+            const list = await displayCursor.toArray()
+           
+            return list;
+        } catch (e) {
+            console.error(`Unable to issue find command, ${e}`)
+            return { list: [], total: 0 }
+        }
+       
+        //var list = await videos.find(query).limit(15);
+        
+    }
     
 
 }
