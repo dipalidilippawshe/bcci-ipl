@@ -231,6 +231,19 @@
                 "roundBig": "",
                 "logoOutline": ""
             }
+        },
+        "auction":"http://dev.iplt20.epicon.in/auction",
+        "fantasy":"http://dev.iplt20.epicon.in/fantasy",
+        "venues":"http://dev.iplt20.epicon.in/venues",
+        "ipl_versions": {
+            "app_ios": {
+                "min": "1.5",
+                "max": "1.5"
+            },
+            "app_android": {
+                "min": "1.5",
+                "max": "1.5"
+            }
         }
     },
 
