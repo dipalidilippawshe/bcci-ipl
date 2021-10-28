@@ -8,7 +8,7 @@
     },
     "tv_app_config": {
         "baseUrl": "https://dev-njsapi.epicon.in",
-        "ga_id": "UA-133366555-4",
+        "ga_id": "UA-211144096-1",
         "faqUrl": "",
         "pageSize": 12,
         "credentials": {
@@ -230,6 +230,21 @@
                 "roundSmall": "",
                 "roundBig": "",
                 "logoOutline": ""
+            }
+        },
+        "auction":"http://dev.iplt20.epicon.in/auction",
+        "fantasy":"http://dev.iplt20.epicon.in/fantasy",
+        "venues":"http://dev.iplt20.epicon.in/venues",
+        "code_of_conduct":"http://dev.iplt20.epicon.in/about/code-of-conduct-for-players-and-team-officials",
+        "matches":"http://dev.iplt20.epicon.in/matches/results/men/2020",
+        "ipl_versions": {
+            "app_ios": {
+                "min": "1.0",
+                "max": "1.0"
+            },
+            "app_android": {
+                "min": "1.0",
+                "max": "1.0"
             }
         }
     },

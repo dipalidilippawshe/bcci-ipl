@@ -3,7 +3,7 @@ let franchisedata
 let iplArticles
 let videos
 let matchPlayers
-const DEFAULT_SORT = [["matchDateMs", -1]]
+const DEFAULT_SORT = [["matchInfo.matchDateMs", -1]]
 module.exports = class MatchDAO {
     static async injectDB(conn) {
 
@@ -104,7 +104,6 @@ module.exports = class MatchDAO {
             console.error(`Unable to issue find command, ${e}`)
             return { matchesList: [], totalNumMatches: 0 }
         }
-
 
         const displayCursor = cursor.limit(matchesPerPage)
 
