@@ -1290,6 +1290,8 @@ module.exports = class MatchController {
                        tempObject.tag="RUNS";
                        tempObject.number = battingStats[bats].mostRuns;
                         tempObject.cap="Orange cap";
+                        tempObject.primaryColor = "#e3cf23",
+                        tempObject.secondaryColor= "#ff481e"
                    }
                 //    if(bats =="hs"){
                 //     tempObject.tag="Score";
@@ -1349,6 +1351,8 @@ module.exports = class MatchController {
                     if(bats=="wickets"){
                         tempObject.tag="WICKETS";
                         tempObject.number = bowlingStats[bats].w;
+                        tempObject.primaryColor = "#9b35f8",
+                        tempObject.secondaryColor= "#692f9e"
                          tempObject.cap="Purple cap";
                     }
                     if(bats =="dots"){
