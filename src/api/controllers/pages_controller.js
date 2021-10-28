@@ -5,17 +5,17 @@ module.exports = class PagesController {
   static async appHomepage(req, res, next) {
     console.log("At route me...");
     var slug = "home-app"
-    const pageFromDB = await PagesDAO.getBcciPage(slug)
+    const pageFromDB = await PagesDAO.getPage(slug)
     
     if (!pageFromDB) {
       res.send({ status: false, message: "Error!" });
       // errors.general = "Internal error, please try again later"
     }
     else {
-      for(let i=0;i<=pageFromDB.list.length-1;i++){
-         pageFromDB.list[i].contents=pageFromDB.list[i].content_list;
-         //delete pageFromDB.list[i].content_list;
-      }
+      // for(let i=0;i<=pageFromDB.list.length-1;i++){
+      //    pageFromDB.list[i].contents=pageFromDB.list[i].content_list;
+      //    //delete pageFromDB.list[i].content_list;
+      // }
       //processPageData(pageFromDB, req, res, next);
       console.log("In page data here me;;;... ");
       res.send({ status: true, message: "Received pagedata", pageData: pageFromDB });
