@@ -186,11 +186,14 @@ module.exports = class PagesController {
          run.cap = "RUNS";
         let highScore = battings.reduce((max, obj) => (max.highScore > obj.highScore) ? max : obj);    
         highScore.cap= "SCORE" 
-      innings.push(run); innings.push(highScore);
+        innings.push(run); innings.push(highScore);
         let bowlings = await MatchDAO.statsBowlingData(filters);
         let wickets = bowlings.reduce((max, obj) => (max.mostWkts > obj.mostWkts) ? max : obj);    
         wickets.cap = "WICKETS"
-        let bestbowlavg = bowlings.reduce((max, obj) => (max.bestBowlAvg > obj.bestBowlAvg) ? max : obj);    
+       
+        bowlings = converttoInt(bowlings);
+      
+        let bestbowlavg = bowlings.reduce((max, obj) => (max.bestBowlAvg1 > obj.bestBowlAvg1) ? max : obj);    
         bestbowlavg.cap = " "
         innings.push(wickets); innings.push(bestbowlavg);
         let resdata=[];
@@ -314,4 +317,16 @@ module.exports = class PagesController {
 
 }
 
-
+function converttoInt(bowlings) {
+  console.log("in functuon")
+    for(bow in bowlings){
+      
+      if(bowlings[bow].bestBowlAvg =="NA"||bowlings[bow].bestBowlAvg==undefined){
+        bowlings[bow].bestBowlAvg1 = 0
+      }else{
+        bowlings[bow].bestBowlAvg1 = parseFloat(bowlings[bow].bestBowlAvg );
+      }
+    
+    }
+    return bowlings;
+}
