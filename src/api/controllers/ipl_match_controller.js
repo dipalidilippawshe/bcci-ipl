@@ -1173,10 +1173,11 @@ module.exports = class MatchController {
                         bowl.splice(i, 1);
                         i--;
                     }
-                    if (filters.team_id && bowl[i] && bowl[i].teams.team_detail.id && filters.team_id !== bowl[i].teams.team_detail.id) {
+                    if (filters.team_id && bowl[i] && bowl[i].teams.team_detail.id && filters.team_id != bowl[i].teams.team_detail.id) {
                         bowl.splice(i, 1);
                         i--;
                     }
+                                  
                 }
             }
             res.json({ status: true, data: { batting: bat, bowling: bowl } });
