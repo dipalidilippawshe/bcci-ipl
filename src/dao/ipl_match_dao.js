@@ -8,10 +8,10 @@ module.exports = class MatchDAO {
     static async injectDB(conn) {
 
         try {
-            matches = await conn.db(process.env.BCCINS).collection("ipl_matches")
+            matches = await conn.db(process.env.BCCINS).collection("ipl_matches_latest")
             franchisedata = await conn.db(process.env.BCCINS).collection("franchises")
-            iplArticles = await conn.db(process.env.BCCINS).collection("ipl_articles")
-            videos = await conn.db(process.env.BCCINS).collection("ipl_videos")
+            iplArticles = await conn.db(process.env.BCCINS).collection("ipl_articles_latest")
+            videos = await conn.db(process.env.BCCINS).collection("ipl_videos_latest")
             matchPlayers = await conn.db(process.env.BCCINS).collection("matchesplayers")
         } catch (e) {
             console.error(`Unable to establish collection handles in pagesDAO: ${e}`)
@@ -1507,8 +1507,19 @@ module.exports = class MatchDAO {
     }
 
     static async playerInfoByYear(id,year){
-        console.log("playerInfo: ",id);
-        const countingPipeline = [
+       // console.log("playerInfo: ",id);
+       if(year){
+        var countingPipeline = [
+            {
+                $match: {
+                    "matchInfo.teams.players.id": parseInt(id),
+                    "matchInfo.matchDate": new RegExp(year, "i")
+                }
+            }
+
+        ]
+       }else{
+        var countingPipeline = [
             {
                 $match: {
                     "matchInfo.teams.players.id": parseInt(id),
@@ -1517,10 +1528,12 @@ module.exports = class MatchDAO {
             }
 
         ]
+       }
+        
         const pipeline = [...countingPipeline]
-        console.log("pipeline: ",pipeline);
+        //console.log("pipeline: ",pipeline);
         const matchesList = await matches.aggregate(pipeline).toArray()
-        console.log("matchesList: ",[matchesList.length-1]);
+        //console.log("matchesList: ",[matchesList.length-1]);
         return matchesList[matchesList.length-1];
     }
 

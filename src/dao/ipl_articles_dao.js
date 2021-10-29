@@ -9,7 +9,7 @@ module.exports = class ArticlesDAO {
             return
         }
         try {
-            iplArticles = await conn.db(process.env.BCCINS).collection("ipl_articles")
+            iplArticles = await conn.db(process.env.BCCINS).collection("ipl_articles_latest")
             this.iplArticles = iplArticles;
         } catch (e) {
             console.error(

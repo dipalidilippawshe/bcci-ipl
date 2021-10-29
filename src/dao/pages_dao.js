@@ -1,13 +1,18 @@
 let pages
 let bccipages
 let iplArticles
+let winners
+let matches
 module.exports = class PagesDAO {
   static async injectDB(conn) {
 
     try {
       pages = await conn.db(process.env.BCCINS).collection("ipl_pages")
       bccipages = await conn.db(process.env.BCCINS).collection("bcci_pages")
-      iplArticles = await conn.db(process.env.BCCINS).collection("ipl_articles")
+      iplArticles = await conn.db(process.env.BCCINS).collection("ipl_articles_latest")
+      winners = await conn.db(process.env.BCCINS).collection("ipl_winners")
+      matches = await conn.db(process.env.BCCINS).collection("ipl_matches_latest")
+
     } catch (e) {
       console.error(`Unable to establish collection handles in pagesDAO: ${e}`)
     }
@@ -69,6 +74,26 @@ module.exports = class PagesDAO {
    
     //var list = await videos.find(query).limit(15);
     
+}
+
+static async callWinners(){
+  var cursor;
+  cursor = await winners.find({})
+
+  const displayCursor = cursor;
+  const list = await displayCursor.toArray()
+  return list
+}
+
+static async callHighestRuns(year){
+  var pipeline =[
+    {
+      $match: { "matchInfo.matchDate": new RegExp(year, "i"), "matchInfo.matchState": "C" }
+  },
+  { $project: { "innings": 1,  } },
+  { $unwind: "$innings" },
+  { $unwind: "$innings.scorecard" },
+  ]
 }
 
 }
