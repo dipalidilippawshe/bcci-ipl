@@ -4,7 +4,8 @@
         "1001": "Data not found.",
         "1002": "Query parameter tag is required.",
         "1003": "Request params missing.",
-        "1004": "Something went wrong!"
+        "1004": "Something went wrong!",
+        "1005": "No upcoming matches to display"
     },
     "tv_app_config": {
         "teamsLogo": {

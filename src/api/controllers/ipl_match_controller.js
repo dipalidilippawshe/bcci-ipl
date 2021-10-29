@@ -735,6 +735,9 @@ module.exports = class MatchController {
             let id = req.params.ID; //This is team ID
             let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
             console.log(year)
+            if(year == 2021){
+               return res.json({ status: true,data:[], message: config.error_codes["1005"] })
+            }
             if(id.includes("-")){
                 console.log("Inside iffififiifiif");
                 let slug = id;
