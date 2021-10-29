@@ -13,7 +13,7 @@ module.exports = class IplVideosDAO {
         }
         try {
             mflix = await conn.db(process.env.BCCINS)
-            videos = await conn.db(process.env.BCCINS).collection("ipl_videos")
+            videos = await conn.db(process.env.BCCINS).collection("ipl_videos_latest")
             playtracks = await conn.db(process.env.BCCINS).collection("playtrackings")
             this.videos = videos // this is only for testing
             this.playtracks = playtracks 

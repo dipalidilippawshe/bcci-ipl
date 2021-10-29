@@ -4,7 +4,7 @@ module.exports = class MatchDAO {
     static async injectDB(conn) {
      
       try {
-        matches = await conn.db(process.env.BCCINS).collection("ipl_matches")
+        matches = await conn.db(process.env.BCCINS).collection("ipl_matches_latest")
       } catch (e) {
         console.error(`Unable to establish collection handles in pagesDAO: ${e}`)
       }

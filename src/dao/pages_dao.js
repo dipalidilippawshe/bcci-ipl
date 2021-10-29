@@ -9,7 +9,7 @@ module.exports = class PagesDAO {
     try {
       pages = await conn.db(process.env.BCCINS).collection("ipl_pages")
       bccipages = await conn.db(process.env.BCCINS).collection("bcci_pages")
-      iplArticles = await conn.db(process.env.BCCINS).collection("ipl_articles")
+      iplArticles = await conn.db(process.env.BCCINS).collection("ipl_articles_latest")
       winners = await conn.db(process.env.BCCINS).collection("ipl_winners")
       matches = await conn.db(process.env.BCCINS).collection("ipl_matches_latest")
 
