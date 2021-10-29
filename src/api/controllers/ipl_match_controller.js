@@ -730,69 +730,77 @@ module.exports = class MatchController {
 
     }
     static async apiScheduleById(req, res, next) {
-        try {
-            let id = req.params.ID; //This is team ID
-            let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
-            console.log(year)
-            if(id.includes("-")){
-                console.log("Inside iffififiifiif");
-                let slug = id;
-                let franchiseId = await franchiseDAO.getfrenchiseBySlug(slug);
-                id = franchiseId.id;
-            }
-               let data = await MatchDAO.getScheduleList(year, id);
-               var items = [];
-               data.forEach(item=>{
+        let response = {
+            status: true,
+            data: {title:"No upcoming matches to display",
+            note:"The schedule is subject to change.",
+            ist:" Indian Standard Time",gmt:"Greenwich Mean Time"}
+           
+        }
+        res.json({ status: true, data: response })
+        // try {
+        //     let id = req.params.ID; //This is team ID
+        //     let year = req.query.year && parseInt(req.query.year) ? parseInt(req.query.year) : 2021
+        //     console.log(year)
+        //     if(id.includes("-")){
+        //         console.log("Inside iffififiifiif");
+        //         let slug = id;
+        //         let franchiseId = await franchiseDAO.getfrenchiseBySlug(slug);
+        //         id = franchiseId.id;
+        //     }
+        //        let data = await MatchDAO.getScheduleList(year, id);
+        //        var items = [];
+        //        data.forEach(item=>{
                      
-                  let teamId1 = item.matchInfo.teams[0].team.id;
+        //           let teamId1 = item.matchInfo.teams[0].team.id;
               
-                  let teamId2 = item.matchInfo.teams[1].team.id;
-                 items.push(teamId1.toString());
-                 items.push(teamId2.toString());
+        //           let teamId2 = item.matchInfo.teams[1].team.id;
+        //          items.push(teamId1.toString());
+        //          items.push(teamId2.toString());
         
     
-               })
+        //        })
               
-               items =  [...new Set(items)];
+        //        items =  [...new Set(items)];
           
           
-                let logos =await franchiseDAO.getTeamLogos(items);
-                  //    console.log("result================");
-                  console.log(logos);
-               data.map(item=>{
-                    let teamId1 = item.matchInfo.teams[0].team.id;
+        //         let logos =await franchiseDAO.getTeamLogos(items);
+        //           //    console.log("result================");
+        //           console.log(logos);
+        //        data.map(item=>{
+        //             let teamId1 = item.matchInfo.teams[0].team.id;
               
-                    let teamId2 = item.matchInfo.teams[1].team.id;
-                    for(let i=0;i<logos.length;i++)
-                    {
-                        if(teamId1==logos[i].id)
-                        {
-                            item.matchInfo.teams[0].team.logo=logos[i].logo;
-                            item.matchInfo.teams[0].team.logo_match=logos[i].logo_match;
-                            item.matchInfo.teams[0].team.logo_player=logos[i].logo_player;
-                            item.matchInfo.teams[0].team.logo_medium=logos[i].logo_medium;
-                            item.matchInfo.teams[0].team.banner=logos[i].banner;
-                        }
-                        if(teamId2==logos[i].id)
-                        {
-                            item.matchInfo.teams[1].team.logo=logos[i].logo;
-                            item.matchInfo.teams[1].team.logo_match=logos[i].logo_match;
-                            item.matchInfo.teams[1].team.logo_player=logos[i].logo_player;
-                            item.matchInfo.teams[1].team.logo_medium=logos[i].logo_medium;
-                            item.matchInfo.teams[1].team.banner=logos[i].banner;;
-                        }
-                    }
-                })
-            if (!data || data.length <= 0) {
-                res.status(404).json({ status: false, error: config.error_codes["1001"] })
-                return
-            } else {
-                res.json({ status: true, data: data })
-            }
-        } catch (e) {
-            console.log(`api, ${e}`)
-            res.status(500).json({ error: e })
-        }
+        //             let teamId2 = item.matchInfo.teams[1].team.id;
+        //             for(let i=0;i<logos.length;i++)
+        //             {
+        //                 if(teamId1==logos[i].id)
+        //                 {
+        //                     item.matchInfo.teams[0].team.logo=logos[i].logo;
+        //                     item.matchInfo.teams[0].team.logo_match=logos[i].logo_match;
+        //                     item.matchInfo.teams[0].team.logo_player=logos[i].logo_player;
+        //                     item.matchInfo.teams[0].team.logo_medium=logos[i].logo_medium;
+        //                     item.matchInfo.teams[0].team.banner=logos[i].banner;
+        //                 }
+        //                 if(teamId2==logos[i].id)
+        //                 {
+        //                     item.matchInfo.teams[1].team.logo=logos[i].logo;
+        //                     item.matchInfo.teams[1].team.logo_match=logos[i].logo_match;
+        //                     item.matchInfo.teams[1].team.logo_player=logos[i].logo_player;
+        //                     item.matchInfo.teams[1].team.logo_medium=logos[i].logo_medium;
+        //                     item.matchInfo.teams[1].team.banner=logos[i].banner;;
+        //                 }
+        //             }
+        //         })
+        //     if (!data || data.length <= 0) {
+        //         res.status(404).json({ status: false, error: config.error_codes["1001"] })
+        //         return
+        //     } else {
+        //         res.json({ status: true, data: data })
+        //     }
+        // } catch (e) {
+        //     console.log(`api, ${e}`)
+        //     res.status(500).json({ error: e })
+        // }
     }
 
     static async apiAppGetTeams(req, res, next) {
