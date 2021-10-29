@@ -1291,6 +1291,8 @@ module.exports = class MatchController {
                        tempObject.tag="RUNS";
                        tempObject.number = battingStats[bats].mostRuns;
                         tempObject.cap="Orange cap";
+                        tempObject.primaryColor = "#e3cf23",
+                        tempObject.secondaryColor= "#ff481e"
                    }
                 //    if(bats =="hs"){
                 //     tempObject.tag="Score";
@@ -1350,6 +1352,8 @@ module.exports = class MatchController {
                     if(bats=="wickets"){
                         tempObject.tag="WICKETS";
                         tempObject.number = bowlingStats[bats].w;
+                        tempObject.primaryColor = "#9b35f8",
+                        tempObject.secondaryColor= "#692f9e"
                          tempObject.cap="Purple cap";
                     }
                     if(bats =="dots"){
@@ -1588,6 +1592,17 @@ module.exports = class MatchController {
 
                     var logo = await franchiseDAO.getfrenchiseByName(matchDetail.matchInfo.teams[team].team.fullName);
                     matchDetail.matchInfo.teams[team].team.logo = logo;
+
+                    var wicketKeeperImg =   await MatchDAO.playerHeadshot(matchDetail.matchInfo.teams[team].wicketKeeper.id);
+                    matchDetail.matchInfo.teams[team].wicketKeeper.images = wicketKeeperImg;
+
+                    var captainImg =   await MatchDAO.playerHeadshot(matchDetail.matchInfo.teams[team].captain.id);
+                    matchDetail.matchInfo.teams[team].captain.images = captainImg;
+
+                    let playersData = matchDetail.matchInfo.teams[team].players;
+                    for(let i=0; i <  playersData.length; i++){
+                        matchDetail.matchInfo.teams[team].players[i].images = await MatchDAO.playerHeadshot(playersData[i].id); 
+                    }
                 }
 
                 let pointTable = await menuDAO.getStadings("m", "app");
