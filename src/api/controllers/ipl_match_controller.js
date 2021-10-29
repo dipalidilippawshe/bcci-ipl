@@ -674,7 +674,6 @@ module.exports = class MatchController {
             matchesList[i].TopRunScorer.player_detail = matchesList[i].TopRunScorer.player_detail.filter(player => player.id == matchesList[i].TopRunScorer.player_id)
             matchesList[i].TopWktTaker = await MatchDAO.getTopBolwerByTeamAndYear(filters)
             matchesList[i].TopWktTaker.player_detail = matchesList[i].TopWktTaker.player_detail.filter(player => player.id == matchesList[i].TopWktTaker.player_id)
-
         }
         let response = {
             status: true,
