@@ -1324,6 +1324,7 @@ module.exports = class MatchController {
                     tempObject.primaryColor = "#19398a",
                      tempObject.secondaryColor= "#0d1e49"
                      tempObject.cap="Most Sixes";
+                     
                    }
                    //console.log("tempObject is: ",tempObject);
                    battingData.push(tempObject);
