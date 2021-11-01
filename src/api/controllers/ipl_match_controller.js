@@ -1314,11 +1314,15 @@ module.exports = class MatchController {
                    if(bats == "fours"){
                     tempObject.tag="FOURS";
                     tempObject.number = battingStats[bats].most4s;
+                    tempObject.primaryColor = "#19398a",
+                     tempObject.secondaryColor= "#0d1e49"
                      tempObject.cap="Most Fours";
                    }
                    if(bats == "six"){
                     tempObject.tag="SIXES";
                     tempObject.number = battingStats[bats].most4s;
+                    tempObject.primaryColor = "#19398a",
+                     tempObject.secondaryColor= "#0d1e49"
                      tempObject.cap="Most Sixes";
                    }
                    //console.log("tempObject is: ",tempObject);
@@ -1366,11 +1370,15 @@ module.exports = class MatchController {
                     if(bats =="dots"){
                      tempObject.tag="";
                      tempObject.number = bowlingStats[bats].d;
+                     tempObject.primaryColor = "#19398a",
+                     tempObject.secondaryColor= "#0d1e49"
                       tempObject.cap="Most Dots";
                     }
                     if(bats =="economy"){
                      tempObject.tag="";
                      tempObject.number = bowlingStats[bats].r / bowlingStats[bats].mostOvers;
+                     tempObject.primaryColor = "#19398a",
+                     tempObject.secondaryColor= "#0d1e49"
                      tempObject.cap="Best Economy";
                     }
                     // if(bats == "bestbowling"){

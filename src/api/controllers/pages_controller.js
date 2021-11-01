@@ -13,9 +13,17 @@ module.exports = class PagesController {
       res.send({ status: false, message: "Error!" });
       // errors.general = "Internal error, please try again later"
     }
-    else {
+    else {const empty={};
       for(let i=0;i<=pageFromDB.list.length-1;i++){
         pageFromDB.list[i].contents=pageFromDB.list[i].content_list;
+        console.log(pageFromDB.list[i]);
+        console.log("content list is: ",pageFromDB.list[i].content_list);
+        for(let j=0;j<=pageFromDB.list[i].content_list.length-1;j++){
+          //console.log("content list is: ",pageFromDB.list[i].content_list[j]);
+          if(pageFromDB.list[i].content_list[j].additionalInfo && Object.keys(pageFromDB.list[i].content_list[j]).length===0 ){
+            pageFromDB.list[i].content_list[j].additionalInfo = null;
+          }
+        }
        
      }
       //processPageData(pageFromDB, req, res, next);
