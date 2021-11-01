@@ -17,10 +17,11 @@ module.exports = class PagesController {
       for(let i=0;i<=pageFromDB.list.length-1;i++){
         pageFromDB.list[i].contents=pageFromDB.list[i].content_list;
        
-        for(let j=0;j<=pageFromDB.list[i].content_list.length-1;j++){
+        for(let j=0;j<=pageFromDB.list[i].contents.length-1;j++){
           //console.log("content list is: ",pageFromDB.list[i].content_list[j]);
-          if(pageFromDB.list[i].content_list[j].additionalInfo && Object.keys(pageFromDB.list[i].content_list[j]).length===0 ){
-            pageFromDB.list[i].content_list[j].additionalInfo = null;
+          if(pageFromDB.list[i].contents[j].additionalInfo || Object.keys(pageFromDB.list[i].contents[j]).length===0 ){
+            
+            pageFromDB.list[i].contents[j].additionalInfo = null;
           }
         }
        
