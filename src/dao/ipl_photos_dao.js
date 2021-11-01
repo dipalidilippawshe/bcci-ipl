@@ -8,7 +8,7 @@ module.exports = class PhotosDAO {
         }
         try {
             mflix = await conn.db(process.env.BCCINS)
-            images = await conn.db(process.env.BCCINS).collection("ipl_images_latest")
+            images = await conn.db(process.env.BCCINS).collection("ipl_images")
             this.images = images // this is only for testing
         } catch (e) {
             console.error(`Unable to establish a collection handle in imagesDAO: ${e}`,)

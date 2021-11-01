@@ -13,7 +13,7 @@ module.exports = class IplRecordsDAO {
 
         try {
             franchise_years = await conn.db(process.env.BCCINS).collection("franchise_years")
-            matches = await conn.db(process.env.BCCINS).collection("ipl_matches_latest");
+            matches = await conn.db(process.env.BCCINS).collection("ipl_matches");
             records = await conn.db(process.env.BCCINS).collection("records");
             frenchisesData = await conn.db(process.env.BCCINS).collection("franchises");
             this.franchise_years = franchise_years // this is only for testing
