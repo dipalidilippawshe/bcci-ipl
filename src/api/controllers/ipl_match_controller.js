@@ -1298,8 +1298,8 @@ module.exports = class MatchController {
                        tempObject.tag="RUNS";
                        tempObject.number = battingStats[bats].mostRuns;
                         tempObject.cap="Orange cap";
-                        tempObject.primaryColor = "#e3cf23",
-                        tempObject.secondaryColor= "#ff481e"
+                        tempObject.primaryColor = "#e3cf23";
+                        tempObject.secondaryColor= "#ff481e";
                    }
                 //    if(bats =="hs"){
                 //     tempObject.tag="Score";
@@ -1314,17 +1314,17 @@ module.exports = class MatchController {
                    if(bats == "fours"){
                     tempObject.tag="FOURS";
                     tempObject.number = battingStats[bats].most4s;
-                    tempObject.primaryColor = "#19398a",
-                     tempObject.secondaryColor= "#0d1e49"
+                    tempObject.primaryColor = "#19398a";
+                     tempObject.secondaryColor= "#0d1e49";
                      tempObject.cap="Most Fours";
                    }
                    if(bats == "six"){
                     tempObject.tag="SIXES";
                     tempObject.number = battingStats[bats].most4s;
-                    tempObject.primaryColor = "#19398a",
-                     tempObject.secondaryColor= "#0d1e49"
+                    tempObject.primaryColor = "#19398a";
+                     tempObject.secondaryColor= "#0d1e49";
                      tempObject.cap="Most Sixes";
-                     
+
                    }
                    //console.log("tempObject is: ",tempObject);
                    battingData.push(tempObject);
@@ -1364,22 +1364,22 @@ module.exports = class MatchController {
                     if(bats=="wickets"){
                         tempObject.tag="WICKETS";
                         tempObject.number = bowlingStats[bats].w;
-                        tempObject.primaryColor = "#9b35f8",
-                        tempObject.secondaryColor= "#692f9e"
+                        tempObject.primaryColor = "#9b35f8";
+                        tempObject.secondaryColor= "#692f9e";
                          tempObject.cap="Purple cap";
                     }
                     if(bats =="dots"){
                      tempObject.tag="";
                      tempObject.number = bowlingStats[bats].d;
-                     tempObject.primaryColor = "#19398a",
-                     tempObject.secondaryColor= "#0d1e49"
+                     tempObject.primaryColor = "#19398a";
+                     tempObject.secondaryColor= "#0d1e49";
                       tempObject.cap="Most Dots";
                     }
                     if(bats =="economy"){
                      tempObject.tag="";
                      tempObject.number = bowlingStats[bats].r / bowlingStats[bats].mostOvers;
-                     tempObject.primaryColor = "#19398a",
-                     tempObject.secondaryColor= "#0d1e49"
+                     tempObject.primaryColor = "#19398a";
+                     tempObject.secondaryColor= "#0d1e49";
                      tempObject.cap="Best Economy";
                     }
                     // if(bats == "bestbowling"){
