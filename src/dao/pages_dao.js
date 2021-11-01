@@ -9,9 +9,9 @@ module.exports = class PagesDAO {
     try {
       pages = await conn.db(process.env.BCCINS).collection("ipl_pages")
       bccipages = await conn.db(process.env.BCCINS).collection("bcci_pages")
-      iplArticles = await conn.db(process.env.BCCINS).collection("ipl_articles_latest")
+      iplArticles = await conn.db(process.env.BCCINS).collection("ipl_articles")
       winners = await conn.db(process.env.BCCINS).collection("ipl_winners")
-      matches = await conn.db(process.env.BCCINS).collection("ipl_matches_latest")
+      matches = await conn.db(process.env.BCCINS).collection("ipl_matches")
 
     } catch (e) {
       console.error(`Unable to establish collection handles in pagesDAO: ${e}`)
