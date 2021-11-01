@@ -4,9 +4,12 @@
         "1001": "Data not found.",
         "1002": "Query parameter tag is required.",
         "1003": "Request params missing.",
-        "1004": "Something went wrong!"
+        "1004": "Something went wrong!",
+        "1005": "No upcoming matches to display"
     },
     "tv_app_config": {
+        "ga_id": "UA-211144096-1",
+        "livelike_program_id":"46c10feb-f968-4bfd-9da7-1be87658f856",
         "teamsLogo": {
                 "CSK": {
                     "logo": "https://bcciplayerimages.s3.ap-south-1.amazonaws.com/ipl/CSK/logos/Small/CSK.png",
@@ -111,6 +114,9 @@
             "fantasy": "http://dev.iplt20.epicon.in/fantasy",
             "venues": "http://dev.iplt20.epicon.in/venues",
             "code_of_conduct": "http://dev.iplt20.epicon.in/about/code-of-conduct-for-players-and-team-officials",
+            "upstox_mvp":"https://dev-iplt20.epicplus.com/upstoxmost",
+            "paytm_fairplay":"https://dev-iplt20.epicplus.com/fairplay",
+            "stats":"https://dev-iplt20.epicplus.com/stats/2021",
             "matches": "http://dev.iplt20.epicon.in/matches/results/men/2020",
             "ipl_versions": {
                 "app_ios": {
