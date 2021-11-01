@@ -16,8 +16,7 @@ module.exports = class PagesController {
     else {const empty={};
       for(let i=0;i<=pageFromDB.list.length-1;i++){
         pageFromDB.list[i].contents=pageFromDB.list[i].content_list;
-        console.log(pageFromDB.list[i]);
-        console.log("content list is: ",pageFromDB.list[i].content_list);
+       
         for(let j=0;j<=pageFromDB.list[i].content_list.length-1;j++){
           //console.log("content list is: ",pageFromDB.list[i].content_list[j]);
           if(pageFromDB.list[i].content_list[j].additionalInfo && Object.keys(pageFromDB.list[i].content_list[j]).length===0 ){
@@ -27,7 +26,6 @@ module.exports = class PagesController {
        
      }
       //processPageData(pageFromDB, req, res, next);
-      console.log("In page data here me;;;... ");
       res.send({ status: true, message: "Received pagedata", pageData: pageFromDB });
     }
 
@@ -46,7 +44,6 @@ module.exports = class PagesController {
        
      }
       //processPageData(pageFromDB, req, res, next);
-      console.log("In page data here me;;;... ");
       res.send({ status: true, message: "Received pagedata", pageData: pageFromDB });
     }
 
